@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.npc.common.modular.corpus.mapper.CorpusMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.npc.common.modular.corpus.entity.Corpus">
+            <result column="id" property="id"/>
+            <result column="content" property="content"/>
+            <result column="tag" property="tag"/>
+            <result column="cre_time" property="creTime"/>
+            <result column="flag" property="flag"/>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+            id, content, tag, cre_time, flag
+    </sql>
+
+    <sql id="commonConditionSQL">
+        <where>
+            t_corpus.is_delete = 0
+                <if test="id != '' and id != null">
+                    and t_corpus.id = #{id}
+                </if>
+                <if test="content != '' and content != null">
+                    and t_corpus.content = #{content}
+                </if>
+                <if test="tag != '' and tag != null">
+                    and t_corpus.tag REGEXP <![CDATA['\\b' + #{tag} + '\\b']]>
+                </if>
+                <if test="creTime != '' and creTime != null">
+                    and t_corpus.cre_time = #{creTime}
+                </if>
+        </where>
+    </sql>
+
+    <select id="getCorpusListByColList" resultType="com.npc.common.modular.corpus.entity.Corpus">
+        select
+        <include refid="Base_Column_List"/>
+        from t_corpus
+        <where>
+            t_corpus.is_delete = 0
+            and ${column} in
+            <foreach collection="ids" item="id" separator="," open="(" close=")">
+                ${id}
+            </foreach>
+        </where>
+    </select>
+
+</mapper>

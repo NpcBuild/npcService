@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.npc.common.modular.chat.mapper.ChatBuddyMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.npc.common.modular.chat.entity.ChatBuddy">
+            <result column="id" property="id"/>
+            <result column="name" property="name"/>
+            <result column="has_contact" property="hasContact"/>
+            <result column="gender" property="gender"/>
+            <result column="tags" property="tags"/>
+            <result column="intimacy_level" property="intimacyLevel"/>
+            <result column="notes" property="notes"/>
+            <result column="sort" property="sort"/>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+            id, name, has_contact, gender, tags, intimacy_level, notes, sort
+    </sql>
+
+    <sql id="commonConditionSQL">
+        <where>
+            t_chat_buddy.is_delete = 0
+                <if test="id != '' and id != null">
+                    and t_chat_buddy.id = #{id}
+                </if>
+                <if test="name != '' and name != null">
+                    and t_chat_buddy.name = #{name}
+                </if>
+                <if test="hasContact != '' and hasContact != null">
+                    and t_chat_buddy.has_contact = #{hasContact}
+                </if>
+                <if test="gender != '' and gender != null">
+                    and t_chat_buddy.gender = #{gender}
+                </if>
+                <if test="tags != '' and tags != null">
+                    and t_chat_buddy.tags = #{tags}
+                </if>
+                <if test="intimacyLevel != '' and intimacyLevel != null">
+                    and t_chat_buddy.intimacy_level = #{intimacyLevel}
+                </if>
+                <if test="notes != '' and notes != null">
+                    and t_chat_buddy.notes = #{notes}
+                </if>
+                <if test="sort != '' and sort != null">
+                    and t_chat_buddy.sort = #{sort}
+                </if>
+        </where>
+    </sql>
+
+    <select id="getChatBuddyListByColList" resultType="com.npc.common.modular.chat.entity.ChatBuddy">
+        select
+        <include refid="Base_Column_List"/>
+        from t_chat_buddy
+        <where>
+            t_chat_buddy.is_delete = 0
+            and ${column} in
+            <foreach collection="ids" item="id" separator="," open="(" close=")">
+                ${id}
+            </foreach>
+        </where>
+    </select>
+
+</mapper>

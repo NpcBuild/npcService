@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.npc.common.file.mapper.FileSliceMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.npc.common.file.entity.FileSlice">
+            <result column="id" property="id"/>
+            <result column="name" property="name"/>
+            <result column="size" property="size"/>
+            <result column="md5" property="md5"/>
+            <result column="chunk_index" property="chunkIndex"/>
+            <result column="uploaded_chunks" property="uploadedChunks"/>
+            <result column="total_chunks" property="totalChunks"/>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+            id, name, size, md5, chunk_index, uploaded_chunks, total_chunks
+    </sql>
+
+    <sql id="commonConditionSQL">
+        <where>
+                <if test="id != '' and id != null">
+                    and t_file_slice.id = #{id}
+                </if>
+                <if test="name != '' and name != null">
+                    and t_file_slice.name = #{name}
+                </if>
+                <if test="size != '' and size != null">
+                    and t_file_slice.size = #{size}
+                </if>
+                <if test="md5 != '' and md5 != null">
+                    and t_file_slice.md5 = #{md5}
+                </if>
+                <if test="chunkIndex != '' and chunkIndex != null">
+                    and t_file_slice.chunk_index = #{chunkIndex}
+                </if>
+                <if test="uploadedChunks != '' and uploadedChunks != null">
+                    and t_file_slice.uploaded_chunks = #{uploadedChunks}
+                </if>
+                <if test="totalChunks != '' and totalChunks != null">
+                    and t_file_slice.total_chunks = #{totalChunks}
+                </if>
+        </where>
+    </sql>
+
+    <select id="getFileSliceListByColList" resultType="com.npc.common.file.entity.FileSlice">
+        select
+        <include refid="Base_Column_List"/>
+        from t_file_slice
+        <where>
+            and ${column} in
+            <foreach collection="ids" item="id" separator="," open="(" close=")">
+                ${id}
+            </foreach>
+        </where>
+    </select>
+
+    <select id="selectChunkCount" resultType="int">
+        select
+        count(1)
+        from t_file_slice
+        <include refid="commonConditionSQL"/>
+    </select>
+
+    <select id="selectUploadedChunks" resultType="int">
+        select
+        count(1)
+        from t_file_slice
+        <where>
+            md5 = #{md5}
+        </where>
+    </select>
+
+    <select id="selectChunksByMd5" resultType="com.npc.common.file.entity.FileSlice">
+        select
+        <include refid="Base_Column_List"/>
+        from t_file_slice
+        <where>
+            md5 = #{md5}
+        </where>
+    </select>
+
+</mapper>

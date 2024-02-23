@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.npc.common.modular.tags.mapper.TagsMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.npc.common.modular.tags.entity.Tags">
+            <result column="id" property="id"/>
+            <result column="parent_id" property="parentId"/>
+            <result column="group_id" property="groupId"/>
+            <result column="name" property="name"/>
+            <result column="type" property="type"/>
+            <result column="color" property="color"/>
+            <result column="description" property="description"/>
+            <result column="usage_count" property="usageCount"/>
+            <result column="icon_url" property="iconUrl"/>
+            <result column="is_featured" property="isFeatured"/>
+            <result column="is_public" property="isPublic"/>
+            <result column="source" property="source"/>
+            <result column="owner_user_id" property="ownerUserId"/>
+            <result column="custom_fields" property="customFields"/>
+            <result column="weight" property="weight"/>
+            <result column="user_rating" property="userRating"/>
+            <result column="priority" property="priority"/>
+            <result column="related_tags" property="relatedTags"/>
+            <result column="created_at" property="createdAt"/>
+            <result column="updated_at" property="updatedAt"/>
+            <result column="aliases" property="aliases"/>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+            id, parent_id, group_id, name, type, color, description, usage_count, icon_url, is_featured, is_public, source, owner_user_id, custom_fields, weight, user_rating, priority, related_tags, created_at, updated_at, aliases
+    </sql>
+
+    <sql id="commonConditionSQL">
+        <where>
+            t_tags.is_delete = 0
+                <if test="id != '' and id != null">
+                    and t_tags.id = #{id}
+                </if>
+                <if test="parentId != '' and parentId != null">
+                    and t_tags.parent_id = #{parentId}
+                </if>
+                <if test="groupId != '' and groupId != null">
+                    and t_tags.group_id = #{groupId}
+                </if>
+                <if test="name != '' and name != null">
+                    and t_tags.name = #{name}
+                </if>
+                <if test="type != '' and type != null">
+                    and t_tags.type = #{type}
+                </if>
+                <if test="color != '' and color != null">
+                    and t_tags.color = #{color}
+                </if>
+                <if test="description != '' and description != null">
+                    and t_tags.description = #{description}
+                </if>
+                <if test="usageCount != '' and usageCount != null">
+                    and t_tags.usage_count = #{usageCount}
+                </if>
+                <if test="iconUrl != '' and iconUrl != null">
+                    and t_tags.icon_url = #{iconUrl}
+                </if>
+                <if test="isFeatured != '' and isFeatured != null">
+                    and t_tags.is_featured = #{isFeatured}
+                </if>
+                <if test="isPublic != '' and isPublic != null">
+                    and t_tags.is_public = #{isPublic}
+                </if>
+                <if test="source != '' and source != null">
+                    and t_tags.source = #{source}
+                </if>
+                <if test="ownerUserId != '' and ownerUserId != null">
+                    and t_tags.owner_user_id = #{ownerUserId}
+                </if>
+                <if test="customFields != '' and customFields != null">
+                    and t_tags.custom_fields = #{customFields}
+                </if>
+                <if test="weight != '' and weight != null">
+                    and t_tags.weight = #{weight}
+                </if>
+                <if test="userRating != '' and userRating != null">
+                    and t_tags.user_rating = #{userRating}
+                </if>
+                <if test="priority != '' and priority != null">
+                    and t_tags.priority = #{priority}
+                </if>
+                <if test="relatedTags != '' and relatedTags != null">
+                    and t_tags.related_tags = #{relatedTags}
+                </if>
+                <if test="createdAt != '' and createdAt != null">
+                    and t_tags.created_at = #{createdAt}
+                </if>
+                <if test="updatedAt != '' and updatedAt != null">
+                    and t_tags.updated_at = #{updatedAt}
+                </if>
+                <if test="aliases != '' and aliases != null">
+                    and t_tags.aliases = #{aliases}
+                </if>
+        </where>
+    </sql>
+
+    <select id="getTagsListByColList" resultType="com.npc.common.modular.tags.entity.Tags">
+        select
+        <include refid="Base_Column_List"/>
+        from t_tags
+        <where>
+            t_tags.is_delete = 0
+            and ${column} in
+            <foreach collection="ids" item="id" separator="," open="(" close=")">
+                ${id}
+            </foreach>
+        </where>
+    </select>
+
+</mapper>

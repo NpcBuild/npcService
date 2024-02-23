@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.npc.common.modular.diary.mapper.DiaryMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.npc.common.modular.diary.entity.Diary">
+            <result column="id" property="id"/>
+            <result column="user_id" property="userId"/>
+            <result column="date" property="date"/>
+            <result column="title" property="title"/>
+            <result column="content" property="content"/>
+            <result column="mood" property="mood"/>
+            <result column="location" property="location"/>
+            <result column="tags" property="tags"/>
+            <result column="weather" property="weather"/>
+            <result column="reminder" property="reminder"/>
+            <result column="pub" property="pub"/>
+            <result column="read_status" property="readStatus"/>
+            <result column="rating" property="rating"/>
+            <result column="timestamp" property="timestamp"/>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+            id, user_id, date, title, content, mood, location, tags, weather, reminder, pub, read_status, rating, timestamp
+    </sql>
+
+    <sql id="commonConditionSQL">
+        <where>
+            t_diary.is_delete = 0
+                <if test="id != '' and id != null">
+                    and t_diary.id = #{id}
+                </if>
+                <if test="userId != '' and userId != null">
+                    and t_diary.user_id = #{userId}
+                </if>
+                <if test="date != '' and date != null">
+                    and t_diary.date = #{date}
+                </if>
+                <if test="title != '' and title != null">
+                    and t_diary.title = #{title}
+                </if>
+                <if test="content != '' and content != null">
+                    and t_diary.content = #{content}
+                </if>
+                <if test="mood != '' and mood != null">
+                    and t_diary.mood = #{mood}
+                </if>
+                <if test="location != '' and location != null">
+                    and t_diary.location = #{location}
+                </if>
+                <if test="tags != '' and tags != null">
+                    and t_diary.tags = #{tags}
+                </if>
+                <if test="weather != '' and weather != null">
+                    and t_diary.weather = #{weather}
+                </if>
+                <if test="reminder != '' and reminder != null">
+                    and t_diary.reminder = #{reminder}
+                </if>
+                <if test="pub != '' and pub != null">
+                    and t_diary.pub = #{pub}
+                </if>
+                <if test="readStatus != '' and readStatus != null">
+                    and t_diary.read_status = #{readStatus}
+                </if>
+                <if test="rating != '' and rating != null">
+                    and t_diary.rating = #{rating}
+                </if>
+                <if test="timestamp != '' and timestamp != null">
+                    and t_diary.timestamp = #{timestamp}
+                </if>
+        </where>
+    </sql>
+
+    <select id="getDiaryListByColList" resultType="com.npc.common.modular.diary.entity.Diary">
+        select
+        <include refid="Base_Column_List"/>
+        from t_diary
+        <where>
+            t_diary.is_delete = 0
+            and ${column} in
+            <foreach collection="ids" item="id" separator="," open="(" close=")">
+                ${id}
+            </foreach>
+        </where>
+    </select>
+
+</mapper>

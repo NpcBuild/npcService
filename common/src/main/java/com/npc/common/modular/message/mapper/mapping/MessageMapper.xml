@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.npc.common.modular.message.mapper.MessageMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.npc.common.modular.message.entity.Message">
+            <result column="id" property="id"/>
+            <result column="text" property="text"/>
+            <result column="timestamp" property="timestamp"/>
+            <result column="sender_id" property="senderId"/>
+            <result column="receiver_id" property="receiverId"/>
+            <result column="type" property="type"/>
+            <result column="readed" property="readed"/>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+            id, text, timestamp, sender_id, receiver_id, type, readed
+    </sql>
+
+    <sql id="commonConditionSQL">
+        <where>
+            t_message.is_delete = 0
+                <if test="id != '' and id != null">
+                    and t_message.id = #{id}
+                </if>
+                <if test="text != '' and text != null">
+                    and t_message.text = #{text}
+                </if>
+                <if test="timestamp != '' and timestamp != null">
+                    and t_message.timestamp = #{timestamp}
+                </if>
+                <if test="senderId != '' and senderId != null">
+                    and t_message.sender_id = #{senderId}
+                </if>
+                <if test="receiverId != '' and receiverId != null">
+                    and t_message.receiver_id = #{receiverId}
+                </if>
+                <if test="type != '' and type != null">
+                    and t_message.type = #{type}
+                </if>
+                <if test="readed != '' and readed != null">
+                    and t_message.readed = #{readed}
+                </if>
+        </where>
+    </sql>
+
+    <select id="getMessageListByColList" resultType="com.npc.common.modular.message.entity.Message">
+        select
+        <include refid="Base_Column_List"/>
+        from t_message
+        <where>
+            t_message.is_delete = 0
+            and ${column} in
+            <foreach collection="ids" item="id" separator="," open="(" close=")">
+                ${id}
+            </foreach>
+        </where>
+    </select>
+
+    <select id="findUserMessageByUserId" resultType="com.npc.common.modular.message.vo.UserMessageVO">
+        SELECT
+            IF
+                ( t.sender_id = #{userId}, t.receiver_id, t.sender_id ) AS other_person_id,
+            t.*,
+            unread_counts.unReadNum,
+            u.id as userId,
+            u.userName,
+            u.avatar
+        FROM
+            t_message t
+                LEFT JOIN (
+                SELECT
+                    IF
+                        ( sender_id = #{userId}, receiver_id, sender_id ) AS other_person_id,
+                    SUM( readed = false AND sender_id != #{userId} ) AS unReadNum
+                FROM
+                    t_message
+                WHERE
+                    receiver_id = #{userId}
+                GROUP BY
+                    other_person_id
+            ) AS unread_counts ON
+                    IF
+                        ( t.sender_id = #{userId}, t.receiver_id, t.sender_id ) = unread_counts.other_person_id
+                LEFT OUTER JOIN t_user u ON u.id = other_person_id
+        WHERE
+            ( t.sender_id = #{userId} OR t.receiver_id = #{userId} )
+          AND t.TIMESTAMP = (
+            SELECT
+                MAX( TIMESTAMP )
+            FROM
+                t_message t2
+            WHERE
+                ( t2.sender_id = t.sender_id AND t2.receiver_id = t.receiver_id )
+               OR ( t2.receiver_id = t.sender_id AND t2.sender_id = t.receiver_id )
+        )
+    </select>
+
+    <select id="findChatMessageById" resultType="com.npc.common.modular.message.vo.ChatMessageVO">
+        SELECT
+            CASE sender_id
+                WHEN #{userId} THEN true
+                WHEN #{tId} THEN false
+                END AS `me`,
+            t_message.*
+        FROM
+            t_message
+        WHERE
+            (sender_id = #{userId} AND receiver_id = #{tId}) OR (sender_id = #{tId} AND receiver_id = #{userId})
+        ORDER BY
+            timestamp
+    </select>
+
+    <update id="readMessage">
+        UPDATE t_message SET readed = true WHERE sender_id = #{tId} AND receiver_id = #{userId}
+    </update>
+
+</mapper>

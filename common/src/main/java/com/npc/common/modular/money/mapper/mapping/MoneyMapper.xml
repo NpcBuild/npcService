@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.npc.common.modular.money.mapper.MoneyMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.npc.common.modular.money.entity.Money">
+            <result column="id" property="id"/>
+            <result column="description" property="description"/>
+            <result column="amount" property="amount"/>
+            <result column="date" property="date"/>
+            <result column="payment_time" property="paymentTime"/>
+            <result column="category" property="category"/>
+            <result column="tags" property="tags"/>
+            <result column="notes" property="notes"/>
+            <result column="expense_location" property="expenseLocation"/>
+            <result column="recurring_transaction" property="recurringTransaction"/>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+            id, description, amount, date, payment_time, category, tags, notes, expense_location, recurring_transaction
+    </sql>
+
+    <sql id="commonConditionSQL">
+        <where>
+            t_money.is_delete = 0
+                <if test="id != '' and id != null">
+                    and t_money.id = #{id}
+                </if>
+                <if test="description != '' and description != null">
+                    and t_money.description = #{description}
+                </if>
+                <if test="amount != '' and amount != null">
+                    and t_money.amount = #{amount}
+                </if>
+                <if test="date != '' and date != null">
+                    and t_money.date = #{date}
+                </if>
+                <if test="paymentTime != '' and paymentTime != null">
+                    and t_money.payment_time = #{paymentTime}
+                </if>
+                <if test="category != '' and category != null">
+                    and t_money.category = #{category}
+                </if>
+                <if test="tags != '' and tags != null">
+                    and t_money.tags = #{tags}
+                </if>
+                <if test="notes != '' and notes != null">
+                    and t_money.notes = #{notes}
+                </if>
+                <if test="expenseLocation != '' and expenseLocation != null">
+                    and t_money.expense_location = #{expenseLocation}
+                </if>
+                <if test="recurringTransaction != '' and recurringTransaction != null">
+                    and t_money.recurring_transaction = #{recurringTransaction}
+                </if>
+        </where>
+    </sql>
+
+    <select id="getMoneyListByColList" resultType="com.npc.common.modular.money.entity.Money">
+        select
+        <include refid="Base_Column_List"/>
+        from t_money
+        <where>
+            t_money.is_delete = 0
+            and ${column} in
+            <foreach collection="ids" item="id" separator="," open="(" close=")">
+                ${id}
+            </foreach>
+        </where>
+    </select>
+
+</mapper>

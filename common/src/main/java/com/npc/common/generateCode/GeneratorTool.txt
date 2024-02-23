@@ -1,0 +1,148 @@
+package com.npc.common.generateCode;
+
+import com.baomidou.mybatisplus.annotation.DbType;
+import com.baomidou.mybatisplus.generator.AutoGenerator;
+import com.baomidou.mybatisplus.generator.config.DataSourceConfig;
+import com.baomidou.mybatisplus.generator.config.InjectionConfig;
+import com.baomidou.mybatisplus.generator.config.PackageConfig;
+import com.baomidou.mybatisplus.generator.config.StrategyConfig;
+import com.baomidou.mybatisplus.generator.config.rules.NamingStrategy;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+
+/**
+ * @Author wow
+ * @createTime 2022/12/10 22:38
+ * @descripttion mybatis+velocity生成代码
+ */
+
+public class GeneratorTool {
+    private static String packageName = "com.npc.common.modular";
+    private static String[] tables = {"qrtz_triggers"};
+    private static String dbUrl = "jdbc:mysql://localhost:3306/yf?autoReconnect=true&useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=CONVERT_TO_NULL&useSSL=false&serverTimezone=CTT";
+    private static String dbUsername = "root";
+    private static String dbPassword = "root";
+    private static String author = "yf";
+    private static String outputDir = "npc\\common\\src\\main\\java\\com\\npc\\common\\modular";
+
+    public static void main(String[] args) {
+        generateByTables(packageName, tables);
+    }
+
+    private static void generateByTables(String packageName, String... tableNames) {
+        AutoGenerator autoGenerator = new AutoGenerator();
+        DataSourceConfig dataSourceConfig = new DataSourceConfig();
+        dataSourceConfig.setDbType(DbType.MYSQL)
+                .setUrl(dbUrl)
+                .setUsername(dbUsername)
+                .setPassword(dbPassword)
+                .setDriverName("com.mysql.jdbc.Driver");
+        StrategyConfig strategyConfig = new StrategyConfig();
+        strategyConfig
+                .setCapitalMode(false)
+                .setEntityLombokModel(false)
+                .setEntityBuilderModel(true)
+                .setRestControllerStyle(true)
+                .setDbColumnUnderline(false)
+                .setNaming(NamingStrategy.underline_to_camel)
+                //修改替换成你需要的表名，多个表名传数组
+                .setInclude(tableNames);
+        GlobalConfig config = new GlobalConfig();
+        config.setActiveRecord(false)
+                .setAuthor(author)
+                .setOpen(false)
+                .setOutputDir(outputDir)
+                .setFileOverride(true)
+                .setEnableCache(false);
+
+        // 注入自定义配置，可以在 VM 中使用 cfg.abc 【可无】
+        InjectionConfig cfg = new InjectionConfig() {
+            @Override
+            public void initMap() {
+                Map<String, Object> map = new HashMap<>(1);
+                map.put("abc", this.getConfig().getGlobalConfig().getAuthor() + "-rb");
+                this.setMap(map);
+            }
+        };
+
+        List<FileOutConfig> focList = new ArrayList<>();
+
+        // 配置Dto
+        focList.add(new FileOutConfig("/templates/query.java.vm") {
+            @Override
+            public String outputFile(TableInfo tableInfo) {
+                return outputDir + "/com/example/demo/service/db/dto/" + tableInfo.getEntityName() + "Dto.java";
+            }
+        });
+        cfg.setFileOutConfigList(focList);
+        autoGenerator.setCfg(cfg);
+
+        // 配置Iservice
+        focList.add(new FileOutConfig("/templates/service.java.vm") {
+            @Override
+            public String outputFile(TableInfo tableInfo) {
+                return outputDir + "/com/example/demo/service/db/service/" + "I" + tableInfo.getEntityName() + "Service.java";
+            }
+        });
+        cfg.setFileOutConfigList(focList);
+        autoGenerator.setCfg(cfg);
+
+        // 配置serviceImpl
+        focList.add(new FileOutConfig("/templates/serviceImpl.java.vm") {
+            @Override
+            public String outputFile(TableInfo tableInfo) {
+                return outputDir + "/com/example/demo/service/db/service/impl/" + tableInfo.getEntityName() + "ServiceImpl.java";
+            }
+        });
+        cfg.setFileOutConfigList(focList);
+        autoGenerator.setCfg(cfg);
+
+        // 配置 Entity
+        focList.add(new FileOutConfig("/templates/entity.java.vm") {
+            @Override
+            public String outputFile(TableInfo tableInfo) {
+                return outputDir + "/com/example/demo/service/db/entity/" + tableInfo.getEntityName() + ".java";
+            }
+        });
+
+        cfg.setFileOutConfigList(focList);
+        autoGenerator.setCfg(cfg);
+
+        // 配置 xml
+        focList.add(new FileOutConfig("/templates/mapper.xml.vm") {
+            @Override
+            public String outputFile(TableInfo tableInfo) {
+                return outputDir + "/com/example/demo/service/db/dao/xml/" + tableInfo.getEntityName() + "Mapper.xml";
+            }
+        });
+
+        cfg.setFileOutConfigList(focList);
+        autoGenerator.setCfg(cfg);
+
+        // 配置 mapper.java
+        focList.add(new FileOutConfig("/templates/mapper.java.vm") {
+            @Override
+            public String outputFile(TableInfo tableInfo) {
+                return outputDir + "/com/example/demo/service/db/dao/" + tableInfo.getEntityName() + "Mapper.java";
+            }
+        });
+
+        cfg.setFileOutConfigList(focList);
+        autoGenerator.setCfg(cfg);
+
+
+        autoGenerator
+                .setGlobalConfig(config)
+                .setDataSource(dataSourceConfig)
+                .setStrategy(strategyConfig)
+                .setPackageInfo(
+                        new PackageConfig()
+                                .setParent(packageName)
+                                .setEntity("entity")
+                                .setMapper("dao")
+                                .setXml("dao.xml")
+                ).execute();
+    }
+}

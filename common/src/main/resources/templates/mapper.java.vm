@@ -1,0 +1,33 @@
+package ${package.Mapper};
+
+import ${package.Entity}.${entity};
+import ${superMapperClassPackage};import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Mapper;
+
+
+import java.util.List;
+
+/**
+ * <p>
+ * $!{table.comment} Mapper 接口
+ * </p>
+ *
+ * @author ${author}
+ * @since ${date}
+ */
+#if(${kotlin})
+interface ${table.mapperName} : ${superMapperClass}<${entity}>
+#else
+@Mapper
+public interface ${table.mapperName} extends ${superMapperClass}<${entity}> {
+    
+	/**
+     * 通过 ${table.comment} 的某一列, 查询在该列所有包含Ids 的数据
+     * @param column 列名
+     * @param ids id 集合
+     * @return
+     */
+    List<${entity}> get${entity}ListByColList(@Param("column") String column, @Param("ids") List<Integer> ids);
+
+}
+#end

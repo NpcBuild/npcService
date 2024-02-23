@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.npc.common.modular.file.mapper.FileMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.npc.common.modular.file.entity.Files">
+            <result column="id" property="id"/>
+            <result column="parent_dir_id" property="parentDirId"/>
+            <result column="name" property="name"/>
+            <result column="path" property="path"/>
+            <result column="size" property="size"/>
+            <result column="type" property="type"/>
+            <result column="md5" property="md5"/>
+            <result column="icon" property="icon"/>
+            <result column="cre_time" property="creTime"/>
+            <result column="upload_time" property="uploadTime"/>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+            id, parent_dir_id, name, path, size, type, md5, icon, cre_time, upload_time
+    </sql>
+
+    <sql id="commonConditionSQL">
+        <where>
+            t_file.is_delete = 0
+                <if test="id != '' and id != null">
+                    and t_file.id = #{id}
+                </if>
+                <if test="parentDirId != '' and parentDirId != null">
+                    and t_file.parent_dir_id = #{parentDirId}
+                </if>
+                <if test="name != '' and name != null">
+                    and t_file.name = #{name}
+                </if>
+                <if test="path != '' and path != null">
+                    and t_file.path = #{path}
+                </if>
+                <if test="size != '' and size != null">
+                    and t_file.size = #{size}
+                </if>
+                <if test="type != '' and type != null">
+                    and t_file.type = #{type}
+                </if>
+                <if test="md5 != '' and md5 != null">
+                    and t_file.md5 = #{md5}
+                </if>
+                <if test="creTime != '' and creTime != null">
+                    and t_file.cre_time = #{creTime}
+                </if>
+                <if test="uploadTime != '' and uploadTime != null">
+                    and t_file.upload_time = #{uploadTime}
+                </if>
+        </where>
+    </sql>
+
+    <select id="getFileListByColList" resultType="com.npc.common.modular.file.entity.Files">
+        select
+        <include refid="Base_Column_List"/>
+        from t_file
+        <where>
+            t_file.is_delete = 0
+            and ${column} in
+            <foreach collection="ids" item="id" separator="," open="(" close=")">
+                ${id}
+            </foreach>
+        </where>
+    </select>
+
+</mapper>

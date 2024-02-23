@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.npc.common.modular.problem.mapper.ProblemMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.npc.common.modular.problem.entity.Problem">
+            <result column="id" property="id"/>
+            <result column="date" property="date"/>
+            <result column="title" property="title"/>
+            <result column="description" property="description"/>
+            <result column="environment" property="environment"/>
+            <result column="solution" property="solution"/>
+            <result column="notes" property="notes"/>
+            <result column="category" property="category"/>
+            <result column="tags" property="tags"/>
+            <result column="status" property="status"/>
+            <result column="resolution_date" property="resolutionDate"/>
+            <result column="severity" property="severity"/>
+            <result column="assigned_to" property="assignedTo"/>
+            <result column="priority" property="priority"/>
+            <result column="attachments" property="attachments"/>
+            <result column="related_problems" property="relatedProblems"/>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+            id, date, title, description, environment, solution, notes, category, tags, status, resolution_date, severity, assigned_to, priority, attachments, related_problems
+    </sql>
+
+    <sql id="commonConditionSQL">
+        <where>
+            t_problem.is_delete = 0
+                <if test="id != '' and id != null">
+                    and t_problem.id = #{id}
+                </if>
+                <if test="date != '' and date != null">
+                    and t_problem.date = #{date}
+                </if>
+                <if test="title != '' and title != null">
+                    and t_problem.title = #{title}
+                </if>
+                <if test="description != '' and description != null">
+                    and t_problem.description = #{description}
+                </if>
+                <if test="environment != '' and environment != null">
+                    and t_problem.environment = #{environment}
+                </if>
+                <if test="solution != '' and solution != null">
+                    and t_problem.solution = #{solution}
+                </if>
+                <if test="notes != '' and notes != null">
+                    and t_problem.notes = #{notes}
+                </if>
+                <if test="category != '' and category != null">
+                    and t_problem.category = #{category}
+                </if>
+                <if test="tags != '' and tags != null">
+                    and t_problem.tags = #{tags}
+                </if>
+                <if test="status != '' and status != null">
+                    and t_problem.status = #{status}
+                </if>
+                <if test="resolutionDate != '' and resolutionDate != null">
+                    and t_problem.resolution_date = #{resolutionDate}
+                </if>
+                <if test="severity != '' and severity != null">
+                    and t_problem.severity = #{severity}
+                </if>
+                <if test="assignedTo != '' and assignedTo != null">
+                    and t_problem.assigned_to = #{assignedTo}
+                </if>
+                <if test="priority != '' and priority != null">
+                    and t_problem.priority = #{priority}
+                </if>
+                <if test="attachments != '' and attachments != null">
+                    and t_problem.attachments = #{attachments}
+                </if>
+                <if test="relatedProblems != '' and relatedProblems != null">
+                    and t_problem.related_problems = #{relatedProblems}
+                </if>
+        </where>
+    </sql>
+
+    <select id="getProblemListByColList" resultType="com.npc.common.modular.problem.entity.Problem">
+        select
+        <include refid="Base_Column_List"/>
+        from t_problem
+        <where>
+            t_problem.is_delete = 0
+            and ${column} in
+            <foreach collection="ids" item="id" separator="," open="(" close=")">
+                ${id}
+            </foreach>
+        </where>
+    </select>
+    <select id="search" resultType="com.npc.common.modular.problem.entity.Problem">
+        select
+        <include refid="Base_Column_List"/>
+        from t_problem
+        <where>
+            title like "%"#{text}"%" or description like "%"#{text}"%" or solution like "%"#{text}"%"
+        </where>
+    </select>
+
+</mapper>

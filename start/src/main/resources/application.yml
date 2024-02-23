@@ -1,0 +1,134 @@
+server:
+  port: 1314
+spring:
+  application:
+    name: NPC
+  profiles:
+    active: @profiles.active@
+    include: system
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 100MB
+      max-request-size: 100MB
+  data:
+    elasticsearch:
+      repositories:
+        enabled: true
+      client:
+#        是否正确？
+        rest:
+          endpoints: 127.0.0.1:9200
+          username:
+          password:
+  quartz:
+#      将 Quartz 持久化方式修改为 jdbc
+    job-store-type: jdbc
+    jdbc:
+      initialize-schema: ALWAYS # 禁用Quartz初始化数据库表
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/yf?autoReconnect=true&useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=CONVERT_TO_NULL&useSSL=false&allowPublicKeyRetrieval=true
+    password: root
+    username: root
+  redis:
+    host: localhost
+    timeout: 1000   #连接超时时间
+    database: 0
+    cluster:
+      nodes:
+        - localhost:6380
+        - localhost:6381
+        - localhost:6382
+        - localhost:6383
+        - localhost:6384
+        - localhost:6385
+      jedis:
+        pool:
+          max-active: 10
+          max-idle: 8   #最大维持连接数
+          min-idle: 2
+          max-wait: 100   #最大等待连接超时时间
+  mail:
+    host: smtp.qq.com
+    username: 1623285565@qq.com
+    password: "ophlijooeeadbcid"
+    #  启动SSL时的配置
+    smtp:
+      socketFactory:
+        class: javax.net.ssl.SSLSocketFactory
+        fallback: false
+        port: 465
+  kafka:
+    bootstrap-servers: #定义主机列表
+      localhost:9092
+    template:
+      default-topic: yftopic   #定义主题名称
+#      loginEmail-topic:loginMailTopic
+      createOrder-Topic: createOrderTopic   # 处理秒杀商品的主题
+    producer: #定义生产者配置
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer   # 消息的 key 的序列化
+      #      value-serializer: org.apache.kafka.common.serialization.StringSerializer # 消息的 value 的序列化
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer # 消息的 value 的序列化
+#      retries: 3 #发送失败时，重试发送的次数  此值需要结合业务场景，重试与否各有千秋(重试，好处：尽可能的确保生产者写入block成功；坏处：有可能时带有顺序写入的数据打乱顺序
+      retries: 0 #发送失败时，重试发送的次数  此值需要结合业务场景，重试与否各有千秋(重试，好处：尽可能的确保生产者写入block成功；坏处：有可能时带有顺序写入的数据打乱顺序
+    consumer: #定义消费者配置
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      #      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      group-id: group-1   #数据分组
+      properties:
+        spring:
+          json:
+            trusted:
+              packages: com.npc.kafka.domain  #properties.spring.json.trusted.packages 需要配置com.artisan.springkafka.domain 包下的 Message 类们。因为 JsonDeserializer 在反序列化消息时，考虑到安全性，只反序列化成信任的 Message 类。 务必配置
+    listener:
+      missing-topics-fatal: false   # 消费监听接口监听的主题不存在时，默认会报错。所以通过设置为 false ，解决报错
+  thymeleaf:
+    prefix: classpath:/templates/
+    suffix: .html
+#    properties:
+#      sasl.mechanism: PLAIN    #安全机制
+#      security.protocol: SASL_PLAINTEXT   #安全协议
+mybatis-plus:
+  global-config:
+    db-config:
+      logic-delete-field: flag # 全局逻辑删除的实体字段名
+      logic-delete-value: 1 # 逻辑已删除值(默认为 1)
+      logic-not-delete-value: 0 # 逻辑未删除值(默认为 0)
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  mapper-locations: classpath*:com/npc/**/mapper/mapping/*.xml
+#  typeAliasesPackage: com.npc.common.modular.user.model
+
+logging:
+  file:
+    path: ./
+    name: logs/${spring.application.name}.log
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} %contextName [%thread] %-5level %logger- %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss} %contextName [%thread] %-5level %logger- %msg%n"
+  level:
+    com.npc.common: DEBUG
+    com.npc.core: INFO
+  logback:
+    rollingpolicy:
+      max-history: 7
+      max-file-size: 10MB
+      total-size-cap: 50MB
+#用于OAuth认证
+github:
+  client:
+    clientId: 33cea9420109a2fc5a50
+    clientSecret: 9a79e757a1170d44ec519428cc757c6fd67c0afc
+    authorizeUrl: https://github.com/login/oauth/authorize
+    accessTokenUrl: https://github.com/login/oauth/access_token
+    redirectUrl: http://localhost:1314/oauth/redirect
+    userInfoUrl: https://api.github.com/user
+chatgpt:
+#  endpoint: https://api.chatgpt.com/v1/generate
+  endpoint: https://api.openai.com/v1/completions
+  apiKey: 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
+
+yf:
+  basic-dir: "E:\\Data"

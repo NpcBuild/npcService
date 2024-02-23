@@ -1,0 +1,17 @@
+package com.lk.truck.service.db.dto;
+
+import com.example.demo.service.db.dto.PageDTO;
+import lombok.Data;
+
+/**
+ * @author ${author}
+ * @since ${date}
+ */
+@Data
+public class ${table.entityName}Dto extends PageDTO {
+
+    /**
+     * 通用查询配置
+     */
+    private String condition;
+}

@@ -1,0 +1,11 @@
+https://github.com/alibaba/easyexcel/blob/master/easyexcel-test/src/test/java/com/alibaba/easyexcel/test/demo/read/ReadTest.java
+https://alibaba-easyexcel.github.io/index.html
+读取时有同步读取、创建监听器读取
+× 同步读取会将大量数据放入内存
+√ 创建一个继承AnalysisEventListener类的监听器类，实现invoke和doAfterAllAnalysed
+    invoke:每一条数据解析都会调用该方法
+    doAfterAllAnalysed:所有数据解析完成后调用该方法
+
+
+导出时可合并单元格、设置复杂的表格格式、自定义样式等，还可提前设置Excel的模板，将数据进行填充
+读取时可读取多个Sheet页，可以格式化数值、日期等格式

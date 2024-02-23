@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.npc.common.modular.user.mapper.UserMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.npc.common.modular.user.entity.User">
+        <id column="id" property="id" />
+        <result column="userName" property="userName" />
+        <result column="userPwd" property="userPwd" />
+        <result column="account" property="account" />
+        <result column="flag" property="flag" />
+    </resultMap>
+    <sql id="base_column_list">
+        id, account, userPwd, userName, flag
+    </sql>
+
+    <select id="findByAccount" resultType="com.npc.common.modular.user.model.result.UserResult" parameterType="String">
+        select
+        <include refid="base_column_list"/>
+        from t_user
+        where account = #{account}
+    </select>
+    <insert id="regist" parameterType="com.npc.common.modular.user.model.parame.UserParame">
+        insert into t_user(userName,userPwd,account)
+        values(#{user.userName},#{user.userPwd},#{user.account})
+    </insert>
+    <insert id="insert" parameterType="com.npc.common.modular.user.model.parame.UserParame">
+        insert into t_user(userName,userPwd,account)
+        values(#{user.userName},#{user.userPwd},#{user.account})
+    </insert>
+</mapper>

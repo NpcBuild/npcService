@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.npc.common.modular.dailySchedule.mapper.DailyScheduleMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.npc.common.modular.dailySchedule.entity.DailySchedule">
+            <result column="id" property="id"/>
+            <result column="date" property="date"/>
+            <result column="start_time" property="startTime"/>
+            <result column="end_time" property="endTime"/>
+            <result column="task" property="task"/>
+            <result column="description" property="description"/>
+            <result column="location" property="location"/>
+            <result column="status" property="status"/>
+            <result column="priority" property="priority"/>
+            <result column="category" property="category"/>
+            <result column="reminder" property="reminder"/>
+            <result column="repeat_pattern" property="repeatPattern"/>
+            <result column="attachments" property="attachments"/>
+            <result column="participants" property="participants"/>
+            <result column="completion_percentage" property="completionPercentage"/>
+            <result column="color_label" property="colorLabel"/>
+            <result column="deadline" property="deadline"/>
+            <result column="notification_time" property="notificationTime"/>
+            <result column="recurrence_pattern" property="recurrencePattern"/>
+            <result column="estimated_duration" property="estimatedDuration"/>
+            <result column="subtasks" property="subtasks"/>
+            <result column="tags" property="tags"/>
+            <result column="linked_tasks" property="linkedTasks"/>
+            <result column="progress_notes" property="progressNotes"/>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+            id, date, start_time, end_time, task, description, location, status, priority, category, reminder, repeat_pattern, attachments, participants, completion_percentage, color_label, deadline, notification_time, recurrence_pattern, estimated_duration, subtasks, tags, linked_tasks, progress_notes
+    </sql>
+
+    <sql id="commonConditionSQL">
+        <where>
+            t_daily_schedule.is_delete = 0
+                <if test="id != '' and id != null">
+                    and t_daily_schedule.id = #{id}
+                </if>
+                <if test="date != '' and date != null">
+                    and t_daily_schedule.date = #{date}
+                </if>
+                <if test="startTime != '' and startTime != null">
+                    and t_daily_schedule.start_time = #{startTime}
+                </if>
+                <if test="endTime != '' and endTime != null">
+                    and t_daily_schedule.end_time = #{endTime}
+                </if>
+                <if test="task != '' and task != null">
+                    and t_daily_schedule.task = #{task}
+                </if>
+                <if test="description != '' and description != null">
+                    and t_daily_schedule.description = #{description}
+                </if>
+                <if test="location != '' and location != null">
+                    and t_daily_schedule.location = #{location}
+                </if>
+                <if test="status != '' and status != null">
+                    and t_daily_schedule.status = #{status}
+                </if>
+                <if test="priority != '' and priority != null">
+                    and t_daily_schedule.priority = #{priority}
+                </if>
+                <if test="category != '' and category != null">
+                    and t_daily_schedule.category = #{category}
+                </if>
+                <if test="reminder != '' and reminder != null">
+                    and t_daily_schedule.reminder = #{reminder}
+                </if>
+                <if test="repeatPattern != '' and repeatPattern != null">
+                    and t_daily_schedule.repeat_pattern = #{repeatPattern}
+                </if>
+                <if test="attachments != '' and attachments != null">
+                    and t_daily_schedule.attachments = #{attachments}
+                </if>
+                <if test="participants != '' and participants != null">
+                    and t_daily_schedule.participants = #{participants}
+                </if>
+                <if test="completionPercentage != '' and completionPercentage != null">
+                    and t_daily_schedule.completion_percentage = #{completionPercentage}
+                </if>
+                <if test="colorLabel != '' and colorLabel != null">
+                    and t_daily_schedule.color_label = #{colorLabel}
+                </if>
+                <if test="deadline != '' and deadline != null">
+                    and t_daily_schedule.deadline = #{deadline}
+                </if>
+                <if test="notificationTime != '' and notificationTime != null">
+                    and t_daily_schedule.notification_time = #{notificationTime}
+                </if>
+                <if test="recurrencePattern != '' and recurrencePattern != null">
+                    and t_daily_schedule.recurrence_pattern = #{recurrencePattern}
+                </if>
+                <if test="estimatedDuration != '' and estimatedDuration != null">
+                    and t_daily_schedule.estimated_duration = #{estimatedDuration}
+                </if>
+                <if test="subtasks != '' and subtasks != null">
+                    and t_daily_schedule.subtasks = #{subtasks}
+                </if>
+                <if test="tags != '' and tags != null">
+                    and t_daily_schedule.tags = #{tags}
+                </if>
+                <if test="linkedTasks != '' and linkedTasks != null">
+                    and t_daily_schedule.linked_tasks = #{linkedTasks}
+                </if>
+                <if test="progressNotes != '' and progressNotes != null">
+                    and t_daily_schedule.progress_notes = #{progressNotes}
+                </if>
+        </where>
+    </sql>
+
+    <select id="getDailyScheduleListByColList" resultType="com.npc.common.modular.dailySchedule.entity.DailySchedule">
+        select
+        <include refid="Base_Column_List"/>
+        from t_daily_schedule
+        <where>
+            t_daily_schedule.is_delete = 0
+            and ${column} in
+            <foreach collection="ids" item="id" separator="," open="(" close=")">
+                ${id}
+            </foreach>
+        </where>
+    </select>
+
+</mapper>

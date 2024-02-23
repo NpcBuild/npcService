@@ -1,0 +1,19 @@
+spring:
+  datasource:
+    url: jdbc:mysql://172.17.0.3:3306/yf?autoReconnect=true&useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=CONVERT_TO_NULL&useSSL=false&allowPublicKeyRetrieval=true
+  redis:
+    host: 172.12.0.11
+    cluster:
+      nodes:
+        - 172.12.0.11:6379
+        - 172.12.0.12:6379
+        - 172.12.0.13:6379
+        - 172.12.0.14:6379
+        - 172.12.0.15:6379
+        - 172.12.0.16:6379
+logging:
+  level:
+    org.apache.kafka.clients: ERROR
+    org.springframework.kafka: ERROR
+
+

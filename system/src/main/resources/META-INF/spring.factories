@@ -1,0 +1,5 @@
+## AutoConfiguration  ??Java?SPI????????
+## ???????spring-core?SpringFactoriesLoader??
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+  com.npc.core.limit.aop.LimitAspect,\
+  com.npc.core.limit.configure.LimiterConfigure

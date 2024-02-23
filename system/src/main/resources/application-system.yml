@@ -1,0 +1,62 @@
+spring:
+  alarm:
+    dingtalk:
+      enabled: true
+      # 钉钉群机器人唯一的token
+      token: xxxxxx
+      # 安全设置：加签的密钥
+      secret: xxxxxxx
+    wechat:
+      enabled: true
+      # 企业微信群机器人唯一key
+      key: xxxxxdsf
+      # 被@人的手机号
+      to-user: 1314243
+    mail:
+      enabled: true
+      smtpHost: smtp.qq.com
+      smtpPort: 465
+      to: zhazhafei@aliyun.com
+      from: 1623285565@qq.com
+      username: 1623285565@qq.com
+      password: "ophlijooeeadbcid"
+      ssl: true
+      debug: true
+    template:
+      # 开启通过模板配置
+      enabled: true
+      # 配置模板来源为文件 枚举类：JDBC（数据库）、FILE（配置文件）、MEMORY（内存），目前只支持FILE，其他两种可自行扩展
+      source: FILE
+      # 配置模板数据 map
+      templates:
+        errorTemp:
+          templateId: errorTemp
+          templateName: 服务异常模板
+          templateContent: 这里是配置模板的内容
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*" #打开所有的监控点
+      base-path: /monitor
+  endpoint:
+    health:
+      enabled: true
+      show-details: always
+    beans:
+      enabled: true
+    shutdown:
+      enabled: true
+
+jwt:
+  #  加密密钥
+  secret: yangfei
+  header: Authorization
+  #  token有效时长 s
+  expire:
+    accessToken: 3600
+    refreshToken: 604800
+
+limit:
+#  type: redis
+  type: local
