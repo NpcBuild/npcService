@@ -6,6 +6,7 @@ import java.lang.management.ManagementFactory;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.*;
+import java.time.temporal.TemporalAdjusters;
 import java.util.Date;
 
 /**
@@ -182,4 +183,38 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils
         ZonedDateTime zdt = localDateTime.atZone(ZoneId.systemDefault());
         return Date.from(zdt.toInstant());
     }
+
+//    ----------------------------------------------天数计算---------------------------------------------------
+
+    /**
+     * 获取给定日期的月初第一天
+     *
+     * @param date 给定的日期
+     * @return 该月初的第一天
+     */
+    public static String getFirstDayOfMonth(LocalDate date) {
+        Date toDate = toDate(date.with(TemporalAdjusters.firstDayOfMonth()));
+        return dateTime(toDate);
+    }
+
+    /**
+     * 获取给定日期的下个月的第一天
+     *
+     * @param date 给定的日期
+     * @return 下个月的第一天
+     */
+    public static String getFirstDayOfNextMonth(LocalDate date) {
+        Date toDate = toDate(date.plusMonths(1).with(TemporalAdjusters.firstDayOfMonth()));
+        return dateTime(toDate);
+    }
+
+    /**
+     * 获取明天
+     * @param date
+     * @return
+     */
+    public static LocalDate getNextDay(LocalDate date) {
+        return date.plusDays(1);
+    }
+
 }

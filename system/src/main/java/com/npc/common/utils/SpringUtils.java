@@ -16,6 +16,11 @@ public class SpringUtils implements ApplicationContextAware {
 
     private static ApplicationContext applicationContext = null;
 
+    /**
+     * 重写setApplicationContext方法，能从该方法中获取到spring容器对象
+     * @param applicationContext
+     * @throws BeansException
+     */
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         if (SpringUtils.applicationContext == null) {
