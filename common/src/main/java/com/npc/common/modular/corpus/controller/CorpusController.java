@@ -74,8 +74,7 @@ public class CorpusController {
     @GetMapping("batchDeleteCorpusByIdList")
     @Transactional(rollbackFor = Exception.class)
     public ServerResponseVO<?> batchDeleteCorpusByIdList(@RequestParam("ids") Integer[] ids) {
-
-            corpusService.removeBatchByIds(Arrays.asList(ids));
+        corpusService.removeBatchByIds(Arrays.asList(ids));
         return ServerResponseVO.success("批量删除成功");
     }
 

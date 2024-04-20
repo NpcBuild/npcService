@@ -1,5 +1,6 @@
-package com.npc.core.net;
+package com.npc.core.net.extractor;
 
+import com.npc.core.net.DisplayDownloadSpeed;
 import org.apache.kafka.common.protocol.types.Field;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.web.client.ResponseExtractor;
@@ -10,7 +11,7 @@ import java.util.concurrent.CompletableFuture;
 
 /**
  * @author NPC
- * @description 当客户端和服务器端连接建立之后，会调用这个方法，我们可以在这个方法中监控下载的速度
+ * @description 当客户端和服务器端连接建立之后，会调用这个方法，可以在这个方法中监控下载的速度
  * @create 2023/8/7 19:18
  */
 public abstract class AbstractDisplayDownloadSpeedResponseExtractor<T> implements ResponseExtractor<T>, DisplayDownloadSpeed {
@@ -23,8 +24,18 @@ public abstract class AbstractDisplayDownloadSpeedResponseExtractor<T> implement
 
     protected abstract T doExtractData(ClientHttpResponse response) throws IOException;
 
+    /**
+     * 获取已经下载了多少字节
+     * @return
+     * @throws IOException
+     */
     protected abstract long getAlreadyDownloadLength();
 
+    /**
+     * 显示下载速度
+     * @param task
+     * @param contentLength
+     */
     @Override
     public void displaySpeed(String task, long contentLength) {
         long totalSize = contentLength / 1024;

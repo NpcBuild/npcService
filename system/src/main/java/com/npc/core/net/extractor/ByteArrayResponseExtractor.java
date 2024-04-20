@@ -1,4 +1,4 @@
-package com.npc.core.net;
+package com.npc.core.net.extractor;
 
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.util.StreamUtils;

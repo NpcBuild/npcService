@@ -1,8 +1,5 @@
-package com.npc.core.net.singleDown;
+package com.npc.core.net.extractor;
 
-import com.npc.core.net.AbstractDisplayDownloadSpeedResponseExtractor;
-import com.npc.core.net.ByteArrayResponseExtractor;
-import org.apache.kafka.common.protocol.types.Field;
 import org.springframework.http.client.ClientHttpResponse;
 
 import java.io.File;
@@ -12,7 +9,7 @@ import java.io.InputStream;
 
 /**
  * @author NPC
- * @description
+ * @description 把流输出在文件中，可以下载更大的文件
  * @create 2023/8/7 20:11
  */
 public class FileResponseExtractor extends AbstractDisplayDownloadSpeedResponseExtractor {

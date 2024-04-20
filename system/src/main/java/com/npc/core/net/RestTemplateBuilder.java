@@ -1,6 +1,6 @@
 package com.npc.core.net;
 
-//import com.sun.istack.internal.NotNull;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.web.client.RestTemplate;
 
@@ -90,8 +90,7 @@ public class RestTemplateBuilder {
         return new SimpleClientHttpRequestFactory() {
             @Override
             protected void prepareConnection(HttpURLConnection connection,
-                                             String httpMethod) throws IOException {
-//                                             @NotNull String httpMethod) throws IOException {
+                                             @NotNull String httpMethod) throws IOException {
                 super.prepareConnection(connection, httpMethod);
                 if (connection instanceof HttpURLConnection) {
                     ((HttpsURLConnection) connection).setSSLSocketFactory(
