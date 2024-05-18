@@ -2,12 +2,15 @@ package com.npc.common.modular.stock.redis;
 
 import com.npc.common.modular.stock.model.result.StockResult;
 import com.npc.common.modular.stock.service.StockService;
+import com.npc.common.utils.spring.StartLog;
 import com.npc.redis.utils.RedisPoolUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.stereotype.Component;
+
+import java.util.Arrays;
 
 @Component
 @Slf4j
@@ -20,7 +23,8 @@ public class RedisPreheatRunner implements ApplicationRunner {
 
         //从数据库查询热卖商品
         StockResult stock = stockService.getStockById(1);
-        log.info("开始预热数据到Redis");
+        StartLog.log("开始预热数据到Redis");
+//        log.info("开始预热数据到Redis");
 
         // 删除旧缓存
         RedisPoolUtil.del(RedisKeysConstant.STOCK_COUNT + stock.getCount());
