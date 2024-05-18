@@ -23,7 +23,7 @@ public class RedisPreheatRunner implements ApplicationRunner {
 
         //从数据库查询热卖商品
         StockResult stock = stockService.getStockById(1);
-        StartLog.log("开始预热数据到Redis");
+        StartLog.log("ApplicationRunner；开始预热数据到Redis");
 //        log.info("开始预热数据到Redis");
 
         // 删除旧缓存
