@@ -1,10 +1,10 @@
 package com.npc.common.scheduled.job;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.npc.common.modular.corpus.entity.Corpus;
 import com.npc.common.modular.corpus.service.ICorpusService;
-import com.npc.core.net.RestTemplateBuilder;
-import com.npc.core.utils.DateUtils;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.npc.core.net.MineRestTemplateBuilder;
+import com.npc.core.utils.UUIDUtil;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
@@ -34,7 +34,7 @@ public class SpeakArt {
      * @return
      */
     public boolean getCorpus() {
-        RestTemplate restTemplate = new RestTemplateBuilder().build();
+        RestTemplate restTemplate = new MineRestTemplateBuilder().build();
 //        String url = "https://api.lovelive.tools/api/SweetNothings/10/Serialization/Json?genderType=M";
         String url = "https://api.lovelive.tools/api/SweetNothings/10/Serialization/Json";
         Map var = new HashMap();
@@ -43,14 +43,22 @@ public class SpeakArt {
         List<String> returnObj = (List)responseEntity.getBody().get("returnObj");
         List batch = new ArrayList();
         for (String s : returnObj) {
-            Corpus corpus = new Corpus();
+            QueryWrapper queryWrapper = new QueryWrapper();
+            queryWrapper.eq("content", s);
+            long count = corpusService.count(queryWrapper);
+            if (count == 0) {
+                Corpus corpus = new Corpus();
+                corpus.setId(UUIDUtil.get());
+                corpus.setContent(s);
 //            corpus.setFlag();
-            corpus.setContent(s);
-            corpus.setTag("10");
-            corpus.setCreTime(LocalDateTime.now());
-            batch.add(corpus);
+                corpus.setTag("10");
+                corpus.setCreTime(LocalDateTime.now());
+                batch.add(corpus);
+            }
         }
-        corpusService.saveBatch(batch);
+        if (batch.size() > 0) {
+            corpusService.saveBatch(batch);
+        }
         return true;
     }
 

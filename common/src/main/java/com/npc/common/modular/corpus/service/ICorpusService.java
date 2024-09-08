@@ -3,6 +3,7 @@ package com.npc.common.modular.corpus.service;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.npc.common.modular.corpus.entity.Corpus;
+import com.npc.common.modular.corpus.vo.CorpusInfoVO;
 import com.npc.common.modular.corpus.vo.CorpusVO;
 
 /**
@@ -16,4 +17,10 @@ import com.npc.common.modular.corpus.vo.CorpusVO;
 public interface ICorpusService extends IService<Corpus> {
 
     IPage<Corpus> selectListByPage(CorpusVO corpusVO);
+
+    CorpusInfoVO getInfo(CorpusVO vo);
+
+    Corpus getRand(CorpusVO vo);
+
+    Boolean score(String id);
 }

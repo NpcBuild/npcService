@@ -1,20 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>com.npc</groupId>
         <artifactId>npc</artifactId>
+        <groupId>com.npc</groupId>
         <version>1.0.0</version>
     </parent>
+    <modelVersion>4.0.0</modelVersion>
 
+    <groupId>com.npc</groupId>
     <artifactId>pay</artifactId>
-    <packaging>jar</packaging>
+    <version>1.0.0</version>
 
     <name>pay</name>
-    <url>http://maven.apache.org</url>
+    <!-- FIXME change it to the project's website -->
+    <url>http://www.example.com</url>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven.compiler.source>8</maven.compiler.source>
+        <maven.compiler.target>8</maven.compiler.target>
     </properties>
 
     <dependencies>
@@ -22,6 +28,32 @@
             <groupId>com.npc</groupId>
             <artifactId>maven</artifactId>
             <version>1.0.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.npc</groupId>
+            <artifactId>system</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+        <!-- 微信支付 -->
+        <dependency>
+            <groupId>com.github.wxpay</groupId>
+            <artifactId>wxpay-sdk</artifactId>
+            <version>0.0.3</version>
+        </dependency>
+        <dependency>
+            <groupId>com.github.binarywang</groupId>
+            <artifactId>weixin-java-miniapp</artifactId>
+            <version>4.4.2.B</version>
+        </dependency>
+        <dependency>
+            <groupId>com.github.binarywang</groupId>
+            <artifactId>weixin-java-pay</artifactId>
+            <version>4.2.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.github.binarywang</groupId>
+            <artifactId>weixin-java-mp</artifactId>
+            <version>4.4.0</version>
         </dependency>
         <dependency>
             <groupId>junit</groupId>

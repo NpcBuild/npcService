@@ -52,6 +52,12 @@
       <artifactId>geoip2</artifactId>
       <version>2.8.1</version>
     </dependency>
+<!--    七牛云javaSDK-->
+    <dependency>
+      <groupId>com.qiniu</groupId>
+      <artifactId>qiniu-java-sdk</artifactId>
+      <version>[7.13.0, 7.13.99]</version>
+    </dependency>
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>

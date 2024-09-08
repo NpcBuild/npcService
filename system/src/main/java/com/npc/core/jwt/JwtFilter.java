@@ -10,6 +10,7 @@ import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 
 /**
  * @author NPC
@@ -29,35 +30,28 @@ public class JwtFilter extends HandlerInterceptorAdapter {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
         // 注意：放行浏览器的预检请求
-        if (request.getMethod().equals("OPTIONS")) {
-            return true;
-        }
+        if (request.getMethod().equals("OPTIONS")) return true;
+
         // 获取token
         String token = request.getHeader(jwtTokenUtil.header);
-
         if (StringUtils.isEmpty(token)) {
             token = request.getParameter(jwtTokenUtil.header);
         }
         if (StringUtils.isEmpty(token)) {
-            // 只是简单DEMO，这里直接返回false，可以自己进行添加
             log.error("token 不能为空！");
-            return false;
+            writeResponseUnauthorized(response);
+             return false;
         }
         // 特殊处理
-        if (token.equals("yf")) return true;
-        // 判断token是否超时
-        if (jwtTokenUtil.isTokenExpired(token)) {
-            log.error("token 已失效！");
-            return false;
-        }
-        // 判断 token 是否已在黑名单
-        if (jwtTokenUtil.checkBlacklist(token)) {
-            log.error("token 已被加入黑名单！");
-            return false;
+        if ("yf".equals(token)) return true;
+
+        if (!isUserLoggedIn(token)) {
+            writeResponseUnauthorized(response);
+            return false; // 拦截请求，不再继续处理
         }
 
-        // 获取用户信息
-        UserTokenInfo userInfoToken = jwtTokenUtil.getUserInfoToken(token);
+        // 获取用户信息 todo：捕获异常
+//        UserTokenInfo userInfoToken = jwtTokenUtil.getUserInfoToken(token);
         // 通过用户信息去判断用户状态，等业务
         //TODO 涉及到业务，这里不在阐述
 
@@ -73,5 +67,33 @@ public class JwtFilter extends HandlerInterceptorAdapter {
 //        // 验证失败，拦截请求
 //        return false;
         return true;
+    }
+
+    private boolean isUserLoggedIn(String token) {
+        // 检查用户是否登录的逻辑
+        try {
+            if (jwtTokenUtil.isTokenExpired(token)) {
+                log.error("token 已失效！");
+                 return false; // 用户未登录
+            }
+        } catch (Exception e) {
+            return false; // 用户未登录
+        }
+        // 判断 token 是否已在黑名单
+        if (jwtTokenUtil.checkBlacklist(token)) {
+            log.error("token 已被加入黑名单！");
+            return false; // 用户未登录
+        }
+        return true;
+    }
+
+    private void writeResponseUnauthorized(HttpServletResponse response) {
+        response.setContentType("application/json;charset=UTF-8");
+        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        try {
+            response.getWriter().write("{\"code\":401,\"message\":\"登录失效\"}");
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

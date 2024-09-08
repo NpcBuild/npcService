@@ -2,6 +2,7 @@ package com.npc.common.modular.problem.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.npc.common.modular.problem.dto.ProblemDto;
 import com.npc.common.modular.problem.entity.Problem;
 import com.npc.common.modular.problem.vo.ProblemVO;
 
@@ -19,5 +20,7 @@ public interface IProblemService extends IService<Problem> {
 
     IPage<Problem> selectListByPage(ProblemVO problemVO);
 
-    List<Problem> search(String text);
+    boolean updateSolutionById(Problem problem);
+
+    List<Problem> search(ProblemDto problem);
 }

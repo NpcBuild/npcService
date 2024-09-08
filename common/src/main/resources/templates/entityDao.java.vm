@@ -1,0 +1,30 @@
+package ${package.Entity};
+
+#foreach($pkg in ${table.importPackages})
+import ${pkg};
+#end
+
+import com.npc.core.PageSearch;
+import lombok.Data;
+
+/**
+ * <p>
+ * $!{table.comment}
+ * </p>
+ *
+ * @author ${author}
+ * @since ${date}
+ */
+@Data
+public class ${entity} extends PageSearch {
+## ----------  BEGIN 字段循环遍历  ----------
+#foreach($field in ${table.fields})
+
+#if("$!field.comment" != "")
+    private ${field.propertyType} ${field.propertyName}; #if("$!field.comment" != "") // ${field.comment} #end
+#else
+    private ${field.propertyType} ${field.propertyName}; #if("$!field.comment" != "") // ${field.comment} #end
+#end
+#end
+
+}

@@ -154,14 +154,6 @@ public class DailySchedule implements Serializable {
     private LocalTime notificationTime;
 
 
-
-    /**
-     * 任务重复模式
-     */
-    private String recurrencePattern;
-
-
-
     /**
      * 预计任务完成所需时间
      */

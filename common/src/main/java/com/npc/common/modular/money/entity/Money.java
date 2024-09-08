@@ -3,6 +3,7 @@ package com.npc.common.modular.money.entity;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -58,7 +59,9 @@ public class Money implements Serializable {
 
     /**
      * 付款时间
+     * 使用Jackson的@JsonFormat注解来指定反序列化时应该使用的格式
      */
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime paymentTime;
 
 
@@ -95,5 +98,10 @@ public class Money implements Serializable {
      * 是否为定期交易
      */
     private Boolean recurringTransaction;
+
+
+    private String dateStartS;
+    private String dateEndS;
+    private Integer day;
 
 }

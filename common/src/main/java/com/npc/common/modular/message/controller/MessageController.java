@@ -1,11 +1,15 @@
 package com.npc.common.modular.message.controller;
 
+import cn.hutool.core.util.ObjectUtil;
+import com.mchange.lang.IntegerUtils;
+import com.npc.common.dto.UserInfos;
 import com.npc.common.modular.message.entity.Message;
 import com.npc.common.modular.message.mapper.MessageMapper;
 import com.npc.common.modular.message.service.IMessageService;
 import com.npc.common.modular.message.vo.ChatMessageVO;
 import com.npc.common.modular.message.vo.UserMessageVO;
 import com.npc.common.modular.user.model.result.UserResult;
+import com.npc.common.utils.UserInfoUtils;
 import com.npc.core.ServerResponseEnum;
 import com.npc.core.ServerResponseVO;
 import org.apache.shiro.SecurityUtils;
@@ -48,14 +52,8 @@ public class MessageController {
      */
     @PostMapping("/getUserMessage")
     public ServerResponseVO<?> findUserMessageByUserId() {
-        // 获取当前用户的 Subject
-        Subject currentUser = SecurityUtils.getSubject();
-        UserResult userInfo = new UserResult();
-        if (currentUser.isAuthenticated()) {
-            userInfo = (UserResult)currentUser.getPrincipal();
-            System.out.println(userInfo.getId());
-        }
-        List<UserMessageVO> message =messageService.findUserMessageByUserId(Long.valueOf(userInfo.getId()));
+        UserInfos userInfos = UserInfoUtils.get();
+        List<UserMessageVO> message =messageService.findUserMessageByUserId(Long.valueOf(userInfos.getId()));
         return ServerResponseVO.success(message);
     }
 
@@ -67,15 +65,8 @@ public class MessageController {
      */
     @RequestMapping(value = "/getMessageByUserId", method = RequestMethod.GET)
     public ServerResponseVO<?> findChatMessageById(@RequestParam("tId") Long tId) {
-        // 获取当前用户的 Subject
-        Subject currentUser = SecurityUtils.getSubject();
-        UserResult userInfo = new UserResult();
-        if (currentUser.isAuthenticated()) {
-            userInfo = (UserResult)currentUser.getPrincipal();
-            System.out.println(userInfo.getId());
-            // 在这里可以继续处理用户信息
-        }
-        Long userId = Long.valueOf(userInfo.getId());
+        UserInfos userInfos = UserInfoUtils.get();
+        Long userId = Long.valueOf(userInfos.getId());
         List<ChatMessageVO> message = messageService.findChatMessageById(userId,tId);
         messageMapper.readMessage(userId,tId);
         return ServerResponseVO.success(message);

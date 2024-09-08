@@ -69,5 +69,36 @@
             </foreach>
         </where>
     </select>
+    <select id="getInfo" resultType="com.npc.common.modular.money.vo.MoneyReport">
+        SELECT
+            -1 * sum( CASE WHEN amount &lt; 0 THEN amount END ) AS 'income',
+            sum( CASE WHEN amount > 0 THEN amount END ) AS 'expenditure',
+            -1 * sum( amount ) AS 'balance',
+            ROUND(sum( CASE WHEN amount > 0 and recurring_transaction is null THEN amount END ) / #{day}, 2) AS'average'
+        FROM
+        t_money
+        WHERE
+            DATE > #{dateStartS}
+            AND DATE &lt; #{dateEndS}
+    </select>
+    <select id="getList" resultType="com.npc.common.modular.money.entity.Money" parameterType="com.npc.common.modular.money.dto.MoneyDto">
+        SELECT
+        description,
+        amount,
+        category,
+        payment_time
+        FROM
+        t_money
+        <where>
+            <if test="dto.dateStartS != '' and dto.dateStartS != null">
+                and payment_time > STR_TO_DATE( #{dto.dateStartS}, '%Y-%m-%d %H:%i:%s' )
+            </if>
+            <if test="dto.dateEndS != '' and dto.dateEndS != null">
+                and payment_time &lt; STR_TO_DATE( #{dto.dateEndS}, '%Y-%m-%d %H:%i:%s' )
+            </if>
+        </where>
+        ORDER BY
+        payment_time DESC
+    </select>
 
 </mapper>

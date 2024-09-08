@@ -1,5 +1,6 @@
 package com.npc.common.todo.controller;
 
+import cn.hutool.core.bean.BeanUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.npc.common.modular.quartzJob.entity.QuartzJob;
@@ -9,15 +10,20 @@ import com.npc.common.modular.todoCompleted.entity.TodoCompleted;
 import com.npc.common.modular.todoCompleted.mapper.TodoCompletedMapper;
 import com.npc.common.modular.todoCompleted.service.ITodoCompletedService;
 import com.npc.common.quartz.Quartz;
+import com.npc.common.quartz.job.ToDoNoticeJob;
 import com.npc.common.todo.entity.Todo;
 import com.npc.common.todo.service.ITodoService;
 import com.npc.common.todo.vo.TodoVO;
 import com.npc.core.ServerResponseVO;
+import com.npc.redis.utils.RedisUtil;
+import com.npc.utils.DateUtils;
 import com.npc.core.utils.StringUtils;
+import org.springframework.util.ObjectUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -42,6 +48,8 @@ public class TodoController {
     private ITodoCompletedService completedService;
     @Resource
     private TodoCompletedMapper completedMapper;
+    @Resource
+    private RedisUtil redisUtil;
 
     @GetMapping("/list")
     public IPage<QuartzJob> list(TodoVO vo) {
@@ -55,7 +63,7 @@ public class TodoController {
      */
     @GetMapping("/getTodoList")
     public ServerResponseVO getTodoList(@Validated TodoVO todoVO) {
-        IPage<Todo> page = todoService.getTodoList(todoVO);
+        IPage<Todo> page = todoService.getListPage(todoVO);
         if (StringUtils.isNotEmpty(todoVO.getDate())) {
             List<Todo> records = page.getRecords();
             List<Integer> todoIds = new ArrayList<>();
@@ -98,6 +106,43 @@ public class TodoController {
             list[i] = completedList.get(i).getTodoId().toString();
         }
         return String.join(",",list);
+    }
+
+    /**
+     * 获取指定日历区间的任务列表
+     * @param todoVO 查询的参数
+     * @return
+     */
+    @GetMapping("getTodoCalendar")
+    public ServerResponseVO getTodoCalendar(@Validated TodoVO todoVO) {
+        String startDate = todoVO.getStartDate();
+        String endDate = todoVO.getEndDate();
+        List<Todo> todos = todoService.getList(todoVO);
+        List<TodoCompleted> completedList = completedMapper.getCompletedListSE(startDate,endDate);
+        Map<String, List> res = new HashMap<>();
+        LocalDate nextDay = LocalDate.parse(startDate);
+        LocalDate startDay = LocalDate.parse(startDate);
+        LocalDate endDay = LocalDate.parse(endDate);
+        while (nextDay.isBefore(endDay) || nextDay.equals(endDay)) {
+            List oneDay = new ArrayList();
+            for (Todo todo : todos) {
+                Todo resTodo = new Todo();
+                BeanUtil.copyProperties(todo,resTodo);
+                if ((startDay.isBefore(nextDay) || startDay.equals(nextDay)) && (endDay.isAfter(nextDay) || endDay.equals(nextDay))) {
+                    for (TodoCompleted completed : completedList) {
+                        LocalDate finishDate = completed.getFinishTime().toLocalDate();
+                        if (completed.getTodoId().equals(resTodo.getId()) && finishDate.equals(nextDay)) {
+                            resTodo.setCompletedStatus("1");
+                        }
+                    }
+                    oneDay.add(resTodo);
+                }
+            }
+            res.put(nextDay.toString(),oneDay);
+            nextDay = DateUtils.getNextDay(nextDay);
+        }
+
+        return ServerResponseVO.success(res);
     }
 
     /**
@@ -172,5 +217,21 @@ public class TodoController {
             }
         }
         return true;
+    }
+
+    /**
+     * 获取累计未完成任务数
+     * @param subtract 减去任务数
+     * @return
+     */
+    @GetMapping("getUnDone")
+    public ServerResponseVO<?> getUnDone(int subtract) {
+        String num = redisUtil.get(ToDoNoticeJob.UN_DONE);
+        if (!ObjectUtils.isEmpty(subtract)) {
+            String res = String.valueOf((Integer.parseInt(num) - subtract));
+            redisUtil.set(ToDoNoticeJob.UN_DONE, res);
+            num = res;
+        }
+        return ServerResponseVO.success(num);
     }
 }

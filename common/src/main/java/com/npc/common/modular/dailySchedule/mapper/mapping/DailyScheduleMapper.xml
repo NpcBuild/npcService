@@ -22,7 +22,6 @@
             <result column="color_label" property="colorLabel"/>
             <result column="deadline" property="deadline"/>
             <result column="notification_time" property="notificationTime"/>
-            <result column="recurrence_pattern" property="recurrencePattern"/>
             <result column="estimated_duration" property="estimatedDuration"/>
             <result column="subtasks" property="subtasks"/>
             <result column="tags" property="tags"/>
@@ -32,7 +31,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-            id, date, start_time, end_time, task, description, location, status, priority, category, reminder, repeat_pattern, attachments, participants, completion_percentage, color_label, deadline, notification_time, recurrence_pattern, estimated_duration, subtasks, tags, linked_tasks, progress_notes
+            id, date, start_time, end_time, task, description, location, status, priority, category, reminder, repeat_pattern, attachments, participants, completion_percentage, color_label, deadline, notification_time, estimated_duration, subtasks, tags, linked_tasks, progress_notes
     </sql>
 
     <sql id="commonConditionSQL">
@@ -92,9 +91,6 @@
                 <if test="notificationTime != '' and notificationTime != null">
                     and t_daily_schedule.notification_time = #{notificationTime}
                 </if>
-                <if test="recurrencePattern != '' and recurrencePattern != null">
-                    and t_daily_schedule.recurrence_pattern = #{recurrencePattern}
-                </if>
                 <if test="estimatedDuration != '' and estimatedDuration != null">
                     and t_daily_schedule.estimated_duration = #{estimatedDuration}
                 </if>
@@ -124,6 +120,29 @@
                 ${id}
             </foreach>
         </where>
+    </select>
+    <select id="getList" resultType="com.npc.common.modular.dailySchedule.vo.DailyScheduleVO">
+        select
+        <include refid="Base_Column_List"/>
+        from t_daily_schedule
+        <where>
+            <if test="dto.id != null and dto.id != ''">
+                and id = #{dto.id}
+            </if>
+            <if test="dto.startTimeCN != null and dto.startTimeCN != ''">
+                and start_time &lt; #{dto.startTimeCN}
+            </if>
+            <if test="dto.endTimeCN != null and dto.endTimeCN != ''">
+                and end_time > #{dto.endTimeCN}
+            </if>
+            <if test="dto.task != null and dto.task != ''">
+                and task like CONCAT('%', #{dto.task}, '%')
+            </if>
+            <if test="dto.id != null and dto.id != ''">
+                and id = #{dto.id}
+            </if>
+        </where>
+    order by start_time
     </select>
 
 </mapper>

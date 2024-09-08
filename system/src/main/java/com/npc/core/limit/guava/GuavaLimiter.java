@@ -12,7 +12,7 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * @author NPC
- * @description
+ * @description Guava限流的核心实现
  * @create 2023/4/13 21:38
  */
 @Slf4j

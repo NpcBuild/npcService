@@ -2,6 +2,7 @@ package com.npc.common.modular.corpus.controller;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.npc.common.modular.corpus.entity.Corpus;
 import com.npc.common.modular.corpus.service.ICorpusService;
+import com.npc.common.modular.corpus.vo.CorpusInfoVO;
 import com.npc.common.modular.corpus.vo.CorpusVO;
 import com.npc.core.ServerResponseEnum;
 import com.npc.core.ServerResponseVO;
@@ -88,6 +89,42 @@ public class CorpusController {
     public ServerResponseVO<?> get(@RequestParam("id") Long id) {
         Corpus corpus =corpusService.getById(id);
         return ServerResponseVO.success(corpus);
+    }
+
+
+    /**
+     * 随机获取对象
+     * @param vo 查询对象
+     * @return ResponseDataModel转换结果
+     */
+    @RequestMapping(value = "/getInfoByTag", method = RequestMethod.GET)
+    public ServerResponseVO<?> getInfo(CorpusVO vo) {
+        CorpusInfoVO infoVO =corpusService.getInfo(vo);
+        return ServerResponseVO.success(infoVO);
+    }
+
+
+    /**
+     * 随机获取对象
+     * @param vo 查询对象
+     * @return ResponseDataModel转换结果
+     */
+    @RequestMapping(value = "/getRandByTag", method = RequestMethod.GET)
+    public ServerResponseVO<?> getRand(CorpusVO vo) {
+        Corpus corpus =corpusService.getRand(vo);
+        return ServerResponseVO.success(corpus);
+    }
+
+
+    /**
+     * 收藏
+     * @param id 数据ID
+     * @return ResponseDataModel转换结果
+     */
+    @RequestMapping(value = "/score", method = RequestMethod.GET)
+    public ServerResponseVO<?> score(String id) {
+        Boolean res =corpusService.score(id);
+        return ServerResponseVO.success(res);
     }
 
 

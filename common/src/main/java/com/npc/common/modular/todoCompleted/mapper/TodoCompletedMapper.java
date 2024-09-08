@@ -32,5 +32,6 @@ public interface TodoCompletedMapper extends BaseMapper<TodoCompleted> {
      * @return
      */
     List<TodoCompleted> getCompletedList(@Param("date") String date);
+    List<TodoCompleted> getCompletedListSE(@Param("startDate") String startDate, @Param("endDate") String endDate);
 
 }

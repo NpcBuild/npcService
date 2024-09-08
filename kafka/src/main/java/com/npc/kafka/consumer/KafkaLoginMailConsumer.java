@@ -32,7 +32,7 @@ public class KafkaLoginMailConsumer {
     @KafkaListener(topics = {"loginMailTopic"})
     public void receiveMessage(KafkaMessage kafkaMessage) {   //进行消息接收处理
 //        /**
-//         * 登陆成功发送邮件提醒
+//         * 登录成功发送邮件提醒
 //         */
 //        SimpleMailMessage msg = new SimpleMailMessage();
 //        msg.setFrom("1623285565@qq.com");

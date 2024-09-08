@@ -1,20 +1,24 @@
 package com.npc.common.todo.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
-import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.mchange.lang.IntegerUtils;
 import com.npc.common.modular.todoCompleted.entity.TodoCompleted;
 import com.npc.common.modular.todoCompleted.service.ITodoCompletedService;
 import com.npc.common.todo.entity.Todo;
 import com.npc.common.todo.mapper.TodoMapper;
 import com.npc.common.todo.service.ITodoService;
 import com.npc.common.todo.vo.TodoVO;
+import com.npc.utils.DateUtils;
+import com.npc.core.utils.StringUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ObjectUtils;
 
 import javax.annotation.Resource;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,23 +35,50 @@ public class TodoServiceImpl extends ServiceImpl<TodoMapper, Todo> implements IT
 
     @Resource
     private ITodoCompletedService todoCompletedService;
+
     @Override
-    public IPage<Todo> getTodoList(TodoVO vo) {
+    public List<Todo> getList(TodoVO vo) {
+        String startDate = null,endDate = null;
+        if (StringUtils.isNotEmpty(vo.getDate())) {
+            startDate = DateUtils.getDate();
+            endDate = DateUtils.getDate();
+        } else {
+            if (StringUtils.isEmpty(vo.getStartDate())) {
+                startDate = DateUtils.getDate();
+            }
+            if (StringUtils.isEmpty(vo.getEndDate())) {
+                endDate = DateUtils.getNextDay(LocalDate.parse(startDate)).toString();
+            }
+        }
+        QueryWrapper queryWrapper = new QueryWrapper();
+        if (StringUtils.isNotEmpty(endDate)) {
+            queryWrapper.ge("end_time", endDate);
+        }
+        if (StringUtils.isNotEmpty(startDate)) {
+            queryWrapper.le("start_time", startDate);
+        }
+        if (StringUtils.isNotEmpty(vo.getType())) {
+            queryWrapper.eq("type", vo.getType());
+        }
+        return this.baseMapper.selectList(queryWrapper);
+    }
+
+    @Override
+    public IPage<Todo> getListPage(TodoVO vo) {
         // 创建分页对象
         Page<Todo> page = new Page<>(vo.getPageNum(), vo.getPageSize());
-        QueryWrapper queryWrapper = new QueryWrapper(vo);
-        if (ObjectUtil.isNotEmpty(vo.getStartTime())) {
-            queryWrapper.ge("end_time", vo.getStartTime());
-            vo.setStartTime(null);
+        if (StringUtils.isNotEmpty(vo.getDate())) {
+            vo.setStartDate(vo.getDate());
+            vo.setEndDate(DateUtils.getNextDay(LocalDate.parse(vo.getDate())).toString());
+        } else {
+            if (StringUtils.isEmpty(vo.getStartDate())) {
+                vo.setStartDate(DateUtils.getDate());
+            }
+            if (StringUtils.isEmpty(vo.getEndDate())) {
+                vo.setEndDate(DateUtils.getNextDay(LocalDate.parse(vo.getStartDate())).toString());
+            }
         }
-        if (ObjectUtil.isNotEmpty(vo.getEndTime())) {
-            queryWrapper.le("start_time", vo.getEndTime());
-            vo.setEndTime(null);
-        }
-
-        // 执行分页查询，将查询结果封装到分页对象中
-        IPage<Todo> todoPage = this.baseMapper.selectPage(page, queryWrapper);
-        return todoPage;
+        return this.baseMapper.getList(page, vo);
     }
 
     @Override

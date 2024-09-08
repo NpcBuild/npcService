@@ -1,4 +1,6 @@
 # 限流（优雅切换）
+RedisLimitAop: 登录限流
+LimitAspect: 缓存限流
 1. 使用Guava实现单机令牌桶限流
 2. 使用Redis实现分布式限流
 # 获取请求中的用户信息

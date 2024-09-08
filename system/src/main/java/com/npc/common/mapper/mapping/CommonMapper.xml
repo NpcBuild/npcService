@@ -7,5 +7,10 @@
         from t_stock
         where id = #{sid}
     </select>
+    <select id="getSystemSet" resultType="java.lang.Integer">
+        select voiceAssistant
+        from t_setting
+        where id = '1'
+    </select>
 
 </mapper>

@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.npc.common.modular.plan.mapper.PlanMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.npc.common.modular.plan.entity.Plan">
+            <result column="id" property="id"/>
+            <result column="parent_id" property="parentId"/>
+            <result column="content" property="content"/>
+            <result column="todo_id" property="todoId"/>
+            <result column="remark" property="remark"/>
+            <result column="sort" property="sort"/>
+            <result column="tag" property="tag"/>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+            id, parent_id, content, todo_id, remark, sort, tag
+    </sql>
+
+    <sql id="commonConditionSQL">
+        <where>
+            t_plan.is_delete = 0
+                <if test="id != '' and id != null">
+                    and t_plan.id = #{id}
+                </if>
+                <if test="parentId != '' and parentId != null">
+                    and t_plan.parent_id = #{parentId}
+                </if>
+                <if test="content != '' and content != null">
+                    and t_plan.content = #{content}
+                </if>
+                <if test="todoId != '' and todoId != null">
+                    and t_plan.todo_id = #{todoId}
+                </if>
+                <if test="remark != '' and remark != null">
+                    and t_plan.remark = #{remark}
+                </if>
+                <if test="sort != '' and sort != null">
+                    and t_plan.sort = #{sort}
+                </if>
+                <if test="tag != '' and tag != null">
+                    and t_plan.tag = #{tag}
+                </if>
+        </where>
+    </sql>
+
+    <select id="getPlanListByColList" resultType="com.npc.common.modular.plan.entity.Plan">
+        select
+        <include refid="Base_Column_List"/>
+        from t_plan
+        <where>
+            t_plan.is_delete = 0
+            and ${column} in
+            <foreach collection="ids" item="id" separator="," open="(" close=")">
+                ${id}
+            </foreach>
+        </where>
+    </select>
+
+</mapper>

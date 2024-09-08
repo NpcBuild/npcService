@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.npc.common.modular.location.mapper.LocationMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.npc.common.modular.location.entity.Location">
+            <result column="id" property="id"/>
+            <result column="location" property="location"/>
+            <result column="coordinates" property="coordinates"/>
+            <result column="visited" property="visited"/>
+            <result column="description" property="description"/>
+            <result column="stars" property="stars"/>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+            id, location, coordinates, visited, description, stars
+    </sql>
+
+    <sql id="commonConditionSQL">
+        <where>
+            t_location.is_delete = 0
+                <if test="id != '' and id != null">
+                    and t_location.id = #{id}
+                </if>
+                <if test="location != '' and location != null">
+                    and t_location.location = #{location}
+                </if>
+                <if test="coordinates != '' and coordinates != null">
+                    and t_location.coordinates = #{coordinates}
+                </if>
+                <if test="visited != '' and visited != null">
+                    and t_location.visited = #{visited}
+                </if>
+                <if test="description != '' and description != null">
+                    and t_location.description = #{description}
+                </if>
+                <if test="stars != '' and stars != null">
+                    and t_location.stars = #{stars}
+                </if>
+        </where>
+    </sql>
+
+    <select id="getLocationListByColList" resultType="com.npc.common.modular.location.entity.Location">
+        select
+        <include refid="Base_Column_List"/>
+        from t_location
+        <where>
+            t_location.is_delete = 0
+            and ${column} in
+            <foreach collection="ids" item="id" separator="," open="(" close=")">
+                ${id}
+            </foreach>
+        </where>
+    </select>
+    <select id="findList" resultType="com.npc.common.modular.location.entity.Location">
+        select
+        <include refid="Base_Column_List"/>
+        from t_location
+        <where>
+            <if test="dto.id != '' and dto.id != null">
+                and id = #{dto.id}
+            </if>
+            <if test="dto.location != '' and dto.location != null">
+                and location = #{dto.location}
+            </if>
+            <if test="dto.coordinates != '' and dto.coordinates != null">
+                and coordinates = #{dto.coordinates}
+            </if>
+            <if test="dto.visited != '' and dto.visited != null">
+                and visited = #{dto.visited}
+            </if>
+            <if test="dto.description != '' and dto.description != null">
+                and description = #{dto.description}
+            </if>
+            <if test="dto.stars != '' and dto.stars != null">
+                and stars = #{dto.stars}
+            </if>
+        </where>
+    </select>
+
+</mapper>

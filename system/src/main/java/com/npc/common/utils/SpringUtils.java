@@ -1,6 +1,7 @@
 package com.npc.common.utils;
 
 import org.springframework.beans.BeansException;
+import org.springframework.boot.system.ApplicationPid;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Component;
@@ -51,5 +52,15 @@ public class SpringUtils implements ApplicationContextAware {
     //通过name,以及Clazz返回指定的Bean
     public static <T> T getBean(String name, Class<T> clazz) {
         return getApplicationContext().getBean(name, clazz);
+    }
+
+    /**
+     * 获取当前SpringBoot运行的进程号
+     * @return
+     */
+    public static String getId() {
+        ApplicationPid pid = new ApplicationPid();
+        System.out.printf("进程ID：%s%n", pid.toString());
+        return pid.toString();
     }
 }

@@ -24,7 +24,7 @@ public @interface Limit {
     /**
      * 获取令牌最大等待时间
      */
-    int timeout();
+    int timeout() default 60000;
 
     /**
      * 获取令牌最大等待时间,单位(例:分钟/秒/毫秒) 默认:毫秒

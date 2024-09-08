@@ -2,6 +2,8 @@ package com.npc.common.modular.corpus.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.npc.common.modular.corpus.entity.Corpus;
+import com.npc.common.modular.corpus.vo.CorpusInfoVO;
+import com.npc.common.modular.corpus.vo.CorpusVO;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Mapper;
 
@@ -27,4 +29,9 @@ public interface CorpusMapper extends BaseMapper<Corpus> {
      */
     List<Corpus> getCorpusListByColList(@Param("column") String column, @Param("ids") List<Integer> ids);
 
+    CorpusInfoVO selectInfo(CorpusVO vo);
+
+    Corpus selectRand(CorpusVO vo);
+
+    Boolean score(@Param("id") String id);
 }

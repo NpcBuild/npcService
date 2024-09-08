@@ -73,7 +73,7 @@ public class MailWarnService extends BaseWarnService {
         /**
          * 删除
          */
-        msg.setSubject("登陆异常", "UTF-8");
+        msg.setSubject("登录异常", "UTF-8");
         msg.setContent(message, "text/html;charset=UTF-8");
         msg.setSentDate(new Date());
         Transport transport = session.getTransport();

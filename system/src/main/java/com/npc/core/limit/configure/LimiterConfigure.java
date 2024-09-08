@@ -6,13 +6,14 @@ import com.npc.core.limit.redis.RedisLimiter;
 import com.npc.redis.utils.RedisUtil;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
 /**
  * @author NPC
- * @description
+ * @description 根据配置文件注入限流实现类，当配置文件中属性 limit.type=local 时启用Guava限流机制，当limit.type=redis 时启用Redis限流机制
  * @create 2023/4/15 20:15
  */
-//@Configuration
+@Configuration
 public class LimiterConfigure {
 
     @Bean

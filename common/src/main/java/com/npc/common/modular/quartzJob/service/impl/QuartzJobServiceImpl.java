@@ -43,9 +43,10 @@ public class QuartzJobServiceImpl extends ServiceImpl<QuartzJobMapper, QuartzJob
     public IPage<QuartzJob> selectTaskListByPage(QuartzJobVO quartzJobVO) {
         // 创建分页对象
         Page<QuartzJob> page = new Page<>(quartzJobVO.getPageNum(), quartzJobVO.getPageSize());
+        QueryWrapper queryWrapper = new QueryWrapper<>(quartzJobVO);
 
         // 执行分页查询，将查询结果封装到分页对象中
-        IPage<QuartzJob> userPage = quartzJobMapper.selectPage(page, null);
+        IPage<QuartzJob> userPage = quartzJobMapper.selectPage(page, queryWrapper);
 
         return userPage;
     }

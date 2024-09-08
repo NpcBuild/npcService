@@ -1,11 +1,18 @@
 package com.npc.common.modular.money.mapper;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.npc.common.modular.money.dto.MoneyDto;
 import com.npc.common.modular.money.entity.Money;
-import com.baomidou.mybatisplus.core.mapper.BaseMapper;import org.apache.ibatis.annotations.Param;
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.npc.common.modular.money.vo.MoneyReport;
+import org.apache.ibatis.annotations.MapKey;
+import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Mapper;
 
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -26,4 +33,12 @@ public interface MoneyMapper extends BaseMapper<Money> {
      */
     List<Money> getMoneyListByColList(@Param("column") String column, @Param("ids") List<Integer> ids);
 
+    /**
+     * 获取信息
+     * @param money
+     * @return
+     */
+    MoneyReport getInfo(Money money);
+
+    IPage<Money> getList(Page<Money> page, @Param("dto") MoneyDto dto);
 }

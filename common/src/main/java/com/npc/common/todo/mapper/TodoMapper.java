@@ -1,11 +1,16 @@
 package com.npc.common.todo.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.core.toolkit.Constants;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.npc.common.todo.entity.Todo;
+import com.npc.common.todo.vo.TodoVO;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Mapper;
 
 
+import java.sql.Wrapper;
 import java.util.List;
 
 /**
@@ -26,5 +31,7 @@ public interface TodoMapper extends BaseMapper<Todo> {
      * @return
      */
     List<Todo> getTodoListByColList(@Param("column") String column, @Param("ids") List<Integer> ids);
+
+    IPage<Todo> getList(Page<Todo> page, @Param("vo") TodoVO vo);
 
 }

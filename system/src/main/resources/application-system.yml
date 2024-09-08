@@ -48,6 +48,12 @@ management:
     shutdown:
       enabled: true
 
+ip:
+  whitelist:
+    addresses:
+      - "192.168.1.1"
+      - "192.168.1.8"
+      - "192.168.1.11"
 jwt:
   #  加密密钥
   secret: yangfei
@@ -56,7 +62,10 @@ jwt:
   expire:
     accessToken: 3600
     refreshToken: 604800
-
 limit:
 #  type: redis
   type: local
+
+sys:
+  web:
+    filterNullAttr: true

@@ -60,6 +60,11 @@ public class Todo implements Serializable {
     private Integer quartzId;
 
     /**
+     * 问题表主键
+     */
+    private Integer problemId;
+
+    /**
      * 开始时间
      */
     private LocalDateTime startTime;
@@ -69,6 +74,33 @@ public class Todo implements Serializable {
      */
     private LocalDateTime endTime;
 
+    /**
+     * 是否提醒
+     */
+    private Integer remind;
+    private String remindType;
+
+    /**
+     * 1-周一，2-周二
+     */
+    private String remindWeek;
+
+    /**
+     * 提醒日
+     */
+    private String remindDay;
+
+    /**
+     * 提醒时间 时分秒
+     */
+    private String remindTime;
+
+    /**
+     * 提醒日（农历）
+     */
+    private String remindLunarDay;
+
     @TableField(exist = false)
     private String completedStatus; // 今日完成情况（查询任务列表用） 0-进行中 1-已完成
+
 }

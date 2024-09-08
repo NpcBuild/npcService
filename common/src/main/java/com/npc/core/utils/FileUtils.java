@@ -1,5 +1,6 @@
 package com.npc.core.utils;
 
+import org.springframework.web.multipart.MultipartFile;
 import sun.awt.shell.ShellFolder;
 
 import javax.imageio.ImageIO;
@@ -157,6 +158,17 @@ public class FileUtils {
                 return Base64.getEncoder().encodeToString(bytes);
             } catch (IOException e) {
                 e.printStackTrace();
+            }
+        }
+        return "";
+    }
+
+    public static String getFileSuffix(MultipartFile file) {
+        String originalFilename = file.getOriginalFilename();
+        if (originalFilename != null) {
+            int lastDotIndex = originalFilename.lastIndexOf('.');
+            if (lastDotIndex > 0 && lastDotIndex < originalFilename.length() - 1) {
+                return originalFilename.substring(lastDotIndex + 1);
             }
         }
         return "";

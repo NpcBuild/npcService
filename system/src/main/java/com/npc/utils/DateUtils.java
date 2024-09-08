@@ -1,4 +1,4 @@
-package com.npc.core.utils;
+package com.npc.utils;
 
 import org.apache.commons.lang3.time.DateFormatUtils;
 
@@ -7,6 +7,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.*;
 import java.time.temporal.TemporalAdjusters;
+import java.util.Calendar;
 import java.util.Date;
 
 /**
@@ -182,6 +183,17 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils
         LocalDateTime localDateTime = LocalDateTime.of(temporalAccessor, LocalTime.of(0, 0, 0));
         ZonedDateTime zdt = localDateTime.atZone(ZoneId.systemDefault());
         return Date.from(zdt.toInstant());
+    }
+
+    /**
+     * 获取指定时间后
+     * calendarType: Calendar.MINUTE 分钟
+     */
+    public static Date getAfter(Date date,int calendarType, int amount) {
+        Calendar now = Calendar.getInstance();
+        now.setTime(date);
+        now.add(calendarType,amount);
+        return now.getTime();
     }
 
 //    ----------------------------------------------天数计算---------------------------------------------------

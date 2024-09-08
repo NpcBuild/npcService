@@ -6,6 +6,7 @@
     <resultMap id="BaseResultMap" type="com.npc.common.modular.chat.entity.ChatBuddy">
             <result column="id" property="id"/>
             <result column="name" property="name"/>
+            <result column="base64_icon" property="base64Icon"/>
             <result column="has_contact" property="hasContact"/>
             <result column="gender" property="gender"/>
             <result column="tags" property="tags"/>
@@ -16,7 +17,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-            id, name, has_contact, gender, tags, intimacy_level, notes, sort
+            id, name, base64_icon, has_contact, gender, tags, intimacy_level, notes, sort
     </sql>
 
     <sql id="commonConditionSQL">
@@ -27,6 +28,9 @@
                 </if>
                 <if test="name != '' and name != null">
                     and t_chat_buddy.name = #{name}
+                </if>
+                <if test="base64Icon != '' and base64Icon != null">
+                    and t_chat_buddy.base64_icon = #{base64Icon}
                 </if>
                 <if test="hasContact != '' and hasContact != null">
                     and t_chat_buddy.has_contact = #{hasContact}
@@ -60,6 +64,41 @@
                 ${id}
             </foreach>
         </where>
+    </select>
+    <select id="getList" resultType="com.npc.common.modular.chat.entity.ChatBuddy">
+        select
+        <include refid="Base_Column_List"/>
+        from t_chat_buddy
+        <where>
+            <if test="dto.id != '' and dto.id != null">
+                and id = #{dto.id}
+            </if>
+            <if test="dto.name != '' and dto.name != null">
+                and name like CONCAT('%', #{dto.name}, '%')
+            </if>
+            <if test="dto.hasContact != null and dto.hasContact">
+                and coalesce(has_contact, 1) = #{dto.hasContact}
+            </if>
+            <if test="dto.hasContact != null and dto.hasContact == false">
+                and has_contact = #{dto.hasContact}
+            </if>
+            <if test="dto.gender != '' and dto.gender != null">
+                and gender = #{dto.gender}
+            </if>
+            <if test="dto.tags != '' and dto.tags != null">
+                and tags = #{dto.tags}
+            </if>
+            <if test="dto.intimacyLevel != '' and dto.intimacyLevel != null">
+                and intimacy_level = #{dto.intimacyLevel}
+            </if>
+            <if test="dto.notes != '' and dto.notes != null">
+                and notes like CONCAT('%', #{dto.notes}, '%')
+            </if>
+            <if test="dto.sort != '' and dto.sort != null">
+                and sort = #{dto.sort}
+            </if>
+        </where>
+        order by sort
     </select>
 
 </mapper>

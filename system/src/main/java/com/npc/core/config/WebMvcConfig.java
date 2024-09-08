@@ -5,6 +5,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
 import javax.annotation.Resource;
 
@@ -18,12 +19,14 @@ public class WebMvcConfig implements WebMvcConfigurer {
 
     @Resource
     private JwtFilter jwtFilter;
+    @Resource
+    private IpWhitelistInterceptor ipWhitelistInterceptor;
 
     /**
      * 不需要拦截地址
      */
     public static final String[] EXCLUDE_URLS = {
-            "/logins",
+            "/login",
             "/login/**",
             "/qrCode",
             "/share",
@@ -39,6 +42,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
      */
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
+        registry.addInterceptor(ipWhitelistInterceptor).addPathPatterns("/**");
         registry.addInterceptor(jwtFilter).addPathPatterns("/**")
                 .excludePathPatterns(EXCLUDE_URLS);
     }
@@ -49,7 +53,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
      */
     @Override
     public void addCorsMappings(CorsRegistry registry) {
-        System.out.print("WebMvcConfig已被加载");
+        System.out.print("**************************************************WebMvcConfig已被加载**************************************************");
         registry.addMapping("/**")
                 //设置允许跨域请求的域名
                 .allowedOriginPatterns("*")

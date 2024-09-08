@@ -6,8 +6,11 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.npc.common.modular.chat.entity.ChatBuddy;
 import com.npc.common.modular.chat.service.IChatBuddyService;
 import com.npc.common.modular.chat.vo.BuddyVO;
+import com.npc.common.monitor.server.ServerService;
 import com.npc.core.ServerResponseEnum;
 import com.npc.core.ServerResponseVO;
+import com.npc.core.constant.Constants;
+import com.npc.core.encrypt.base64.ImageUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +18,9 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Arrays;
+import java.io.File;
+import java.io.IOException;
+import java.util.*;
 
 /**
  * <p>
@@ -31,8 +36,11 @@ public class ChatBuddyController {
     
     private static final Logger logger = LoggerFactory.getLogger(ChatBuddyController.class);
 
+    private static final String WIN_DIR = "C:\\Users\\NPC\\Pictures\\";
+    private static final String LIUNX_DIR = "/home/npc/Desktop/do/";
+
     @Autowired
-    public IChatBuddyService chatBuddyService;
+    private IChatBuddyService chatBuddyService;
 
 
     /**
@@ -136,5 +144,67 @@ public class ChatBuddyController {
     public ServerResponseVO<?> getChatBuddyList(@Validated BuddyVO buddyVO) {
         IPage<ChatBuddy> page = chatBuddyService.selectListByPage(buddyVO);
         return ServerResponseVO.success(page);
+    }
+
+
+    /**
+     * 上传图片
+     * @param obj 参数对象
+     * @return ResponseDataModel转换结果
+     */
+    @PostMapping("uploadPic")
+    public ServerResponseVO<?> uploadPic(@RequestBody Map<String, Object> obj) throws IOException {
+        String fileDir = ServerService.IS_LINUX?LIUNX_DIR:WIN_DIR;
+        String dir = fileDir + obj.get("buddyId").toString();
+        File dirFile = new File(dir);
+        if (dirFile != null && !dirFile.exists()) {
+            boolean created = dirFile.mkdirs(); // 创建父目录
+            if (!created) {
+                throw new IOException("无法创建目录：" + dirFile.getAbsolutePath());
+            }
+        }
+        File parentDir = dirFile.getParentFile();
+        if (parentDir != null && !parentDir.exists()) {
+            boolean created = parentDir.mkdirs(); // 创建父目录
+            if (!created) {
+                throw new IOException("无法创建目录：" + parentDir.getAbsolutePath());
+            }
+        }
+        String imgFileName =  dir + (ServerService.IS_LINUX? Constants.LIUNX_SP:Constants.WIN_SP) + obj.get("fileName").toString();
+        ImageUtil.convertBase64StrToImage(obj.get("pic").toString(),imgFileName);
+        return ServerResponseVO.success("成功");
+    }
+
+    /**
+     * 查看图片
+     * @return ResponseDataModel转换结果
+     */
+    @GetMapping("loadPicList")
+    public ServerResponseVO<?> loadPicList(String buddyId) {
+        String fileDir = ServerService.IS_LINUX?LIUNX_DIR:WIN_DIR;
+        String dir = fileDir + buddyId;
+        File all = new File(dir);
+        if (!all.exists()) {
+            return ServerResponseVO.success(null);
+        }
+        List<String> allFileName = new ArrayList<>();
+        for (File file : all.listFiles()) {
+            allFileName.add(file.getName());
+        }
+        return ServerResponseVO.success(allFileName);
+    }
+
+    /**
+     * 查看图片
+     * @return ResponseDataModel转换结果
+     */
+    @GetMapping("loadPic")
+    public ServerResponseVO<?> loadPic(String buddyId, String fileName) {
+        String fileDir = ServerService.IS_LINUX?LIUNX_DIR:WIN_DIR;
+        String dir = fileDir + buddyId + (ServerService.IS_LINUX?Constants.LIUNX_SP:Constants.WIN_SP) + fileName;
+        File file = new File(dir);
+        String imgFileName = file.getAbsolutePath();
+        String image = ImageUtil.convertImageToBase64Str(imgFileName);
+        return ServerResponseVO.success(image);
     }
 }

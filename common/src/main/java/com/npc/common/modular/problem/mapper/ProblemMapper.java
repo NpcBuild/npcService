@@ -1,7 +1,12 @@
 package com.npc.common.modular.problem.mapper;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.npc.common.modular.problem.dto.ProblemDto;
 import com.npc.common.modular.problem.entity.Problem;
-import com.baomidou.mybatisplus.core.mapper.BaseMapper;import org.apache.ibatis.annotations.Param;
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.npc.common.modular.problem.vo.ProblemVO;
+import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Mapper;
 
 
@@ -26,5 +31,7 @@ public interface ProblemMapper extends BaseMapper<Problem> {
      */
     List<Problem> getProblemListByColList(@Param("column") String column, @Param("ids") List<Integer> ids);
 
-    List<Problem> search(@Param("text") String text);
+    List<Problem> search(ProblemDto problem);
+
+    IPage<Problem> getList(@Param("vo") ProblemVO problemVO, Page<Problem> page);
 }

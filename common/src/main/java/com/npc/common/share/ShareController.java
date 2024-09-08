@@ -49,6 +49,7 @@ public class ShareController {
             if (StringUtils.isNotEmpty(vo.getUrl())) {
                 Corpus corpus = new Corpus();
                 corpus.setContent(vo.getUrl());
+                corpus.setTag("11"); // 字符串
                 corpus.setCreTime(LocalDateTime.now());
                 corpusService.save(corpus);
             }

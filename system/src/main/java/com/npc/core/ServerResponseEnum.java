@@ -23,7 +23,8 @@ public enum ServerResponseEnum {
 
     DATA_EXCEPTION(25, "数据异常"),
     SAVE_FAILED(30, "保存失败"),
-    DELETE_FAILED(31, "删除失败"),
+    UPDATE_FAILED(31, "更新失败"),
+    DELETE_FAILED(32, "删除失败"),
     TASK_CRON_ERROR(40, "表达式错误"),
     TASK_CRON_DOUBLE(41, "定时任务已存在"),
     TASK_NOT_EXITES(42, "定时任务不存在"),

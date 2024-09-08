@@ -5,6 +5,7 @@ import com.google.zxing.client.j2se.MatrixToImageWriter;
 import com.google.zxing.common.BitMatrix;
 import com.maxmind.geoip2.model.CityResponse;
 import com.npc.client.Netty.service.PushMsgService;
+import com.npc.common.login.service.LoginService;
 import com.npc.common.modular.user.entity.User;
 import com.npc.common.modular.user.model.parame.UserParame;
 import com.npc.common.modular.user.model.result.UserResult;
@@ -13,12 +14,14 @@ import com.npc.core.ServerResponseEnum;
 import com.npc.core.ServerResponseVO;
 import com.npc.core.alarm.MessageTypes;
 import com.npc.core.alarm.aop.Alarm;
+import com.npc.core.jwt.JwtFilter;
 import com.npc.core.jwt.JwtTokenUtil;
 import com.npc.core.jwt.UserToken;
 import com.npc.core.jwt.UserTokenInfo;
 import com.npc.core.utils.QRCodeUtils;
 import com.npc.core.utils.StringUtils;
 import com.npc.core.utils.ip.IpUtils;
+import com.npc.exception.YFLoginTimeoutException;
 import com.npc.kafka.producer.KafkaLoginMailProducer;
 import com.npc.redis.aop.login.anno.RedisLimit;
 import com.npc.redis.utils.RedisPoolUtil;
@@ -57,6 +60,8 @@ public class Login {
     @Resource
     private UserService userService;
     @Autowired
+    private LoginService loginService;
+    @Autowired
     private KafkaLoginMailProducer kafkaLoginMailProducer;
     @Autowired
     PushMsgService pushMsgService;
@@ -70,27 +75,14 @@ public class Login {
         Subject userSubject = SecurityUtils.getSubject();
         UsernamePasswordToken token = new UsernamePasswordToken(user.getAccount(), user.getUserPwd());
         try {
-            // 登陆验证
+            // 登录验证
             userSubject.login(token);
             // 获取用户IP地址
             String userIpAddress = IpUtils.getIpAddr(request);
-            try {
-                CityResponse city = IpUtils.ipToLocation(userIpAddress);
-                if (null != city) {
-                    System.out.println(city.toString());
-                    System.out.println(userIpAddress);
-                    // 将用户IP地址存入Redis集群 用户id -> 城市
-                    String cityName = "未查询到";
-                    if (StringUtils.isNotEmpty(city.getCity().getNames().get("zh-CN"))) {
-                        cityName = city.getCity().getNames().get("zh-CN");
-                    }
-                    RedisPoolUtil.set(user.getAccount(), cityName);
-                }
-            } catch (Exception e) {
-                log.error("查询IP所在地异常" + e.getMessage());
-            }
+            Boolean flag = loginService.recordIpToRedis(userIpAddress, user.getAccount());
+            System.out.println("存储结果：" + flag);
 
-//            KafkaMessage kafkaMessage = new KafkaMessage(0,"login","登陆成功");
+//            KafkaMessage kafkaMessage = new KafkaMessage(0,"login","登录成功");
 //            kafkaLoginMailProducer.sendMsgSync(kafkaMessage);
             // 获取当前用户的 Subject
             Subject currentUser = SecurityUtils.getSubject();
@@ -106,7 +98,7 @@ public class Login {
 //            userTokenInfo.setRealName(user.getAccount());
             // 生成Token
             UserToken userToken = jwtTokenUtil.createToekns(userTokenInfo);
-            return ServerResponseVO.success(userToken);
+            return ServerResponseVO.success("登录成功", userToken);
         }catch (UnknownAccountException e) {
             return ServerResponseVO.error(ServerResponseEnum.ACCOUNT_NOT_EXIST);
         }catch (DisabledAccountException e) {
@@ -142,14 +134,15 @@ public class Login {
      * @return
      */
     @PostMapping("/refreshToken/{refreshToken}")
-    public ServerResponseVO refreshToken(@PathVariable("refreshToken") String refreshToken) {
+    public ServerResponseVO refreshToken(@PathVariable("refreshToken") String refreshToken, HttpServletResponse response) {
+        try {
 
-//        // 判断token是否超时
-//        if (jwtTokenUtil.isTokenExpired(refreshToken)) {
-//            return ServerResponseVO.error(ServerResponseEnum.TOKEN_INVALID);
-//        }
+        // 判断token是否超时
+        if (jwtTokenUtil.isTokenExpired(refreshToken)) {
+            return ServerResponseVO.error(ServerResponseEnum.TOKEN_INVALID);
+        }
 
-        // 刷新令牌 放入黑名单
+            // 刷新令牌 放入黑名单
         jwtTokenUtil.addBlacklist(refreshToken, jwtTokenUtil.getExpirationDate(refreshToken));
 //        // 访问令牌 放入黑名单
 //        String odlAccessToken = jwtTokenUtil.getAccessTokenByRefresh(refreshToken);
@@ -157,12 +150,14 @@ public class Login {
 //            jwtTokenUtil.addBlacklist(odlAccessToken, jwtTokenUtil.getExpirationDate(odlAccessToken));
 //        }
 
-        // 生成新的 访问令牌 和 刷新令牌
-        UserTokenInfo userInfoToken = jwtTokenUtil.getUserInfoToken(refreshToken);
-        // 生成Token
-        UserToken userToken = jwtTokenUtil.createToekns(userInfoToken);
-
-        return ServerResponseVO.success(userToken);
+            // 生成新的 访问令牌 和 刷新令牌
+            UserTokenInfo userInfoToken = jwtTokenUtil.getUserInfoToken(refreshToken);
+            // 生成Token
+            UserToken userToken = jwtTokenUtil.createToekns(userInfoToken);
+            return ServerResponseVO.success(userToken);
+        } catch (YFLoginTimeoutException e) {
+            return ServerResponseVO.error(ServerResponseEnum.TOKEN_INVALID);
+        }
     }
 
 

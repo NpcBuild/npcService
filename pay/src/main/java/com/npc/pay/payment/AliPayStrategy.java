@@ -1,5 +1,6 @@
 package com.npc.pay.payment;
 
+import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Component;
 
 /**
@@ -8,6 +9,7 @@ import org.springframework.stereotype.Component;
  * @create 2024/5/17 9:24
  */
 @Component
+@Primary
 public class AliPayStrategy implements PaymentStrategy {
 
     @Override

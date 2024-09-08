@@ -40,6 +40,12 @@ public class ServerResponseVO<T> implements Serializable {
         this.message = message;
     }
 
+    private ServerResponseVO(Integer code, String message, T data) {
+        this.code = code;
+        this.message = message;
+        this.data = data;
+    }
+
     /**
      * 返回成功信息
      * @param data      信息内容
@@ -48,6 +54,16 @@ public class ServerResponseVO<T> implements Serializable {
      */
     public static<T> ServerResponseVO success(T data) {
         return new ServerResponseVO<>(ServerResponseEnum.SUCCESS, data);
+    }
+
+    /**
+     * 返回成功信息
+     * @param data      信息内容
+     * @param <T>
+     * @return
+     */
+    public static<T> ServerResponseVO success(String msg, T data) {
+        return new ServerResponseVO<>(ServerResponseEnum.SUCCESS.getCode(),msg , data);
     }
 
     /**

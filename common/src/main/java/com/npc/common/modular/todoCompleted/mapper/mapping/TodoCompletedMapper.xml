@@ -52,5 +52,11 @@
         from t_todo_completed
         WHERE status = '2' and finish_time LIKE CONCAT(#{date},'%')
     </select>
+    <select id="getCompletedListSE" resultType="com.npc.common.modular.todoCompleted.entity.TodoCompleted">
+        select
+        <include refid="Base_Column_List"/>
+        from t_todo_completed
+        WHERE status = '2' and finish_time &lt; #{endDate} and finish_time &gt; #{startDate}
+    </select>
 
 </mapper>

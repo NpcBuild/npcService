@@ -1,7 +1,10 @@
 package com.npc.core.net;
 
 import jakarta.validation.constraints.NotNull;
+import org.springframework.http.MediaType;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
 import javax.net.ssl.HttpsURLConnection;
@@ -15,31 +18,33 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
+import java.util.Arrays;
 
 /**
  * @author NPC
  * @description RestTemplate的构造器，以及绕过https的证书验证
  * @create 2023/8/7 13:28
  */
-public class RestTemplateBuilder {
+@Component
+public class MineRestTemplateBuilder {
     private int connectTimeout = 50000;
     private int readTimeout = 50000;
     private boolean enableSslCheck = false;
 
-    public RestTemplateBuilder connectTimeout(int connectTimeout) {
+    public MineRestTemplateBuilder connectTimeout(int connectTimeout) {
         this.connectTimeout = connectTimeout;
         return this;
     }
-    public RestTemplateBuilder readTimeout(int readTimeout) {
+    public MineRestTemplateBuilder readTimeout(int readTimeout) {
         this.readTimeout = readTimeout;
         return this;
     }
-    public RestTemplateBuilder enableSslCheck(boolean enableSslCheck) {
+    public MineRestTemplateBuilder enableSslCheck(boolean enableSslCheck) {
         this.enableSslCheck = enableSslCheck;
         return this;
     }
-    public static RestTemplateBuilder builder() {
-        return new RestTemplateBuilder();
+    public static MineRestTemplateBuilder builder() {
+        return new MineRestTemplateBuilder();
     }
 
     public RestTemplate build() {
@@ -52,6 +57,14 @@ public class RestTemplateBuilder {
         } else {
             requestFactory = new SimpleClientHttpRequestFactory();
         }
+
+        // fix Could not extract response: no suitable HttpMessageConverter found for response type
+        // 手动添加text/plan,text/html格式
+        MappingJackson2HttpMessageConverter mappingJackson2HttpMessageConverter = new MappingJackson2HttpMessageConverter();
+        mappingJackson2HttpMessageConverter.setSupportedMediaTypes(Arrays.asList(
+                MediaType.TEXT_HTML,
+                MediaType.TEXT_PLAIN));
+        restTemplate.getMessageConverters().add(mappingJackson2HttpMessageConverter);
 
         // timeout
         requestFactory.setConnectTimeout(this.connectTimeout);

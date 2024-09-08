@@ -16,11 +16,13 @@ import java.util.List;
  * @since 2023-09-10
  */
 public interface ITodoService extends IService<Todo> {
-    IPage<Todo> getTodoList(TodoVO vo);
+
+    List<Todo> getList(TodoVO vo);
+    IPage<Todo> getListPage(TodoVO vo);
 
     /**
      * 扩展更多信息
-     * @param todo
+     * @param todos
      * @return
      */
     List<TodoVO> getMoreInfo(List<Todo> todos, String day);

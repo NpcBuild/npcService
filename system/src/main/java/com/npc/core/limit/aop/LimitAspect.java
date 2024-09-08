@@ -44,6 +44,8 @@ public class LimitAspect {
         //Limit，如果存在则说明需要限流
         Limit limit = method.getAnnotation(Limit.class);
         if(limit != null){
+            String className = method.getDeclaringClass().getName();
+            String name = method.getName();
 
             Limiter limiter = Limiter.builder().limitNum((int) limit.permitsPerSecond())
                     .seconds(limit.timeout())

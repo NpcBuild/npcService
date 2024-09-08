@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.npc.common.modular.setting.mapper.SettingMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.npc.common.modular.setting.entity.Setting">
+            <result column="id" property="id"/>
+            <result column="userId" property="userId"/>
+            <result column="voiceAssistant" property="voiceAssistant"/>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+            id, userId, voiceAssistant
+    </sql>
+
+    <sql id="commonConditionSQL">
+        <where>
+            t_setting.is_delete = 0
+                <if test="id != '' and id != null">
+                    and t_setting.id = #{id}
+                </if>
+                <if test="userId != '' and userId != null">
+                    and t_setting.userId = #{userId}
+                </if>
+                <if test="voiceAssistant != '' and voiceAssistant != null">
+                    and t_setting.voiceAssistant = #{voiceAssistant}
+                </if>
+        </where>
+    </sql>
+
+    <select id="getSettingListByColList" resultType="com.npc.common.modular.setting.entity.Setting">
+        select
+        <include refid="Base_Column_List"/>
+        from t_setting
+        <where>
+            t_setting.is_delete = 0
+            and ${column} in
+            <foreach collection="ids" item="id" separator="," open="(" close=")">
+                ${id}
+            </foreach>
+        </where>
+    </select>
+
+</mapper>

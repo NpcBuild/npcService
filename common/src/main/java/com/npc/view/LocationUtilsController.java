@@ -2,7 +2,7 @@ package com.npc.view;
 
 import com.maxmind.geoip2.model.CityResponse;
 import com.npc.common.mail.server.MailService;
-import com.npc.core.utils.DateUtils;
+import com.npc.utils.DateUtils;
 import com.npc.core.utils.ip.IpUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
@@ -21,7 +21,7 @@ import java.util.Map;
  */
 @Slf4j
 @RestController
-public class LocationController {
+public class LocationUtilsController {
     @Resource
     private MailService mailService;
     @Resource

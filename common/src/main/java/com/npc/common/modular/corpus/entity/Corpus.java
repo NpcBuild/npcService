@@ -23,7 +23,7 @@ public class Corpus implements Serializable {
     /**
      * 唯一标识
      */
-    private Integer id;
+    private Long id;
 
     /**
      * 内容
@@ -34,6 +34,11 @@ public class Corpus implements Serializable {
      * 标签
      */
     private String tag;
+
+    /**
+     * 数据打分
+     */
+    private Integer score;
 
     /**
      * 创建时间

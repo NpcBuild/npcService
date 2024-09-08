@@ -9,6 +9,6 @@ spring:
         - localhost:6383
         - localhost:6384
         - localhost:6385
-#logging:
-#  level:
-#    org.apache.kafka.clients: ERROR
+logging:
+  level:
+    org.apache.kafka.clients: ERROR

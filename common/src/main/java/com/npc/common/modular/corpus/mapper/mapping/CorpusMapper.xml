@@ -7,13 +7,14 @@
             <result column="id" property="id"/>
             <result column="content" property="content"/>
             <result column="tag" property="tag"/>
+            <result column="score" property="score"/>
             <result column="cre_time" property="creTime"/>
             <result column="flag" property="flag"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-            id, content, tag, cre_time, flag
+            id, content, tag, score, cre_time, flag
     </sql>
 
     <sql id="commonConditionSQL">
@@ -33,6 +34,11 @@
                 </if>
         </where>
     </sql>
+    <update id="score">
+        update t_corpus
+        set score = IF(score IS NULL, 1, score + 1)
+        where id = #{id}
+    </update>
 
     <select id="getCorpusListByColList" resultType="com.npc.common.modular.corpus.entity.Corpus">
         select
@@ -45,6 +51,31 @@
                 ${id}
             </foreach>
         </where>
+    </select>
+    <select id="selectInfo" resultType="com.npc.common.modular.corpus.vo.CorpusInfoVO">
+        SELECT count(1) num,MAX(cre_time) syncTime
+        FROM t_corpus
+        <where>
+            flag = '0'
+            <if test="tag != '' and tag != null">
+                and tag REGEXP <![CDATA['\\b' + #{tag} + '\\b']]>
+            </if>
+        </where>
+    </select>
+    <select id="selectRand" resultType="com.npc.common.modular.corpus.entity.Corpus" parameterType="com.npc.common.modular.corpus.vo.CorpusVO">
+        select
+        <include refid="Base_Column_List"/>
+        from t_corpus
+        <where>
+            flag = '0'
+            <if test="id != '' and id != null">
+                and id = #{id}
+            </if>
+            <if test="tag != '' and tag != null">
+                and tag REGEXP <![CDATA['\\b' + #{tag} + '\\b']]>
+            </if>
+        </where>
+        order by rand() limit 1
     </select>
 
 </mapper>

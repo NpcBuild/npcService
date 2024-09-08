@@ -42,7 +42,7 @@ public class RedisLimitAop {
     /**
      * 环绕通知，对方法前后进行增强
      */
-    @Around("@annotation(com.npc.redis.aop.login.anno.RedisLimit)")
+    @Around("pt()")
     public Object handleLimit(ProceedingJoinPoint joinPoint){
         MethodSignature methodSignature = (MethodSignature) joinPoint.getSignature();
         final Method method = methodSignature.getMethod();
@@ -92,7 +92,7 @@ public class RedisLimitAop {
             log.info(">>> handle login exception...");
             final ValueOperations<String, String> ssOps = stringRedisTemplate.opsForValue();
             Boolean exist = stringRedisTemplate.hasKey(identifierValue);
-            //不存在，意味着首次登陆
+            //不存在，意味着首次登录
             if (exist == null || !exist) {
                 ssOps.set(identifierValue, "1", watch, TimeUnit.SECONDS);
                 return ServerResponseVO.error(ServerResponseEnum.INCORRECT_CREDENTIALS);

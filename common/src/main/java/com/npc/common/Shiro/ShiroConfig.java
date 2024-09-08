@@ -44,7 +44,8 @@ public class ShiroConfig {
         shiroFilterFactoryBean.setSuccessUrl("/");
         Map<String, String> map = new LinkedHashMap<>();
         // 有先后顺序
-        map.put("/logins","anon");  //允许匿名访问
+//        map.put("/logins","anon");  //允许匿名访问
+        map.put("/login","anon");  //允许匿名访问
         map.put("/qrCode","anon");  //允许匿名访问
         map.put("/video","anon");
         map.put("/home","authc");  //进行身份认证后才能访问

@@ -48,6 +48,7 @@ public class TodoVO extends QuartzJobVO {
      * 定时任务表主键
      */
     private Integer quartzId;
+    private Integer problemId; //问题表主键
 
     /**
      * 开始时间
@@ -63,5 +64,7 @@ public class TodoVO extends QuartzJobVO {
 
     private Boolean done; // 任务是否完成
     private String date; // 查询用
+    private String startDate; // 查询用
+    private String endDate; // 查询用
 
 }

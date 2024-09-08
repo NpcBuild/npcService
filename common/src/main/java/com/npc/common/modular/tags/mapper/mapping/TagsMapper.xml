@@ -100,6 +100,11 @@
                 </if>
         </where>
     </sql>
+    <select id="getTagName" resultType="java.lang.String">
+        select name
+        from t_tags
+        where id = #{id}
+    </select>
 
     <select id="getTagsListByColList" resultType="com.npc.common.modular.tags.entity.Tags">
         select
@@ -112,6 +117,18 @@
                 ${id}
             </foreach>
         </where>
+    </select>
+    <select id="getTree" resultType="com.npc.common.modular.tags.entity.Tags">
+        WITH RECURSIVE tree AS (
+            SELECT id, parent_id, name, 0 AS level
+            FROM t_tags
+            WHERE parent_id = #{id}
+            UNION ALL
+            SELECT t.id, t.parent_id, t.name, tree.level + 1 AS level
+            FROM t_tags t
+                     JOIN tree ON t.parent_id = tree.id
+        )
+        SELECT * FROM tree WHERE level &lt;= #{level};
     </select>
 
 </mapper>

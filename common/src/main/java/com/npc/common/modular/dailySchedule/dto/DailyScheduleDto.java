@@ -31,10 +31,12 @@ public class DailyScheduleDto extends PageSearch {
     private String colorLabel; // 颜色标签
     private LocalDate deadline; // 任务截止日期
     private LocalTime notificationTime; // 任务提醒时间
-    private String recurrencePattern; // 任务重复模式
     private LocalTime estimatedDuration; // 预计任务完成所需时间
     private String subtasks; // 子任务信息
     private String tags; // 标签
     private String linkedTasks; // 关联任务信息
     private String progressNotes; // 任务进展备注
+
+    private String startTimeCN;
+    private String endTimeCN;
 }

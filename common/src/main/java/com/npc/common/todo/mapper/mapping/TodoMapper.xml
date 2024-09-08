@@ -11,13 +11,20 @@
             <result column="remark" property="remark"/>
             <result column="status" property="status"/>
             <result column="quartz_id" property="quartzId"/>
+            <result column="problem_id" property="problemId"/>
             <result column="start_time" property="startTime"/>
             <result column="end_time" property="endTime"/>
+            <result column="remind" property="remind"/>
+            <result column="remind_type" property="remindType"/>
+            <result column="remind_week" property="remindWeek"/>
+            <result column="remind_day" property="remindDay"/>
+            <result column="remind_time" property="remindTime"/>
+            <result column="remind_lunar_day" property="remindLunarDay"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-            id, todo_name, type, tag, remark, status, quartz_id, start_time, end_time
+            id, todo_name, type, tag, remark, status, quartz_id, problem_id, start_time, end_time, remind, remind_type, remind_week, remind_day, remind_time, remind_lunar_day
     </sql>
 
     <sql id="commonConditionSQL">
@@ -44,11 +51,32 @@
                 <if test="quartzId != '' and quartzId != null">
                     and t_todo.quartz_id = #{quartzId}
                 </if>
+                <if test="problemId != '' and problemId != null">
+                    and t_todo.problem_id = #{problemId}
+                </if>
                 <if test="startTime != '' and startTime != null">
                     and t_todo.start_time = #{startTime}
                 </if>
                 <if test="endTime != '' and endTime != null">
                     and t_todo.end_time = #{endTime}
+                </if>
+                <if test="remind != '' and remind != null">
+                    and t_todo.remind = #{remind}
+                </if>
+                <if test="remindType != '' and remindType != null">
+                    and t_todo.remind_type = #{remindType}
+                </if>
+                <if test="remindWeek != '' and remindWeek != null">
+                    and t_todo.remind_week = #{remindWeek}
+                </if>
+                <if test="remindDay != '' and remindDay != null">
+                    and t_todo.remind_day = #{remindDay}
+                </if>
+                <if test="remindTime != '' and remindTime != null">
+                    and t_todo.remind_time = #{remindTime}
+                </if>
+                <if test="remindLunarDay != '' and remindLunarDay != null">
+                    and t_todo.remind_lunar_day = #{remindLunarDay}
                 </if>
         </where>
     </sql>
@@ -63,6 +91,25 @@
             <foreach collection="ids" item="id" separator="," open="(" close=")">
                 ${id}
             </foreach>
+        </where>
+    </select>
+    <select id="getList" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_todo
+        <where>
+            <if test="vo.startDate != null and vo.startDate != ''">
+                and start_time &lt; #{vo.startDate}
+            </if>
+            <if test="vo.endDate != null and vo.endDate != ''">
+                and end_time > #{vo.endDate}
+            </if>
+            <if test="vo.type != null and vo.type != ''">
+                and type = #{vo.type}
+            </if>
+            <if test="vo.id != null and vo.id != ''">
+                and id = #{vo.id}
+            </if>
         </where>
     </select>
 

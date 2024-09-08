@@ -134,4 +134,10 @@ public class Constants
      */
     public static final String[] JOB_ERROR_STR = { "java.net.URL", "javax.naming.InitialContext", "org.yaml.snakeyaml",
             "org.springframework", "org.apache", "com.ruoyi.common.utils.file" };
+
+    /**
+     * 文件分隔符
+     */
+    public static final String WIN_SP = "\\";
+    public static final String LIUNX_SP = "/";
 }

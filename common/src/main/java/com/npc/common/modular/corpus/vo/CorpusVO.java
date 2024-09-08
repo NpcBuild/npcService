@@ -28,6 +28,11 @@ public class CorpusVO extends PageSearch {
     private String tag;
 
     /**
+     * 数据打分
+     */
+    private Integer score;
+
+    /**
      * 创建时间
      */
     private LocalDateTime creTime;

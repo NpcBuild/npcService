@@ -1,13 +1,16 @@
 package com.npc.common.modular.problem.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.npc.common.modular.problem.dto.ProblemDto;
 import com.npc.common.modular.problem.entity.Problem;
 import com.npc.common.modular.problem.mapper.ProblemMapper;
 import com.npc.common.modular.problem.service.IProblemService;
 import com.npc.common.modular.problem.vo.ProblemVO;
+import com.npc.core.utils.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -32,16 +35,22 @@ public class ProblemServiceImpl extends ServiceImpl<ProblemMapper, Problem> impl
     public IPage<Problem> selectListByPage(ProblemVO problemVO) {
         // 创建分页对象
         Page<Problem> page = new Page<>(problemVO.getPageNum(), problemVO.getPageSize());
-        QueryWrapper queryWrapper = new QueryWrapper<>(problemVO);
-        queryWrapper.orderByDesc("date");
-        // 执行分页查询，将查询结果封装到分页对象中
-        IPage<Problem> corpusPage = this.baseMapper.selectPage(page, queryWrapper);
+
+        IPage<Problem> corpusPage = this.baseMapper.getList(problemVO, page);
         return corpusPage;
     }
 
     @Override
-    public List<Problem> search(String text) {
-        List<Problem> problemList = this.baseMapper.search(text);
+    public boolean updateSolutionById(Problem problem) {
+        UpdateWrapper updateWrapper = new UpdateWrapper();
+        updateWrapper.eq("id",problem.getId());
+        boolean update = this.update(problem, updateWrapper);
+        return update;
+    }
+
+    @Override
+    public List<Problem> search(ProblemDto problem) {
+        List<Problem> problemList = this.baseMapper.search(problem);
         return problemList;
     }
 }

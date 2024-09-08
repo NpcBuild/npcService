@@ -1,0 +1,1 @@
+已移除PackDynamicAutoProxyCreator的@Component ，使其失效。因为启动会报错，此热拔插Aop功能未实现。原文见 https://mp.weixin.qq.com/s/hBVfCkbL0NQCaYb-qVQf0Q

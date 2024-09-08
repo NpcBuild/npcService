@@ -7,11 +7,8 @@ import com.npc.common.modular.user.entity.User;
 import com.npc.common.modular.user.service.UserService;
 import com.npc.common.modular.user.service.impl.UserServiceImpl;
 import com.npc.core.encrypt.RSA.RsaCryptUtil;
-import com.npc.core.net.RestTemplateBuilder;
-import com.npc.core.net.singleDown.FileResponseExtractor;
+import com.npc.core.net.mulitDown.MulitDown;
 import org.junit.Test;
-import org.springframework.http.HttpMethod;
-import org.springframework.web.client.RestTemplate;
 
 import javax.annotation.Resource;
 import java.io.*;
@@ -79,23 +76,30 @@ public class AppTest
         User user = userService.getOne(userQueryWrapper);
     }
 
+    /**
+     * 适合下载小文件
+     * @throws IOException
+     */
     @Test
-    public void downloadToMemory() {
-        // 单线程
-        long start = System.currentTimeMillis();
-        RestTemplateBuilder restTemplateBuilder = new RestTemplateBuilder();
-        RestTemplate restTemplate = restTemplateBuilder.build();
-        FileResponseExtractor extractor = new FileResponseExtractor("D:\\Data\\tmp" + ".download");
-        File tmpFile = (File) restTemplate.execute("https://image.baidu.com/search/down?url=https://tvax2.sinaimg.cn/large/006BNqYCly1hgfpxtpnz4j30j6159tfv.jpg", HttpMethod.GET,null,extractor);
-        tmpFile.renameTo(new File("D:\\Data\\tmp.png"));
-        System.out.println("总共下载文件耗时：" + (System.currentTimeMillis() - start) / 1000 + "S");
-//        // 多线程
-//        MulitDown mulitDown = new MulitDown();
-//        try {
-//            mulitDown.multiThreadDownload("https://image.baidu.com/search/down?url=https://tvax2.sinaimg.cn/large/006BNqYCly1hgfpxtpnz4j30j6159tfv.jpg","D:\\Data\\tmp.jpg",3);
-//        } catch (IOException e) {
-//            throw new RuntimeException(e);
-//        }
+    public void downloadToMemory() throws IOException {
+//        // 单线程
+//        long start = System.currentTimeMillis();
+//        RestTemplateBuilder restTemplateBuilder = new RestTemplateBuilder();
+//        RestTemplate restTemplate = restTemplateBuilder.build();
+//        FileResponseExtractor extractor = new FileResponseExtractor("D:\\Data\\tmp" + ".download");
+//        File tmpFile = (File) restTemplate.execute("https://image.baidu.com/search/down?url=https://tvax2.sinaimg.cn/large/006BNqYCly1hgfpxtpnz4j30j6159tfv.jpg", HttpMethod.GET,null,extractor);
+//        tmpFile.renameTo(new File("D:\\Data\\tmp.png"));
+//        System.out.println("总共下载文件耗时：" + (System.currentTimeMillis() - start) / 1000 + "S");
+//        byte[] body = restTemplate.execute("https://image.baidu.com/search/down?url=https://tvax2.sinaimg.cn/large/006BNqYCly1hgfpxtpnz4j30j6159tfv.jpg", HttpMethod.GET,null,new ByteArrayResponseExtractor());
+//        Files.write(Paths.get("D:\\Data\\tmp2.png"), Objects.requireNonNull(body));
+
+        // 多线程
+        MulitDown mulitDown = new MulitDown();
+        try {
+            mulitDown.multiThreadDownload("https://dldir1.qq.com/wework/work_weixin/WeCom_4.1.22.6009.exe","D:\\Data\\tmp.jpg",3);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
 

@@ -40,6 +40,13 @@ public class ChatBuddy implements Serializable {
 
 
     /**
+     * base64编码头像
+     */
+    private String base64Icon;
+
+
+
+    /**
      * 是否还有联系
      */
     private Boolean hasContact;

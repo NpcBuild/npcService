@@ -9,11 +9,11 @@
     <packaging>pom</packaging>
     <version>1.0.0</version>
     <modules>
+        <module>kafka</module>
         <module>maven</module>
-        <module>start</module>
         <module>common</module>
         <module>system</module>
-        <module>kafka</module>
+        <module>pay</module>
         <module>start</module>
     </modules>
 

@@ -93,13 +93,77 @@
             </foreach>
         </where>
     </select>
-    <select id="search" resultType="com.npc.common.modular.problem.entity.Problem">
+    <select id="search" resultType="com.npc.common.modular.problem.entity.Problem" parameterType="com.npc.common.modular.problem.dto.ProblemDto">
         select
         <include refid="Base_Column_List"/>
         from t_problem
         <where>
-            title like "%"#{text}"%" or description like "%"#{text}"%" or solution like "%"#{text}"%"
+            <if test="tags != '' and tags != null">
+                and tags in
+                <foreach collection="tags.split(',')" item="id" separator="," open="(" close=")">
+                    ${id}
+                </foreach>
+            </if>
+            <if test="text != '' and text != null">
+                and (title like CONCAT('%', #{text}, '%') or description like CONCAT('%', #{text}, '%') or solution like CONCAT('%', #{text}, '%'))
+            </if>
         </where>
+    </select>
+    <select id="getList" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_problem
+        <where>
+            <if test="vo.id != '' and vo.id != null">
+                and id = #{vo.id}
+            </if>
+            <if test="vo.date != '' and vo.date != null">
+                and date = #{vo.date}
+            </if>
+            <if test="vo.title != '' and vo.title != null">
+                and title like CONCAT('%', #{vo.title}, '%')
+            </if>
+            <if test="vo.description != '' and vo.description != null">
+                and description = #{vo.description}
+            </if>
+            <if test="vo.environment != '' and vo.environment != null">
+                and environment = #{vo.environment}
+            </if>
+            <if test="vo.solution != '' and vo.solution != null">
+                and solution = #{vo.solution}
+            </if>
+            <if test="vo.notes != '' and vo.notes != null">
+                and notes = #{vo.notes}
+            </if>
+            <if test="vo.category != '' and vo.category != null">
+                and category = #{vo.category}
+            </if>
+            <if test="vo.tags != '' and vo.tags != null">
+                and tags = #{vo.tags}
+            </if>
+            <if test="vo.status != '' and vo.status != null">
+                and status = #{vo.status}
+            </if>
+            <if test="vo.resolutionDate != '' and vo.resolutionDate != null">
+                and resolution_date = #{vo.resolutionDate}
+            </if>
+            <if test="vo.severity != '' and vo.severity != null">
+                and severity = #{vo.severity}
+            </if>
+            <if test="vo.assignedTo != '' and vo.assignedTo != null">
+                and assigned_to = #{vo.assignedTo}
+            </if>
+            <if test="vo.priority != '' and vo.priority != null">
+                and priority = #{vo.priority}
+            </if>
+            <if test="vo.attachments != '' and vo.attachments != null">
+                and attachments = #{vo.attachments}
+            </if>
+            <if test="vo.relatedProblems != '' and vo.relatedProblems != null">
+                and related_problems = #{vo.relatedProblems}
+            </if>
+        </where>
+        order by date desc
     </select>
 
 </mapper>

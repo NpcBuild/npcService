@@ -1,6 +1,6 @@
 package com.npc.core.net.mulitDown;
 
-import com.npc.core.net.RestTemplateBuilder;
+import com.npc.core.net.MineRestTemplateBuilder;
 import com.npc.core.net.extractor.FileResponseExtractor;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -36,7 +36,7 @@ import java.util.concurrent.Executors;
 @Component
 public class MulitDown {
     @Resource
-    private RestTemplateBuilder templateBuilder;
+    private MineRestTemplateBuilder templateBuilder;
     public void multiThreadDownload(String fileURL, String filePath, int threadNum) throws IOException {
         System.out.println("开始下载文件。。..");
         ExecutorService executorService = Executors. newFixedThreadPool(threadNum);

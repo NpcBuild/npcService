@@ -1,6 +1,6 @@
 package com.npc.core.net.singleDown;
 
-import com.npc.core.net.RestTemplateBuilder;
+import com.npc.core.net.MineRestTemplateBuilder;
 import com.npc.core.net.extractor.ByteArrayResponseExtractor;
 import com.npc.core.net.extractor.FileResponseExtractor;
 import org.springframework.http.HttpMethod;
@@ -22,7 +22,7 @@ public class SingleDown {
     private static final String testUrl = "https://image.baidu.com/search/down?url=https://tvax2.sinaimg.cn/large/006BNqYCly1hgfpxtpnz4j30j6159tfv.jpg";
     private static final String filePath = "D:\\Data\\tmp2.png";
     @Resource
-    private RestTemplateBuilder restTemplateBuilder;
+    private MineRestTemplateBuilder restTemplateBuilder;
     public void downloadToFile(String url, String filePath) throws IOException {
         long start = System.currentTimeMillis();
         RestTemplate restTemplate = restTemplateBuilder.build();

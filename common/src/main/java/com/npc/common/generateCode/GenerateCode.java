@@ -1,9 +1,11 @@
 package com.npc.common.generateCode;
 
 import com.baomidou.mybatisplus.annotation.FieldFill;
+import com.baomidou.mybatisplus.generator.AutoGenerator;
 import com.baomidou.mybatisplus.generator.FastAutoGenerator;
 import com.baomidou.mybatisplus.generator.config.DataSourceConfig;
 import com.baomidou.mybatisplus.generator.config.OutputFile;
+import com.baomidou.mybatisplus.generator.config.PackageConfig;
 import com.baomidou.mybatisplus.generator.fill.Column;
 
 import java.util.*;
@@ -49,17 +51,24 @@ public class GenerateCode {
      * 快速生成
      */
     public static void fastGenerate() {
+        // 获取项目路径 这里只会获取到idea工作目录 例 C:\private-idea-workspace\5-21
+//        String projectPath = System.getProperty("user.dir");
+//        String filePath = "\\common\\src\\main\\java\\com\\npc\\common\\modular";
+        String projectPath = "D:\\Code";
+        String filePath = "\\Generate";
+        String moduleName = "todo";
         FastAutoGenerator.create("jdbc:mysql://localhost:3306/yf?autoReconnect=true&useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=CONVERT_TO_NULL&useSSL=false&serverTimezone=CTT", "root", "root")
                 .globalConfig(builder -> {
                     builder.author("yangfei") // 设置作者
 //                            .enableSwagger() // 开启 swagger 模式
                             .fileOverride() // 覆盖已生成文件
-                            .outputDir("D://Code//Generate"); // 指定输出目录
+                            .outputDir(projectPath + filePath); // 指定输出目录
                 })
                 .packageConfig(builder -> {
                     builder.parent("com.npc.common.modular") // 设置父包名
-                            .moduleName("money") // 设置父包模块名
-                            .pathInfo(Collections.singletonMap(OutputFile.xml, "D://Code//Generate")); // 设置mapperXml生成路径
+//                    builder.parent("com.npc.auth.admin") // 设置父包名
+                            .moduleName(moduleName) // 设置父包模块名
+                            .pathInfo(Collections.singletonMap(OutputFile.xml, projectPath + filePath + "\\" + moduleName + "\\mapper\\mapping")); // 设置mapperXml生成路径
                 })
                 .templateConfig(builder -> {
                     builder.entity("templates/entity.java.vm");
@@ -74,7 +83,7 @@ public class GenerateCode {
                                     .enableRestStyle();
                     builder.entityBuilder().enableLombok(); //使用lombok
                     builder.controllerBuilder().enableHyphenStyle().enableRestStyle(); // 开启RestController
-                    builder.addInclude("t_money") // 设置需要生成的表名
+                    builder.addInclude("t_todo") // 设置需要生成的表名
                             .addTablePrefix("c_","t_"); // 设置过滤表前缀
                 })
                 // 自定义配置：用来生成前端部分的Vue页面
@@ -82,6 +91,7 @@ public class GenerateCode {
                     Map<String, String> customFile = new HashMap<>();
                     // 根据指定的模板，生成对应的文件
                     customFile.put("a.vue", "/templates/a.vue.vm");
+                    customFile.put(moduleName + "Dao.java", "/templates/entityDao.java.vm");
                     consumer.customFile(customFile);
                 })
 //                .templateEngine(new FreemarkerTemplateEngine()) // 使用Freemarker引擎模板，默认的是Velocity引擎模板

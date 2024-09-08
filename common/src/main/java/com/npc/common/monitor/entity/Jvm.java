@@ -2,7 +2,7 @@ package com.npc.common.monitor.entity;
 
 import java.lang.management.ManagementFactory;
 import com.npc.core.utils.Arith;
-import com.npc.core.utils.DateUtils;
+import com.npc.utils.DateUtils;
 
 /**
  * JVM相关信息
