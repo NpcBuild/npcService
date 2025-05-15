@@ -2,6 +2,8 @@ package com.npc.common.modular.plan.controller;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.npc.common.modular.plan.dto.PlanDto;
 import com.npc.common.modular.tags.entity.Tags;
+import com.npc.common.todo.entity.Todo;
+import com.npc.common.todo.service.ITodoService;
 import com.npc.core.ServerResponseEnum;
 import com.npc.core.ServerResponseVO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +18,7 @@ import com.npc.common.modular.plan.service.IPlanService;
 import com.npc.common.modular.plan.entity.Plan;
 
 import java.util.Arrays;
+import java.util.List;
 
 /**
  * <p>
@@ -33,6 +36,8 @@ public class PlanController {
 
     @Autowired
     public IPlanService planService;
+    @Autowired
+    private ITodoService todoService;
 
 
     /**
@@ -105,5 +110,32 @@ public class PlanController {
         QueryWrapper<Plan> queryWrapper = new QueryWrapper(planDto);
         Page<Plan> pages = planService.page(page, queryWrapper);
         return ServerResponseVO.success(pages);
+    }
+
+    /**
+     * 查询计划根节点信息
+     */
+    @RequestMapping(value = "/getPlanRoot", method = RequestMethod.GET)
+    public ServerResponseVO<?> getPlanRoot() {
+        List<Plan> plans = planService.getPlanRoot();
+        return ServerResponseVO.success(plans);
+    }
+
+    /**
+     * 新增根节点
+     */
+    @RequestMapping(value = "/addPlanRoot", method = RequestMethod.POST)
+    public ServerResponseVO<?> addPlanRoot(@RequestBody Plan plan) {
+        planService.save(plan);
+        return ServerResponseVO.success(planService.getPlanRoot());
+    }
+
+    /**
+     * 查询节点下的任务列表
+     */
+    @RequestMapping(value = "/getPlanTaskList", method = RequestMethod.GET)
+    public ServerResponseVO<?> getPlanTaskList(@RequestParam("id") Integer id) {
+        List<Todo> todoList = todoService.list(new QueryWrapper<Todo>().eq("plan_id", id));
+        return ServerResponseVO.success(todoList);
     }
 }

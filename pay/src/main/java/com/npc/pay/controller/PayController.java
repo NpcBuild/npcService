@@ -25,9 +25,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * @author NPC
- * @description
- * @create 2024/5/17 9:16
+ * @ author NPC
+ * @ description
+ * @ create 2024/5/17 9:16
  */
 @Slf4j
 @RestController
@@ -64,8 +64,8 @@ public class PayController {
 
     /**
      * 微信native下单,返回支付二维码
-     * @param orderNumber
-     * @return
+     * @param orderNumber 下单编号
+     * @return 支付二维码
      */
     @GetMapping("/nativePay")
     public Object nativePay(@RequestParam("orderNumber") String orderNumber) {

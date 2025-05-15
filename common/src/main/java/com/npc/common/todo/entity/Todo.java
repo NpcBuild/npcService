@@ -59,6 +59,8 @@ public class Todo implements Serializable {
      */
     private Integer quartzId;
 
+    private Integer planId;
+
     /**
      * 问题表主键
      */

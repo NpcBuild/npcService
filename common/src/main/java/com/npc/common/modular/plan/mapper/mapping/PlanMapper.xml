@@ -58,4 +58,13 @@
         </where>
     </select>
 
+    <select id="getPlanRoot" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_plan
+        <where>
+            t_plan.is_delete = 0
+            and t_plan.parent_id is null
+        </where>
+    </select>
 </mapper>

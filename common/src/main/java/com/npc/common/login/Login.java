@@ -124,6 +124,23 @@ public class Login {
     }
 
     /**
+     * 判断token是否有效
+     * @param token 令牌
+     * @param response 响应
+     * @return 判断结果
+     */
+    @PostMapping("/isValidToken/{token}")
+    public ServerResponseVO isValidToken(@PathVariable("token") String token, HttpServletResponse response) {
+        if (jwtTokenUtil.isTokenExpired(token)) {
+            return ServerResponseVO.error(ServerResponseEnum.TOKEN_INVALID);
+        }
+        if (jwtTokenUtil.checkBlacklist(token)) {
+            return ServerResponseVO.error(ServerResponseEnum.TOKEN_INVALID);
+        }
+        return ServerResponseVO.success(true);
+    }
+
+    /**
      * 刷新令牌
      * 黑名单的清理： 你需要定期清理黑名单中过期的令牌，以防止黑名单无限增长，导致内存或存储问题。你可以使用一个定时任务来清理过期的令牌。
      * 并发问题： 如果你的应用程序是多线程的，确保在多个线程中对黑名单进行访问时没有竞争条件，否则可能会导致问题。
