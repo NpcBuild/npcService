@@ -153,14 +153,17 @@ public class TodoController {
      */
     @PostMapping("/add")
     public ServerResponseVO addTodo(@RequestBody QuartzJobVO jobVO,String todoName) {
-        Integer quartzId = Integer.valueOf(quartzJobService.addJob(jobVO).getData().toString());
+        Integer quartzId = null;
+        if (!ObjectUtils.isEmpty(jobVO)) {
+            quartzId = Integer.valueOf(quartzJobService.addJob(jobVO).getData().toString());
+        }
         Todo todo = new Todo();
         todo.setTodoName(todoName);
         todo.setQuartzId(quartzId);
         todo.setStatus("1");
         todo.setStartTime(LocalDateTime.now());
         todoService.save(todo);
-        return ServerResponseVO.success();
+        return ServerResponseVO.success(todo);
     }
 
     /**
