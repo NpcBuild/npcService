@@ -2,6 +2,7 @@ package com.npc.common.todo.controller;
 
 import cn.hutool.core.bean.BeanUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.npc.common.modular.quartzJob.entity.QuartzJob;
 import com.npc.common.modular.quartzJob.service.IQuartzJobService;
@@ -236,5 +237,25 @@ public class TodoController {
             num = res;
         }
         return ServerResponseVO.success(num);
+    }
+
+    /**
+     * 切换任务状态
+     */
+    @PostMapping("changeStatus")
+    public Boolean changeStatus(@RequestBody TodoVO todoVO) {
+        UpdateWrapper<Todo> updateWrapper = new UpdateWrapper<Todo>();
+        updateWrapper.eq("id", todoVO.getId());
+        updateWrapper.set("status", todoVO.getStatus());
+        return todoService.update(updateWrapper);
+    }
+
+    /**
+     * 删除任务
+     */
+    @PostMapping("delete")
+    public ServerResponseVO<?> delete(Integer id) {
+        boolean b = todoService.removeById(id);
+        return ServerResponseVO.success(b);
     }
 }

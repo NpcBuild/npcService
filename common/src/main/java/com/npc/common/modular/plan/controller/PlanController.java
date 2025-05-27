@@ -17,6 +17,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.npc.common.modular.plan.service.IPlanService;
 import com.npc.common.modular.plan.entity.Plan;
 
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 
@@ -144,6 +145,8 @@ public class PlanController {
      */
     @PostMapping("/addPlanTask")
     public ServerResponseVO<?> addPlanTask(@RequestBody Todo todo) {
+        todo.setStatus("1");
+        todo.setStartTime(LocalDateTime.now());
         todoService.save(todo);
         return ServerResponseVO.success();
     }
