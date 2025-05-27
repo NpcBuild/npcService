@@ -138,4 +138,13 @@ public class PlanController {
         List<Todo> todoList = todoService.list(new QueryWrapper<Todo>().eq("plan_id", id));
         return ServerResponseVO.success(todoList);
     }
+
+    /**
+     * 添加任务到指定节点中
+     */
+    @PostMapping("/addPlanTask")
+    public ServerResponseVO<?> addPlanTask(@RequestBody Todo todo) {
+        todoService.save(todo);
+        return ServerResponseVO.success();
+    }
 }
