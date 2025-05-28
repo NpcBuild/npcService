@@ -243,11 +243,11 @@ public class TodoController {
      * 切换任务状态
      */
     @PostMapping("changeStatus")
-    public Boolean changeStatus(@RequestBody TodoVO todoVO) {
+    public ServerResponseVO<?> changeStatus(@RequestBody TodoVO todoVO) {
         UpdateWrapper<Todo> updateWrapper = new UpdateWrapper<Todo>();
         updateWrapper.eq("id", todoVO.getId());
         updateWrapper.set("status", todoVO.getStatus());
-        return todoService.update(updateWrapper);
+        return ServerResponseVO.success(todoService.update(updateWrapper));
     }
 
     /**
