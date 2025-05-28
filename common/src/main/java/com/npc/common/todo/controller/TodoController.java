@@ -254,8 +254,8 @@ public class TodoController {
      * 删除任务
      */
     @PostMapping("delete")
-    public ServerResponseVO<?> delete(Integer id) {
-        boolean b = todoService.removeById(id);
+    public ServerResponseVO<?> delete(@RequestBody TodoVO todoVO) {
+        boolean b = todoService.removeById(todoVO.getId());
         return ServerResponseVO.success(b);
     }
 }
