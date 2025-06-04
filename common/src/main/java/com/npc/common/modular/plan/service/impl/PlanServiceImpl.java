@@ -34,4 +34,13 @@ public class PlanServiceImpl extends ServiceImpl<PlanMapper, Plan> implements IP
         List<Plan> plans = baseMapper.getPlanRoot();
         return plans;
     }
+
+    /**
+     * 更新节点位置等信息
+     * @param planList
+     */
+    @Override
+    public void updatePlanPosition(List<Plan> planList) {
+        baseMapper.updatePlanPosition(planList);
+    }
 }

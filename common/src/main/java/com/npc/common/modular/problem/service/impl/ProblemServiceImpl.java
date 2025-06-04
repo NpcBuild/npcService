@@ -1,5 +1,6 @@
 package com.npc.common.modular.problem.service.impl;
 
+import cn.hutool.core.bean.BeanUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -10,12 +11,19 @@ import com.npc.common.modular.problem.entity.Problem;
 import com.npc.common.modular.problem.mapper.ProblemMapper;
 import com.npc.common.modular.problem.service.IProblemService;
 import com.npc.common.modular.problem.vo.ProblemVO;
+import com.npc.common.modular.tags.entity.Tags;
+import com.npc.common.modular.tags.mapper.TagsMapper;
+import com.npc.common.modular.tags.service.ITagsService;
 import com.npc.core.utils.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ObjectUtils;
 
-import java.util.List;
+import javax.annotation.PostConstruct;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -28,7 +36,19 @@ import java.util.List;
 @Service
 public class ProblemServiceImpl extends ServiceImpl<ProblemMapper, Problem> implements IProblemService {
 
+    @Autowired
+    private ITagsService tagsService;
+
     private static final Logger logger = LoggerFactory.getLogger(ProblemServiceImpl.class);
+
+    private static Map<Integer, String> TAG_MAP = new HashMap<>();
+
+    @PostConstruct
+    public void loadTagsFromDB() {
+        List<Tags> list = tagsService.list();
+        TAG_MAP = list.stream()
+                .collect(Collectors.toMap(Tags::getId, Tags::getName));
+    }
 
     /**获取列表分页*/
     @Override
@@ -52,5 +72,29 @@ public class ProblemServiceImpl extends ServiceImpl<ProblemMapper, Problem> impl
     public List<Problem> search(ProblemDto problem) {
         List<Problem> problemList = this.baseMapper.search(problem);
         return problemList;
+    }
+
+    @Override
+    public ProblemVO translate(Problem record) {
+        ProblemVO vo = new ProblemVO();
+        BeanUtil.copyProperties(record, vo);
+        if (!ObjectUtils.isEmpty(record.getTags())) {
+            String[] split = record.getTags().split(",");
+            List<String> tagNameList = new ArrayList<>();
+            for (String tag : split) {
+                tagNameList.add(TAG_MAP.get(Integer.valueOf(tag)));
+            }
+            vo.setTagName(String.join(",", tagNameList));
+        }
+        return vo;
+    }
+
+    @Override
+    public List<ProblemVO> translate(List<Problem> records) {
+        List<ProblemVO> res = new ArrayList<>();
+        for (Problem record : records) {
+            res.add(translate(record));
+        }
+        return res;
     }
 }

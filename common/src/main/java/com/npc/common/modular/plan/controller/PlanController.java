@@ -150,4 +150,13 @@ public class PlanController {
         todoService.save(todo);
         return ServerResponseVO.success();
     }
+
+    /**
+     * 拖动节点 更新节点位置
+     */
+    @PostMapping("/updatePlanPosition")
+    public ServerResponseVO<?> updatePlanPosition(@RequestBody List<Plan> planList) {
+        planService.updatePlanPosition(planList);
+        return ServerResponseVO.success();
+    }
 }

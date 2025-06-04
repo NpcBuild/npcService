@@ -54,7 +54,8 @@ public class ProblemVO extends PageSearch {
      * 标签，用于关键词标记
      */
     private String tags;
-    private String tagName; // 标签名
+    // 标签名
+    private String tagName;
 
     /**
      * 问题状态（未解决、已解决等）

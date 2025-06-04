@@ -27,4 +27,6 @@ public interface PlanMapper extends BaseMapper<Plan> {
     List<Plan> getPlanListByColList(@Param("column") String column, @Param("ids") List<Integer> ids);
 
     List<Plan> getPlanRoot();
+
+    void updatePlanPosition(List<Plan> planList);
 }

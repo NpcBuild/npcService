@@ -247,7 +247,8 @@ public class TodoController {
         UpdateWrapper<Todo> updateWrapper = new UpdateWrapper<Todo>();
         updateWrapper.eq("id", todoVO.getId());
         updateWrapper.set("status", todoVO.getStatus());
-        return ServerResponseVO.success(todoService.update(updateWrapper));
+        boolean update = todoService.update(updateWrapper);
+        return ServerResponseVO.success(todoService.getById(todoVO.getId()));
     }
 
     /**

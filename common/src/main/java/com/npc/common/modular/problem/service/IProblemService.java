@@ -23,4 +23,7 @@ public interface IProblemService extends IService<Problem> {
     boolean updateSolutionById(Problem problem);
 
     List<Problem> search(ProblemDto problem);
+
+    ProblemVO translate(Problem record);
+    List<ProblemVO> translate(List<Problem> records);
 }

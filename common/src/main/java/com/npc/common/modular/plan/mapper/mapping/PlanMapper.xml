@@ -67,4 +67,13 @@
             and t_plan.parent_id is null
         </where>
     </select>
+
+    <update id="updatePlanPosition">
+        <foreach collection="list" item="plan" separator=";">
+            UPDATE t_plan
+            SET parent_id = #{plan.parentId},
+            sort = #{plan.sort}
+            WHERE id = #{plan.id}
+        </foreach>
+    </update>
 </mapper>
