@@ -297,11 +297,10 @@ public class ProblemController {
     public ServerResponseVO<?> getProblemList(@Validated ProblemVO problemVO) {
         IPage<Problem> page = problemService.selectListByPage(problemVO);
         List<Problem> records = page.getRecords();
-        List<ProblemVO> translate = problemService.translate(records);
         IPage<ProblemVO> res = new Page<>();
         res.setCurrent(page.getCurrent());
         res.setPages(page.getPages());
-        res.setRecords();
+        res.setRecords(problemService.translate(records));
         res.setSize(page.getSize());
         res.setTotal(page.getTotal());
         return ServerResponseVO.success(res);
