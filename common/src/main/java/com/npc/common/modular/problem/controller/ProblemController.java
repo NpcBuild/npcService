@@ -284,7 +284,8 @@ public class ProblemController {
     @GetMapping("/search")
     public ServerResponseVO<?> search(ProblemDto problem) {
         List<Problem> problems = problemService.search(problem);
-        return ServerResponseVO.success(problems);
+        List<ProblemVO> translate = problemService.translate(problems);
+        return ServerResponseVO.success(translate);
     }
 
 

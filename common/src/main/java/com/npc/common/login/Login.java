@@ -112,6 +112,17 @@ public class Login {
         }
     }
 
+    /**
+     * 通过token获取用户信息
+     */
+    @GetMapping("/user/info")
+    public ServerResponseVO getUserInfoByToken(HttpServletRequest request) {
+        String token = request.getHeader(jwtTokenUtil.header);
+        UserTokenInfo userInfoToken = jwtTokenUtil.getUserInfoToken(token);
+        User user = userService.getById(userInfoToken.getUserId());
+        return ServerResponseVO.success(user);
+    }
+
     @PostMapping("/regist")
     public ServerResponseVO registe(@RequestBody UserParame user){
         UserResult existUser = userService.findByAccount(user.getAccount());

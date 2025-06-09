@@ -49,8 +49,8 @@ public class PlanController {
     @RequestMapping(value = "/save", method = RequestMethod.POST)
     public ServerResponseVO<?> save(@RequestBody @Validated Plan plan) {
         try {
-            Boolean obj = planService.saveOrUpdate(plan);
-            return ServerResponseVO.success(obj);
+            planService.saveOrUpdate(plan);
+            return ServerResponseVO.success(plan);
         } catch (Exception e) {
             e.printStackTrace();
             return ServerResponseVO.error(ServerResponseEnum.SAVE_FAILED);
