@@ -26,4 +26,5 @@ public interface SettingMapper extends BaseMapper<Setting> {
      */
     List<Setting> getSettingListByColList(@Param("column") String column, @Param("ids") List<Integer> ids);
 
+    boolean updateScore(@Param("id") String id,@Param("score") int score);
 }

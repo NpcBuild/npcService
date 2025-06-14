@@ -50,14 +50,11 @@ public class AlarmAutoConfiguration {
     static class WorkWechatWarnServiceMethod {
 
         @Bean
-        @ConditionalOnMissingBean(MailWarnService.class)
+        @ConditionalOnMissingBean(WorkWeXinWarnService.class)
         public WorkWeXinWarnService workWechatWarnService(final WorkWeXinConfig workWeXinConfig) {
-            return new WorkWeXinWarnService(workWeXinConfig.getKey(), workWeXinConfig.getToUser());
-        }
-
-        @Autowired
-        void setDataChangedListener(WorkWeXinWarnService workWeXinWarnService) {
+            WorkWeXinWarnService workWeXinWarnService = new WorkWeXinWarnService(workWeXinConfig.getKey(), workWeXinConfig.getToUser());
             AlarmFactoryExecute.addAlarmLogWarnService(workWeXinWarnService);
+            return workWeXinWarnService;
         }
     }
 

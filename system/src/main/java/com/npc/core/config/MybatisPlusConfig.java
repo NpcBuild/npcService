@@ -1,10 +1,16 @@
 package com.npc.core.config;
 
 import com.baomidou.mybatisplus.annotation.DbType;
+import com.baomidou.mybatisplus.autoconfigure.ConfigurationCustomizer;
 import com.baomidou.mybatisplus.extension.plugins.MybatisPlusInterceptor;
+import com.baomidou.mybatisplus.extension.plugins.inner.InnerInterceptor;
 import com.baomidou.mybatisplus.extension.plugins.inner.PaginationInnerInterceptor;
+import org.apache.ibatis.plugin.Interceptor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author NPC
@@ -21,10 +27,17 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class MybatisPlusConfig {
     @Bean
-    public MybatisPlusInterceptor mybatisPlusInterceptor() {
+    public MyBatisPlusRandomInterceptor myBatisPlusRandomInterceptor() {
+        return new MyBatisPlusRandomInterceptor();
+    }
+
+    @Bean
+    public MybatisPlusInterceptor mybatisPlusInterceptor(MyBatisPlusRandomInterceptor randomInterceptor) {
         MybatisPlusInterceptor interceptor = new MybatisPlusInterceptor();
         // 分页插件，数据库配置根据数据库选择
         interceptor.addInnerInterceptor(new PaginationInnerInterceptor(DbType.MYSQL));
+        // 自动检测random
+        interceptor.addInnerInterceptor(randomInterceptor); // ✅ 正确传入 InnerInterceptor
         return interceptor;
     }
 }

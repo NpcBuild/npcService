@@ -6,11 +6,13 @@ import com.baomidou.mybatisplus.core.toolkit.Constants;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.npc.common.todo.entity.Todo;
 import com.npc.common.todo.vo.TodoVO;
+import com.npc.common.todo.vo.TodoViewVO;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Mapper;
 
 
 import java.sql.Wrapper;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -23,7 +25,7 @@ import java.util.List;
  */
 @Mapper
 public interface TodoMapper extends BaseMapper<Todo> {
-    
+
 	/**
      * 通过 任务清单表 的某一列, 查询在该列所有包含Ids 的数据
      * @param column 列名
@@ -32,6 +34,6 @@ public interface TodoMapper extends BaseMapper<Todo> {
      */
     List<Todo> getTodoListByColList(@Param("column") String column, @Param("ids") List<Integer> ids);
 
-    IPage<Todo> getList(Page<Todo> page, @Param("vo") TodoVO vo);
+    IPage<TodoViewVO> getList(Page<TodoViewVO> page, @Param("vo") TodoVO vo);
 
 }

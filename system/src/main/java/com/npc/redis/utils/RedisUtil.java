@@ -45,6 +45,56 @@ public class RedisUtil {
         return stringRedisTemplate.hasKey(key);
     }
 
+
+    /**
+     * 增加zset
+     * @param key
+     * @param value
+     * @param score
+     */
+    public void addToZset(String key, String value, double score) {
+        stringRedisTemplate.opsForZSet().add(key, value, score);
+    }
+
+    /**
+     * 从zset中删除
+     * @param key
+     * @param value
+     */
+    public void removeFromZset(String key, String value) {
+        stringRedisTemplate.opsForZSet().remove(key, value);
+    }
+
+    /**
+     * 获取zset的排名
+     * @param key
+     * @param value
+     * @return
+     */
+    public Long getZset(String key, String value) {
+        return stringRedisTemplate.opsForZSet().reverseRank(key, value);
+    }
+
+    /**
+     * 获取zset的分数
+     * @param key
+     * @param value
+     * @return
+     */
+    public Double getScore(String key, String value) {
+        return stringRedisTemplate.opsForZSet().score(key, value);
+    }
+
+    /**
+     * 获取zset的前n个元素
+     * @param key
+     * @param count
+     * @return
+     */
+    public Iterable<String> getTopZset(String key, int count) {
+        return stringRedisTemplate.opsForZSet().reverseRange(key, 0, count - 1);
+    }
+
     // 执行Redis命令，并返回执行结果
     public Long execute(RedisScript<Long> script, List<String> keys, String... args) {
         JedisCluster jedis = null;

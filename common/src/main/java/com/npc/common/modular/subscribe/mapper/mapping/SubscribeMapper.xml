@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.npc.common.modular.subscribe.mapper.SubscribeMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.npc.common.modular.subscribe.entity.Subscribe">
+            <result column="id" property="id"/>
+            <result column="sub_content" property="subContent"/>
+            <result column="user_id" property="userId"/>
+            <result column="payment_date" property="paymentDate"/>
+            <result column="payment_cycle" property="paymentCycle"/>
+            <result column="pay_cron" property="payCron"/>
+            <result column="sub_amount" property="subAmount"/>
+            <result column="category" property="category"/>
+            <result column="start_date" property="startDate"/>
+            <result column="end_date" property="endDate"/>
+            <result column="sub_status" property="subStatus"/>
+            <result column="notes" property="notes"/>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+            id, sub_content, user_id, payment_date, payment_cycle, pay_cron, sub_amount, category, start_date, end_date, sub_status, notes
+    </sql>
+
+    <sql id="commonConditionSQL">
+        <where>
+            t_subscribe.is_delete = 0
+                <if test="id != '' and id != null">
+                    and t_subscribe.id = #{id}
+                </if>
+                <if test="subContent != '' and subContent != null">
+                    and t_subscribe.sub_content = #{subContent}
+                </if>
+                <if test="userId != '' and userId != null">
+                    and t_subscribe.user_id = #{userId}
+                </if>
+                <if test="paymentDate != '' and paymentDate != null">
+                    and t_subscribe.payment_date = #{paymentDate}
+                </if>
+                <if test="paymentCycle != '' and paymentCycle != null">
+                    and t_subscribe.payment_cycle = #{paymentCycle}
+                </if>
+                <if test="payCron != '' and payCron != null">
+                    and t_subscribe.pay_cron = #{payCron}
+                </if>
+                <if test="subAmount != '' and subAmount != null">
+                    and t_subscribe.sub_amount = #{subAmount}
+                </if>
+                <if test="category != '' and category != null">
+                    and t_subscribe.category = #{category}
+                </if>
+                <if test="startDate != '' and startDate != null">
+                    and t_subscribe.start_date = #{startDate}
+                </if>
+                <if test="endDate != '' and endDate != null">
+                    and t_subscribe.end_date = #{endDate}
+                </if>
+                <if test="subStatus != '' and subStatus != null">
+                    and t_subscribe.sub_status = #{subStatus}
+                </if>
+                <if test="notes != '' and notes != null">
+                    and t_subscribe.notes = #{notes}
+                </if>
+        </where>
+    </sql>
+
+    <select id="getSubscribeListByColList" resultType="com.npc.common.modular.subscribe.entity.Subscribe">
+        select
+        <include refid="Base_Column_List"/>
+        from t_subscribe
+        <where>
+            t_subscribe.is_delete = 0
+            and ${column} in
+            <foreach collection="ids" item="id" separator="," open="(" close=")">
+                ${id}
+            </foreach>
+        </where>
+    </select>
+    <select id="getEnableList" resultType="com.npc.common.modular.subscribe.entity.Subscribe">
+        SELECT <include refid="Base_Column_List"/> FROM t_subscribe
+        WHERE (end_date is null or end_date >= #{endTime})
+          and sub_status = 1
+    </select>
+
+</mapper>

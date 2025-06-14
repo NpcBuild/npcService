@@ -55,6 +55,16 @@ public class DailySchedule implements Serializable {
      */
     private LocalTime endTime;
 
+    /**
+     * 计划开始时动作
+     */
+    private String startTodo;
+
+    /**
+     * 计划结束时动作
+     */
+    private String endTodo;
+
 
 
     /**

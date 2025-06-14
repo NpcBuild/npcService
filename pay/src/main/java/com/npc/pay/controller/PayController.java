@@ -1,12 +1,15 @@
 package com.npc.pay.controller;
 
 import com.alibaba.fastjson.JSONObject;
+import com.alipay.api.AlipayApiException;
+import com.alipay.api.internal.util.AlipaySignature;
 import com.github.binarywang.wxpay.constant.WxPayConstants;
 import com.github.wxpay.sdk.WXPayUtil;
 import com.npc.pay.dto.WxPayDTO;
 import com.npc.pay.payment.AliPayStrategy;
 import com.npc.pay.payment.PaymentContext;
 import com.npc.pay.payment.WechatPayStrategy;
+import com.npc.pay.properties.AliPayProperties;
 import com.npc.pay.properties.WxPayProperties;
 import com.npc.pay.service.PayService;
 import com.npc.utils.DateUtils;
@@ -19,6 +22,7 @@ import javax.annotation.Resource;
 import javax.servlet.ServletInputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -38,7 +42,7 @@ public class PayController {
     private PaymentContext paymentContext;
 
     @GetMapping("")
-    public String pay(@RequestParam double amount, @RequestParam String method) {
+    public String pay(@RequestParam double amount, @RequestParam String method, HttpServletResponse httpServletResponse) throws IOException {
         // 根据支付方式选择具体的支付策略
         switch (method) {
             case "alipay":
@@ -53,7 +57,7 @@ public class PayController {
         }
 
 //        执行支付
-        paymentContext.executePayment(amount);
+        paymentContext.executePayment(amount, httpServletResponse);
         return "Payment successful";
     }
 
@@ -167,6 +171,95 @@ public class PayController {
      */
     @PostMapping("/wxCallback")
     public Object wxCallback(HttpServletRequest request, HttpServletResponse response) {
+        ServletInputStream inputStream = null;
+        try {
+            inputStream = request.getInputStream();
+            String notifyXml = StreamUtils.inputStream2String(inputStream, "utf-8");
+            log.info(notifyXml);
+            // 解析返回结果
+            Map<String, String> notifyMap = WXPayUtil.xmlToMap(notifyXml);
+            String jsonString = JSONObject.toJSONString(notifyMap);
+            log.info(jsonString);
+            // 判断支付是否成功
+            if ("SUCCESS".equals(notifyMap.get("result_code"))) {
+                //todo 修改订单状态
+
+                // 支付成功：给微信发送我已接收通知的响应 创建响应对象
+                Map<String, String> returnMap = new HashMap<>();
+                returnMap.put("return_code", "SUCCESS");
+                returnMap.put("return_msg", "OK");
+                String returnXml = WXPayUtil.mapToXml(returnMap);
+                response.setContentType("text/xml");
+                log.info("支付成功");
+                return returnXml;
+            }else {
+                //保存回调信息,方便排除问题
+            }
+            // 创建响应对象：微信接收到校验失败的结果后，会反复的调用当前回调函数
+            Map<String, String> returnMap = new HashMap<>();
+            returnMap.put("return_code", "FAIL");
+            returnMap.put("return_msg", "");
+            String returnXml = WXPayUtil.mapToXml(returnMap);
+            response.setContentType("text/xml");
+            log.info("校验失败");
+            return returnXml;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+    @Resource
+    private AliPayProperties aliPayProperties;
+
+    /**
+     * 支付宝支付回调
+     * @param request
+     * @param response
+     * @return
+     */
+    @PostMapping("/aliCallback")
+    public Object aliCallback(HttpServletRequest request, HttpServletResponse response) throws AlipayApiException {
+        // 判断返回状态trade_status 支付成功是TRADE_SUCCESS
+        if ("TRADE_SUCCESS".equals(request.getParameter("trade_status"))) {
+            System.out.println("============支付宝异步回调===============");
+            Map<String, String> params = new HashMap<>();
+            // 返回的所有元素 其中有gmt_create=2024-03-16 22:26:17, charset=utf-8, gmt_payment=2024-03-16 22:26:17,
+            // notify_time=2024-03-16 22:26:17, subject=商品描述
+            Map<String, String[]> requestMap = request.getParameterMap();
+            for (String name : requestMap.keySet()) {
+                // servlet写法，通过key获取value
+                params.put(name, request.getParameter(name));
+            }
+            System.out.println(params);
+            System.out.println(params.size());
+            String tradeNo = params.get("out_trade_no");
+            String gmtPayment = params.get("gmt_payment");
+            // 支付宝验签
+            // 这里必须初始化不然报错
+            boolean signVerified = AlipaySignature.rsaCheckV1(params, aliPayProperties.getAlipayPublicKey(), "utf-8", "RSA2");
+            if (signVerified) {
+                // 验签成功
+                System.out.println("交易名称：" + params.get("subject"));
+                System.out.println("交易状态：" + params.get("trade_status"));
+                System.out.println("支付宝交易凭证号：" + params.get("trade_no"));
+                System.out.println("商户订单号：" + params.get("out_trade_no"));
+                System.out.println("交易金额：" + params.get("total_amount"));
+                System.out.println("买家在支付宝唯一id：" + params.get("buyer_id"));
+                System.out.println("买家付款时间：" + params.get("gmt_payment"));
+                System.out.println("买家付款金额：" + params.get("buyer_pay_amount"));
+                // 保存订单信息
+                // 保存支付日志
+                // 修改订单状态
+//                ShopOrder
+            }
+            // 支付成功：给支付宝发送我已接收通知的响应
+            return "success";
+        }
+
+
         ServletInputStream inputStream = null;
         try {
             inputStream = request.getInputStream();

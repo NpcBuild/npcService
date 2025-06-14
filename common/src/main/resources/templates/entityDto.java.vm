@@ -16,7 +16,7 @@ import lombok.Data;
  * @since ${date}
  */
 @Data
-public class ${entity} extends PageSearch {
+public class ${entity}Dto extends PageSearch {
 ## ----------  BEGIN 字段循环遍历  ----------
 #foreach($field in ${table.fields})
 

@@ -1,3 +1,5 @@
+EnvironmentPostProcessor 接口允许你在 Spring 应用上下文创建之前对环境配置进行修改
+
 # 限流（优雅切换）
 RedisLimitAop: 登录限流
 LimitAspect: 缓存限流

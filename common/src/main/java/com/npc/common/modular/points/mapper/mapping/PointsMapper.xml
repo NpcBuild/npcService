@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.npc.common.modular.points.mapper.PointsMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.npc.common.modular.points.entity.Points">
+            <result column="id" property="id"/>
+            <result column="user_id" property="userId"/>
+            <result column="total_points" property="totalPoints"/>
+            <result column="updated_at" property="updatedAt"/>
+            <result column="created_at" property="createdAt"/>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+            id, user_id, total_points, updated_at, created_at
+    </sql>
+
+    <sql id="commonConditionSQL">
+        <where>
+            points.is_delete = 0
+                <if test="id != '' and id != null">
+                    and points.id = #{id}
+                </if>
+                <if test="userId != '' and userId != null">
+                    and points.user_id = #{userId}
+                </if>
+                <if test="totalPoints != '' and totalPoints != null">
+                    and points.total_points = #{totalPoints}
+                </if>
+                <if test="updatedAt != '' and updatedAt != null">
+                    and points.updated_at = #{updatedAt}
+                </if>
+                <if test="createdAt != '' and createdAt != null">
+                    and points.created_at = #{createdAt}
+                </if>
+        </where>
+    </sql>
+
+    <select id="getPointsListByColList" resultType="com.npc.common.modular.points.entity.Points">
+        select
+        <include refid="Base_Column_List"/>
+        from points
+        <where>
+            points.is_delete = 0
+            and ${column} in
+            <foreach collection="ids" item="id" separator="," open="(" close=")">
+                ${id}
+            </foreach>
+        </where>
+    </select>
+    <select id="getMyPoints" resultType="com.npc.common.modular.points.entity.Points">
+        select
+        <include refid="Base_Column_List"/>
+        from points
+        <where>
+            user_id = #{userId}
+        </where>
+    </select>
+
+</mapper>

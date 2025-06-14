@@ -34,5 +34,6 @@ public interface DailyScheduleMapper extends BaseMapper<DailySchedule> {
     List<DailySchedule> getDailyScheduleListByColList(@Param("column") String column, @Param("ids") List<Integer> ids);
 
     IPage<DailyScheduleVO> getList(Page<DailySchedule> page, @Param("dto") DailyScheduleDto dto);
+    List<DailyScheduleVO> getList(@Param("dto") DailyScheduleDto dto);
 
 }

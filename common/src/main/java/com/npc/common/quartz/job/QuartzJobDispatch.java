@@ -40,7 +40,6 @@ public class QuartzJobDispatch extends QuartzJobBean {
 
     @Override
     protected void executeInternal(JobExecutionContext context) throws JobExecutionException {
-        log.info("幼年是盼盼，青年是晶晶，中年是冰墩墩，生活见好逐渐发福");
         // 发送消息提醒做任务
         String to = "1623285565@qq.com";
         String subject = "todo清单";

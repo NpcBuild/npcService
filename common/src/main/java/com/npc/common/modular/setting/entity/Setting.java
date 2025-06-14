@@ -36,4 +36,9 @@ public class Setting implements Serializable {
      */
     private Boolean voiceAssistant;
 
+    /**
+     * 得分
+     */
+    private Boolean score;
+
 }

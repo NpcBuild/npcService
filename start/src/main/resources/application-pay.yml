@@ -5,3 +5,9 @@ wx:
     mchId: 456 #微信支付商户号
     mchKey: 789 #微信支付商户密钥
     notifyUrl: http://8.130.135.74:8053/api/order/student/pay/wxCallback #支付回调地址
+alipay:
+  pay:
+    appId:  9021000144617577
+    appPrivateKey: 123
+    alipayPublicKey: 456 #支付宝公钥
+    notifyUrl: /alipay/notify #支付回调地址

@@ -2,6 +2,7 @@ package com.npc.common.modular.dailySchedule.dto;
 
 import com.npc.core.PageSearch;
 import lombok.Data;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -14,6 +15,7 @@ import java.time.LocalTime;
 @Data
 public class DailyScheduleDto extends PageSearch {
     private Integer id;
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate date; // 日期
     private LocalTime startTime; // 计划开始时间
     private LocalTime endTime; // 计划结束时间
@@ -36,7 +38,9 @@ public class DailyScheduleDto extends PageSearch {
     private String tags; // 标签
     private String linkedTasks; // 关联任务信息
     private String progressNotes; // 任务进展备注
+    private String isDelete; // 逻辑删除
 
     private String startTimeCN;
     private String endTimeCN;
+    private String dateTimeIn; // 查询-在时间段内
 }

@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.npc.common.modular.holiday.mapper.HolidayMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.npc.common.modular.holiday.entity.Holiday">
+            <result column="date" property="date"/>
+            <result column="name" property="name"/>
+            <result column="holiday" property="holiday"/>
+            <result column="wage" property="wage"/>
+            <result column="after" property="after"/>
+            <result column="target" property="target"/>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+            date, name, holiday, wage, after, target
+    </sql>
+
+    <sql id="commonConditionSQL">
+        <where>
+            t_holiday.is_delete = 0
+                <if test="date != '' and date != null">
+                    and t_holiday.date = #{date}
+                </if>
+                <if test="name != '' and name != null">
+                    and t_holiday.name = #{name}
+                </if>
+                <if test="holiday != '' and holiday != null">
+                    and t_holiday.holiday = #{holiday}
+                </if>
+                <if test="wage != '' and wage != null">
+                    and t_holiday.wage = #{wage}
+                </if>
+                <if test="after != '' and after != null">
+                    and t_holiday.after = #{after}
+                </if>
+                <if test="target != '' and target != null">
+                    and t_holiday.target = #{target}
+                </if>
+        </where>
+    </sql>
+
+    <select id="getHolidayListByColList" resultType="com.npc.common.modular.holiday.entity.Holiday">
+        select
+        <include refid="Base_Column_List"/>
+        from t_holiday
+        <where>
+            t_holiday.is_delete = 0
+            and ${column} in
+            <foreach collection="ids" item="id" separator="," open="(" close=")">
+                ${id}
+            </foreach>
+        </where>
+    </select>
+
+</mapper>

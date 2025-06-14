@@ -32,6 +32,15 @@ public class JwtFilter extends HandlerInterceptorAdapter {
         // 注意：放行浏览器的预检请求
         if (request.getMethod().equals("OPTIONS")) return true;
 
+        // todo 调整成配置文件处理
+        //  放行来自 /wx 的请求
+        if (StringUtils.isNotEmpty((request.getRequestURI())) && (request.getRequestURI().startsWith("/wx"))) {
+            return true;
+        }
+        //  放行来自 /swagger-ui.html 的请求
+        if (StringUtils.isNotEmpty((request.getRequestURI())) && (request.getRequestURI().startsWith("/swagger-ui") || "/v3/api-docs".equals(request.getRequestURI()))) {
+            return true;
+        }
         // 获取token
         String token = request.getHeader(jwtTokenUtil.header);
         if (StringUtils.isEmpty(token)) {

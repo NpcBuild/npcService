@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.npc.common.modular.chat.mapper.ChatTopicCategoryMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.npc.common.modular.chat.entity.ChatTopicCategory">
+            <result column="id" property="id"/>
+            <result column="parent_id" property="parentId"/>
+            <result column="name" property="name"/>
+            <result column="description" property="description"/>
+            <result column="to_do" property="toDo"/>
+            <result column="important" property="important"/>
+            <result column="sort_order" property="sortOrder"/>
+            <result column="is_leaf" property="isLeaf"/>
+            <result column="status" property="status"/>
+            <result column="created_at" property="createdAt"/>
+            <result column="updated_at" property="updatedAt"/>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+            id, parent_id, name, description, to_do, important, sort_order, is_leaf, status, created_at, updated_at
+    </sql>
+    <sql id="T_Base_Column_List">
+            t.id, t.parent_id, t.name, t.description, t.to_do, t.important, t.sort_order, t.is_leaf, t.status, t.created_at, t.updated_at
+    </sql>
+
+    <sql id="commonConditionSQL">
+        <where>
+            t_chat_topic_category.is_delete = 0
+                <if test="id != '' and id != null">
+                    and t_chat_topic_category.id = #{id}
+                </if>
+                <if test="parentId != '' and parentId != null">
+                    and t_chat_topic_category.parent_id = #{parentId}
+                </if>
+                <if test="name != '' and name != null">
+                    and t_chat_topic_category.name = #{name}
+                </if>
+                <if test="description != '' and description != null">
+                    and t_chat_topic_category.description = #{description}
+                </if>
+                <if test="toDo != '' and toDo != null">
+                    and t_chat_topic_category.to_do = #{toDo}
+                </if>
+                <if test="important != '' and important != null">
+                    and t_chat_topic_category.important = #{important}
+                </if>
+                <if test="sortOrder != '' and sortOrder != null">
+                    and t_chat_topic_category.sort_order = #{sortOrder}
+                </if>
+                <if test="isLeaf != '' and isLeaf != null">
+                    and t_chat_topic_category.is_leaf = #{isLeaf}
+                </if>
+                <if test="status != '' and status != null">
+                    and t_chat_topic_category.status = #{status}
+                </if>
+                <if test="createdAt != '' and createdAt != null">
+                    and t_chat_topic_category.created_at = #{createdAt}
+                </if>
+                <if test="updatedAt != '' and updatedAt != null">
+                    and t_chat_topic_category.updated_at = #{updatedAt}
+                </if>
+        </where>
+    </sql>
+
+    <select id="getChatTopicCategoryListByColList" resultType="com.npc.common.modular.chat.entity.ChatTopicCategory">
+        select
+        <include refid="Base_Column_List"/>
+        from t_chat_topic_category
+        <where>
+            t_chat_topic_category.is_delete = 0
+            and ${column} in
+            <foreach collection="ids" item="id" separator="," open="(" close=")">
+                ${id}
+            </foreach>
+        </where>
+    </select>
+    <select id="getTree" resultType="com.npc.common.modular.chat.entity.ChatTopicCategory">
+        WITH RECURSIVE tree AS (
+            SELECT <include refid="Base_Column_List"/>, 0 AS level
+            FROM t_chat_topic_category
+            WHERE parent_id = #{id}
+            UNION ALL
+            SELECT <include refid="T_Base_Column_List"/>, tree.level + 1 AS level
+            FROM t_chat_topic_category t
+                     JOIN tree ON t.parent_id = tree.id
+        )
+        SELECT * FROM tree WHERE level &lt;= #{level};
+    </select>
+
+</mapper>

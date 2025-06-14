@@ -321,6 +321,7 @@ public class IpUtils
         if ("127.0.0.1".equals(ipAddress)) {
             return response;
         }
+        // 192.168. 开头的直接退出
         try {
             // 查询IP地址的地理位置信息
             response = reader.city(ipAddress);

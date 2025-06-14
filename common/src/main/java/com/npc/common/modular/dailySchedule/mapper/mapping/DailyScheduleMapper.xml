@@ -8,6 +8,8 @@
             <result column="date" property="date"/>
             <result column="start_time" property="startTime"/>
             <result column="end_time" property="endTime"/>
+            <result column="start_todo" property="startTodo"/>
+            <result column="end_todo" property="endTodo"/>
             <result column="task" property="task"/>
             <result column="description" property="description"/>
             <result column="location" property="location"/>
@@ -31,7 +33,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-            id, date, start_time, end_time, task, description, location, status, priority, category, reminder, repeat_pattern, attachments, participants, completion_percentage, color_label, deadline, notification_time, estimated_duration, subtasks, tags, linked_tasks, progress_notes
+            id, date, start_time, end_time, start_todo, end_todo, task, description, location, status, priority, category, reminder, repeat_pattern, attachments, participants, completion_percentage, color_label, deadline, notification_time, estimated_duration, subtasks, tags, linked_tasks, progress_notes
     </sql>
 
     <sql id="commonConditionSQL">
@@ -141,6 +143,25 @@
             <if test="dto.id != null and dto.id != ''">
                 and id = #{dto.id}
             </if>
+            <if test="dto.date != null">
+                and (date is null or date = DATE_FORMAT( #{dto.date}, '%Y-%m-%d' ))
+            </if>
+            <if test="dto.dateTimeIn != null and dto.dateTimeIn != ''">
+                and (date is null or date = DATE_FORMAT( #{dto.dateTimeIn}, '%Y-%m-%d' ))
+                and (start_time &lt;= DATE_FORMAT( #{dto.dateTimeIn}, '%Y-%m-%d %H:%i:%s' ))
+                and (end_time &gt;= DATE_FORMAT( #{dto.dateTimeIn}, '%Y-%m-%d %H:%i:%s' ))
+            </if>
+            <if test="dto.repeatPattern != null and dto.repeatPattern != ''">
+                and (repeat_pattern = #{dto.repeatPattern} or repeat_pattern is null OR repeat_pattern = '')
+            </if>
+            <choose>
+                <when test="dto.isDelete!= '' and dto.isDelete!= null">
+                    and is_delete = #{isDelete}
+                </when>
+                <otherwise>
+                    and (is_delete = 0 or is_delete is null)
+                </otherwise>
+            </choose>
         </where>
     order by start_time
     </select>

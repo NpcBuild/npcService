@@ -10,10 +10,13 @@ import com.npc.common.modular.dailySchedule.entity.DailySchedule;
 import com.npc.common.modular.dailySchedule.mapper.DailyScheduleMapper;
 import com.npc.common.modular.dailySchedule.service.IDailyScheduleService;
 import com.npc.common.modular.dailySchedule.vo.DailyScheduleVO;
+import com.npc.core.net.query.Workday;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Locale;
@@ -32,20 +35,26 @@ public class DailyScheduleServiceImpl extends ServiceImpl<DailyScheduleMapper, D
 
     private static final Logger logger = LoggerFactory.getLogger(DailyScheduleServiceImpl.class);
 
+    /**
+     * 查询规则：
+     * 查询条件date为空时，初始为当前时间
+     * 截止日期在查询条件date前为有效数据
+     * 查数据date为空为所有的事项安排。date有值为对应时间的日程
+     * 数据规则：
+     * date为空，数据为符合所有日期的日程安排 date不为空，数据为符合该日期的日程安排
+     * @param dailyScheduleDto
+     * @return
+     */
     @Override
     public IPage<DailyScheduleVO> selectListByPage(DailyScheduleDto dailyScheduleDto) {
         // 创建分页对象
         Page<DailySchedule> page = new Page<>(dailyScheduleDto.getPageNum(), dailyScheduleDto.getPageSize());
-        IPage<DailyScheduleVO> dailyScheduleIPage = this.baseMapper.getList(page, dailyScheduleDto);
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("a hh:mm", Locale.CHINESE);
-        for (DailyScheduleVO vo : dailyScheduleIPage.getRecords()) {
-            if (null != vo.getStartTime()) {
-                vo.setStartTimeCN(vo.getStartTime().format(formatter));
-            }
-            if (null != vo.getEndTime()) {
-                vo.setEndTimeCN(vo.getEndTime().format(formatter));
-            }
+        if (null == dailyScheduleDto.getDate()) {
+            dailyScheduleDto.setDate(LocalDate.now());
         }
+        dailyScheduleDto.setRepeatPattern(Workday.isWorkday(dailyScheduleDto.getDate()) ? "workDay" : "weekDay");
+        IPage<DailyScheduleVO> dailyScheduleIPage = this.baseMapper.getList(page, dailyScheduleDto);
+        convertToPhone(dailyScheduleIPage.getRecords());
         return dailyScheduleIPage;
 
 //        QueryWrapper queryWrapper = new QueryWrapper<>(dailyScheduleDto);
@@ -67,6 +76,24 @@ public class DailyScheduleServiceImpl extends ServiceImpl<DailyScheduleMapper, D
 //        return voPage;
     }
 
+    @Override
+    public String selectNowToDo(String time) {
+        String res = "";
+        if (null == time) {
+            // 获取当前时间 yyyy-MM-dd HH:mm:ss 带时分秒
+            time = LocalDate.now().toString() + " " + LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss"));
+        }
+        DailyScheduleDto dailyScheduleDto = new DailyScheduleDto();
+        dailyScheduleDto.setDateTimeIn(time);
+        dailyScheduleDto.setRepeatPattern(Workday.isWorkday(LocalDate.parse(time.substring(0,10)))? "workDay" : "weekDay");
+        List<DailyScheduleVO> list = this.baseMapper.getList(dailyScheduleDto);
+        for (DailyScheduleVO vo : list) {
+            String task = vo.getTask();
+            res += task + ";";
+        }
+        return res;
+    }
+
     // 用于转换 DailySchedule 到 DailyScheduleVO
     private DailyScheduleVO convertToDailyScheduleVO(DailySchedule dailySchedule) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("a hh:mm", Locale.CHINESE);
@@ -80,5 +107,18 @@ public class DailyScheduleServiceImpl extends ServiceImpl<DailyScheduleMapper, D
             vo.setEndTimeCN(dailySchedule.getEndTime().format(formatter));
         }
         return vo;
+    }
+
+    // 转换成快捷指令需要的数据格式
+    private void convertToPhone(List<DailyScheduleVO> list) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("a hh:mm", Locale.CHINESE);
+        for (DailyScheduleVO vo : list) {
+            if (null != vo.getStartTime()) {
+                vo.setStartTimeCN(vo.getStartTime().format(formatter));
+            }
+            if (null != vo.getEndTime()) {
+                vo.setEndTimeCN(vo.getEndTime().format(formatter));
+            }
+        }
     }
 }

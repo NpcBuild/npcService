@@ -1,7 +1,7 @@
 package ${package.Entity};
 
 import java.io.Serializable;
-import io.swagger.annotations.ApiModelProperty;
+// import io.swagger.annotations.ApiModelProperty;
 
 
 #foreach($pkg in ${table.importPackages})
@@ -58,10 +58,10 @@ public class ${entity} implements Serializable {
 	@TableField("${field.name}")
 #end
 #if("$!field.comment" != "")
-    @ApiModelProperty(value = "${field.comment}")
+    // @ApiModelProperty(value = "${field.comment}")
     private ${field.propertyType} ${field.propertyName};
 #else
-    @ApiModelProperty(value = "${field.propertyName}")
+    // @ApiModelProperty(value = "${field.propertyName}")
     private ${field.propertyType} ${field.propertyName};
 #end
 #end

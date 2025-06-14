@@ -1,5 +1,6 @@
 package com.npc.core.alarm.request;
 
+import cn.hutool.json.JSONUtil;
 import lombok.Data;
 
 import java.util.List;
@@ -25,11 +26,17 @@ public class WorkWeXinSendRequest {
     }
 
     public static class Text {
-        private String message;
-        private List<String> toUsers;
-        public Text(String message, List<String> toUsers) {
-            this.message = message;
-            this.toUsers = toUsers;
+        private String content;
+        private List<String> mentioned_mobile_list;
+        public Text(String content, List<String> toUsers) {
+            this.content = content;
+            this.mentioned_mobile_list = toUsers;
+        }
+        public String getContent() {
+            return content;
+        }
+        public List<String> getMentioned_mobile_list() {
+            return mentioned_mobile_list;
         }
     }
 }

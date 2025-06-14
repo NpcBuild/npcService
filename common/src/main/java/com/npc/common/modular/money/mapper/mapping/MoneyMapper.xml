@@ -69,6 +69,7 @@
             </foreach>
         </where>
     </select>
+<!--    统计-->
     <select id="getInfo" resultType="com.npc.common.modular.money.vo.MoneyReport">
         SELECT
             -1 * sum( CASE WHEN amount &lt; 0 THEN amount END ) AS 'income',
@@ -99,6 +100,103 @@
         </where>
         ORDER BY
         payment_time DESC
+    </select>
+    <select id="getSubMoneyCount" resultType="java.math.BigDecimal">
+        -- 使用递归 CTE 生成还款日期序列并计算总还款金额
+        WITH RECURSIVE payment_days AS (
+        -- 计算第一个还款日期
+        SELECT
+        s.id,
+        s.sub_amount,
+        s.end_date,
+        -- 用变量简化处理
+        @new_start_date :=
+        <choose>
+            <when test="startDay!= '' and startDay!= null">
+                CASE
+                WHEN DATE_FORMAT( s.start_date, '%Y-%m-%d %H:%i:%s' )  &lt; #{startDay} THEN
+                STR_TO_DATE( #{startDay}, '%Y-%m-%d %H:%i:%s' ) ELSE s.start_date
+                END AS new_start_date,
+            </when>
+            <otherwise>
+                s.start_date AS new_start_date,
+            </otherwise>
+        </choose>
+        CASE
+        WHEN DAY ( @new_start_date )  &lt; s.payment_date THEN
+                                       DATE_FORMAT( DATE ( @new_start_date )+ INTERVAL ( s.payment_date - DAY ( @new_start_date )) DAY, '%Y-%m-%d' ) ELSE DATE_FORMAT( DATE ( DATE_FORMAT( @new_start_date, '%Y-%m-01' ))+ INTERVAL 1 MONTH + INTERVAL ( s.payment_date - 1 ) DAY, '%Y-%m-%d' ) END AS payment_day
+        FROM
+        t_subscribe s
+        <where>
+            <if test="id!= '' and id!= null">
+                and s.id = #{id}
+            </if>
+        </where>
+        UNION ALL
+        -- 递归部分，生成后续的还款日期
+        SELECT
+        pd.id,
+        pd.sub_amount,
+        pd.end_date,
+        '' AS new_start_date,
+        DATE_FORMAT( STR_TO_DATE( pd.payment_day, '%Y-%m-%d' ) + INTERVAL 1 MONTH, '%Y-%m-%d' )
+        FROM
+        payment_days pd
+        WHERE
+        pd.end_date > STR_TO_DATE(pd.payment_day, '%Y-%m-%d')
+        <if test="endDay!= '' and endDay!= null">
+            -- 递归终止条件：还款日期不超过指定日期
+            and STR_TO_DATE( pd.payment_day, '%Y-%m-%d %H:%i:%s' ) &lt; #{endDay}
+        </if>
+        )
+        -- 计算总还款金额
+        SELECT
+        SUM( pd.sub_amount ) AS subMoneyCount
+        FROM
+        payment_days pd
+    </select>
+
+    <select id="getCategory" resultType="java.lang.String">
+        SELECT DISTINCT
+            category
+        FROM
+            t_money
+    </select>
+
+<!--    &#45;&#45; 初始化变量
+    SET @sql = NULL;
+    &#45;&#45; 构建动态列部分，这里以获取所有不同支付类型为列名
+    SELECT GROUP_CONCAT(DISTINCT
+    CONCAT('SUM(CASE WHEN category = ''', category, ''' THEN amount END) AS `', category, '`')
+    ) INTO @sql
+    FROM t_money;
+
+    &#45;&#45; 构建完整的动态SQL语句，以月份为行
+    SET @sql = CONCAT('SELECT DATE_FORMAT(payment_time,''%Y-%m'') AS month, ', @sql,' FROM t_money GROUP BY DATE_FORMAT(payment_time,''%Y-%m'') ORDER BY DATE_FORMAT(payment_time,''%Y-%m'') DESC');
+    &#45;&#45; 预处理并执行动态SQL
+    PREPARE stmt FROM @sql;
+    EXECUTE stmt;
+    DEALLOCATE PREPARE stmt;-->
+    <select id="getChart" resultType="map">
+        SELECT DATE_FORMAT(payment_time,'%Y-%m') AS month
+        <foreach collection="categories" item="category">
+            ,SUM(CASE WHEN category = #{category} THEN amount END) AS `${category}`
+        </foreach>
+        FROM t_money
+        WHERE payment_time IS NOT NULL
+        GROUP BY DATE_FORMAT(payment_time,'%Y-%m')
+        ORDER BY DATE_FORMAT(payment_time,'%Y-%m') DESC
+    </select>
+    <select id="getPaiedMoneyCount" resultType="java.math.BigDecimal">
+       SELECT sum(amount) FROM t_money
+       <where>
+           <if test="startTime!= '' and startTime!= null">
+              AND DATE_FORMAT( payment_time, '%Y-%m-%d %H:%i:%s')  > #{startTime}
+           </if>
+           <if test="endTime!= '' and endTime!= null">
+              AND DATE_FORMAT( payment_time, '%Y-%m-%d %H:%i:%s')  &lt; #{endTime}
+           </if>
+       </where>
     </select>
 
 </mapper>

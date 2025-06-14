@@ -17,4 +17,5 @@ import com.npc.common.modular.dailySchedule.vo.DailyScheduleVO;
 public interface IDailyScheduleService extends IService<DailySchedule> {
     IPage<DailyScheduleVO> selectListByPage(DailyScheduleDto dailyScheduleDto);
 
+    String selectNowToDo(String date);
 }

@@ -4,6 +4,9 @@ import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+
 /**
  * @author NPC
  * @description
@@ -16,7 +19,7 @@ public class PaymentContext {
     @Autowired
     private PaymentStrategy paymentStrategy;
 
-    public void executePayment(double amount) {
-        paymentStrategy.pay(amount);
+    public void executePayment(double amount, HttpServletResponse httpServletResponse) throws IOException {
+        paymentStrategy.pay(amount, httpServletResponse);
     }
 }

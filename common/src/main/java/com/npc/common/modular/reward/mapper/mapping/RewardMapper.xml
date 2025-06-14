@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.npc.common.modular.reward.mapper.RewardMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.npc.common.modular.reward.entity.Reward">
+            <result column="id" property="id"/>
+            <result column="name" property="name"/>
+            <result column="description" property="description"/>
+            <result column="type" property="type"/>
+            <result column="task_id" property="taskId"/>
+            <result column="points_required" property="pointsRequired"/>
+            <result column="money_required" property="moneyRequired"/>
+            <result column="auto_grant" property="autoGrant"/>
+            <result column="max_per_user" property="maxPerUser"/>
+            <result column="image_url" property="imageUrl"/>
+            <result column="display_order" property="displayOrder"/>
+            <result column="available" property="available"/>
+            <result column="created_at" property="createdAt"/>
+            <result column="updated_at" property="updatedAt"/>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+            id, name, description, type, task_id, points_required, money_required, auto_grant, max_per_user, image_url, display_order, available, created_at, updated_at
+    </sql>
+
+    <sql id="commonConditionSQL">
+        <where>
+            reward.is_delete = 0
+                <if test="id != '' and id != null">
+                    and reward.id = #{id}
+                </if>
+                <if test="name != '' and name != null">
+                    and reward.name = #{name}
+                </if>
+                <if test="description != '' and description != null">
+                    and reward.description = #{description}
+                </if>
+                <if test="type != '' and type != null">
+                    and reward.type = #{type}
+                </if>
+                <if test="taskId != '' and taskId != null">
+                    and reward.task_id = #{taskId}
+                </if>
+                <if test="pointsRequired != '' and pointsRequired != null">
+                    and reward.points_required = #{pointsRequired}
+                </if>
+                <if test="moneyRequired != '' and moneyRequired != null">
+                    and reward.money_required = #{moneyRequired}
+                </if>
+                <if test="autoGrant != '' and autoGrant != null">
+                    and reward.auto_grant = #{autoGrant}
+                </if>
+                <if test="maxPerUser != '' and maxPerUser != null">
+                    and reward.max_per_user = #{maxPerUser}
+                </if>
+                <if test="imageUrl != '' and imageUrl != null">
+                    and reward.image_url = #{imageUrl}
+                </if>
+                <if test="displayOrder != '' and displayOrder != null">
+                    and reward.display_order = #{displayOrder}
+                </if>
+                <if test="available != '' and available != null">
+                    and reward.available = #{available}
+                </if>
+                <if test="createdAt != '' and createdAt != null">
+                    and reward.created_at = #{createdAt}
+                </if>
+                <if test="updatedAt != '' and updatedAt != null">
+                    and reward.updated_at = #{updatedAt}
+                </if>
+        </where>
+    </sql>
+
+    <select id="getRewardListByColList" resultType="com.npc.common.modular.reward.entity.Reward">
+        select
+        <include refid="Base_Column_List"/>
+        from reward
+        <where>
+            reward.is_delete = 0
+            and ${column} in
+            <foreach collection="ids" item="id" separator="," open="(" close=")">
+                ${id}
+            </foreach>
+        </where>
+    </select>
+
+</mapper>

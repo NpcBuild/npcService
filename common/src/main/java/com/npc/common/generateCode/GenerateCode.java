@@ -56,8 +56,9 @@ public class GenerateCode {
 //        String filePath = "\\common\\src\\main\\java\\com\\npc\\common\\modular";
         String projectPath = "D:\\Code";
         String filePath = "\\Generate";
-        String moduleName = "todo";
-        FastAutoGenerator.create("jdbc:mysql://localhost:3306/yf?autoReconnect=true&useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=CONVERT_TO_NULL&useSSL=false&serverTimezone=CTT", "root", "root")
+        String moduleName = "reward";
+//        FastAutoGenerator.create("jdbc:mysql://localhost:3306/yf?autoReconnect=true&useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=CONVERT_TO_NULL&useSSL=false&serverTimezone=CTT", "root", "root")
+        FastAutoGenerator.create("jdbc:mysql://192.168.1.20:3306/yf?autoReconnect=true&useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=CONVERT_TO_NULL&useSSL=false&serverTimezone=CTT", "root", "root")
                 .globalConfig(builder -> {
                     builder.author("yangfei") // 设置作者
 //                            .enableSwagger() // 开启 swagger 模式
@@ -65,7 +66,7 @@ public class GenerateCode {
                             .outputDir(projectPath + filePath); // 指定输出目录
                 })
                 .packageConfig(builder -> {
-                    builder.parent("com.npc.common.modular") // 设置父包名
+                    builder.parent("com.npc.common.modular.reward") // 设置父包名
 //                    builder.parent("com.npc.auth.admin") // 设置父包名
                             .moduleName(moduleName) // 设置父包模块名
                             .pathInfo(Collections.singletonMap(OutputFile.xml, projectPath + filePath + "\\" + moduleName + "\\mapper\\mapping")); // 设置mapperXml生成路径
@@ -83,15 +84,15 @@ public class GenerateCode {
                                     .enableRestStyle();
                     builder.entityBuilder().enableLombok(); //使用lombok
                     builder.controllerBuilder().enableHyphenStyle().enableRestStyle(); // 开启RestController
-                    builder.addInclude("t_todo") // 设置需要生成的表名
-                            .addTablePrefix("c_","t_"); // 设置过滤表前缀
+                    builder.addInclude("reward_claim_log") // 设置需要生成的表名
+                            .addTablePrefix("c_","t_","read_","diet_"); // 设置过滤表前缀
                 })
                 // 自定义配置：用来生成前端部分的Vue页面
                 .injectionConfig(consumer -> {
                     Map<String, String> customFile = new HashMap<>();
                     // 根据指定的模板，生成对应的文件
                     customFile.put("a.vue", "/templates/a.vue.vm");
-                    customFile.put(moduleName + "Dao.java", "/templates/entityDao.java.vm");
+                    customFile.put(moduleName + "Dto.java", "/templates/entityDto.java.vm");
                     consumer.customFile(customFile);
                 })
 //                .templateEngine(new FreemarkerTemplateEngine()) // 使用Freemarker引擎模板，默认的是Velocity引擎模板

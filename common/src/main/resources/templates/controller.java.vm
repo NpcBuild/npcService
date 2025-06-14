@@ -24,7 +24,7 @@ import java.util.Arrays;
  */
 @RestController
 @RequestMapping("/${table.entityPath}")
-@Api(value = "/${table.entityPath}", description = "${table.comment} 相关接口")
+// @Api(value = "/${table.entityPath}", description = "${table.comment} 相关接口")
 public class ${entity}Controller {
     
     private static final Logger logger = LoggerFactory.getLogger(${entity}Controller.class);
@@ -39,7 +39,7 @@ public class ${entity}Controller {
      * @return ServerResponseVO转换结果
      */
     @RequestMapping(value = "/save", method = RequestMethod.POST)
-    @ApiOperation(response = ServerResponseVO.class, value = "${table.comment} 添加 修改接口, 填入Id为更新, 不填Id为新增")
+    // @ApiOperation(response = ServerResponseVO.class, value = "${table.comment} 添加 修改接口, 填入Id为更新, 不填Id为新增")
     public ServerResponseVO<?> save(@RequestBody @Validated ${entity} ${table.entityPath}) {
         try {
             Boolean obj = ${table.entityPath}Service.saveOrUpdate(${table.entityPath});
@@ -57,7 +57,7 @@ public class ${entity}Controller {
      * @return ServerResponseVO转换结果
      */
     @GetMapping("delete${entity}ById")
-    @ApiOperation(response = ServerResponseVO.class, value = "通过id 删除对象")
+    // @ApiOperation(response = ServerResponseVO.class, value = "通过id 删除对象")
     public ServerResponseVO<?> delete(@RequestParam("id") Integer id) {
 
         try {
@@ -76,7 +76,7 @@ public class ${entity}Controller {
      */
     @GetMapping("batchDelete${entity}ByIdList")
     @Transactional(rollbackFor = Exception.class)
-    @ApiOperation(response = ServerResponseVO.class, value = "批量删除 ${table.comment}")
+    // @ApiOperation(response = ServerResponseVO.class, value = "批量删除 ${table.comment}")
     public ServerResponseVO<?> batchDelete${entity}ByIdList(@RequestParam("ids") Integer[] ids) {
         ${table.entityPath}Service.removeBatchByIds(Arrays.asList(ids));
         return ServerResponseVO.success();
@@ -89,7 +89,7 @@ public class ${entity}Controller {
      * @return ServerResponseVO转换结果
      */
     @RequestMapping(value = "/get${entity}ById", method = RequestMethod.GET)
-    @ApiOperation(response = ServerResponseVO.class, value = "通过Id 获取 ${table.comment} ")
+    // @ApiOperation(response = ServerResponseVO.class, value = "通过Id 获取 ${table.comment} ")
     public ServerResponseVO<?> get(@RequestParam("id") Long id) {
         ${entity} ${table.entityPath} =${table.entityPath}Service.getById(id);
         return ServerResponseVO.success(${table.entityPath});
@@ -102,7 +102,7 @@ public class ${entity}Controller {
      * @return PageList 分页对象
      */
     @RequestMapping(value = "/get${entity}List", method = RequestMethod.GET)
-    @ApiOperation(response = ServerResponseVO.class, value = "${table.comment} 分页查询数据")
+    // @ApiOperation(response = ServerResponseVO.class, value = "${table.comment} 分页查询数据")
     public ServerResponseVO<?> get${entity}List(@Validated ${entity}Dto ${table.entityPath}Dto) {
         Page page = new Page(${table.entityPath}Dto.getPageNum(), ${table.entityPath}Dto.getPageSize());
         QueryWrapper<${entity}> queryWrapper = new QueryWrapper(${table.entityPath}Dto);

@@ -8,11 +8,12 @@
             <result column="todo_id" property="todoId"/>
             <result column="status" property="status"/>
             <result column="finish_time" property="finishTime"/>
+            <result column="score" property="score"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-            id, todo_id, status, finish_time
+            id, todo_id, status, finish_time, score
     </sql>
 
     <sql id="commonConditionSQL">
@@ -57,6 +58,18 @@
         <include refid="Base_Column_List"/>
         from t_todo_completed
         WHERE status = '2' and finish_time &lt; #{endDate} and finish_time &gt; #{startDate}
+    </select>
+    <select id="getCompletedListIn" resultType="com.npc.common.modular.todoCompleted.entity.TodoCompleted">
+        select
+        <include refid="Base_Column_List"/>
+        from t_todo_completed
+        WHERE status = '2' and finish_time LIKE CONCAT(#{date},'%')
+          <if test="ids!= null and ids.size()>0">
+              and todo_id in
+              <foreach collection="ids" item="id" separator="," open="(" close=")">
+                  #{id}
+              </foreach>
+          </if>
     </select>
 
 </mapper>

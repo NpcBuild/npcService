@@ -3,3 +3,7 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
   com.npc.core.limit.aop.LimitAspect,\
   com.npc.core.limit.configure.LimiterConfigure
+org.springframework.boot.env.EnvironmentPostProcessor=\
+  com.npc.system.NacosServerAddrModifier,\
+  com.npc.system.RedisServerAddrModifier
+

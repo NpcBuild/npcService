@@ -119,9 +119,13 @@ spring:
   mail:
     host: smtp.qq.com
     username: 1623285565@qq.com
-    password: "ophlijooeeadbcid"
+    password: "wiqjfxkhllhfhiie"
     #  启动SSL时的配置
     smtp:
+      auth: true
+      starttls:
+        enable: true
+        required: true
       socketFactory:
         class: javax.net.ssl.SSLSocketFactory
         fallback: false
@@ -168,6 +172,12 @@ mybatis-plus:
   mapper-locations: classpath*:com/npc/**/mapper/mapping/*.xml
 #  typeAliasesPackage: com.npc.common.modular.user.model
 
+springdoc:
+  swagger-ui:
+    title: My API Documentation
+    description: This is a description of my API.
+    version: 1.0.0
+
 qiniuyun:
   upload:
     accessKey: Vm7po0hPS-Xuizj-MmjobvoO7bAVSNEhc6fn24j7
@@ -186,11 +196,20 @@ logging:
   level:
     com.npc.common: DEBUG
     com.npc.core: INFO
+    org.apache.kafka.clients: ERROR
+    org.springframework.kafka: ERROR
   logback:
     rollingpolicy:
       max-history: 7
       max-file-size: 10MB
       total-size-cap: 50MB
+
+wx:
+  mp:
+    app-id: wxbba22b1fa115c107
+    secret: 7a07a0b001ff52cbbf46a484e2f2d2c6
+    token: yangfei
+    aes-key: ysNXQ1J05Qez035ft6v1VtfnYga60aDvEtvjx11az0B
 #用于OAuth认证
 github:
   client:

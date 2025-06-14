@@ -141,7 +141,11 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils
      */
     public static int differentDaysByMillisecond(Date date1, Date date2)
     {
-        return Math.abs((int) ((date2.getTime() - date1.getTime()) / (1000 * 3600 * 24)));
+        // 将 Date 转换为 LocalDate
+        LocalDate localDate1 = date1.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+        LocalDate localDate2 = date2.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+        // 计算两个 LocalDate 之间的天数差
+        return (int) Math.abs(localDate1.toEpochDay() - localDate2.toEpochDay());
     }
 
     /**
@@ -165,6 +169,7 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils
         // long sec = diff % nd % nh % nm / ns;
         return day + "天" + hour + "小时" + min + "分钟";
     }
+
 
     /**
      * 增加 LocalDateTime ==> Date

@@ -46,7 +46,7 @@ public class DownLoadTask {
     @Async("threadPool")
     @Scheduled(cron = "0 15 * * * ?")
     public void schedule3(){
-        speakArt.getCorpus();
+//        speakArt.getCorpus();
     }
 
 

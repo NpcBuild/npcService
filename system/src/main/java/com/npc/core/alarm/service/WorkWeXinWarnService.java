@@ -2,11 +2,21 @@ package com.npc.core.alarm.service;
 
 import cn.hutool.http.HttpRequest;
 import cn.hutool.json.JSONUtil;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.npc.core.alarm.WorkWeXinSendMsgTypeEnum;
 import com.npc.core.alarm.request.WorkWeXinSendRequest;
 import com.npc.core.alarm.service.BaseWarnService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.util.EntityUtils;
 
 import java.util.Arrays;
 import java.util.List;
@@ -24,13 +34,13 @@ public class WorkWeXinWarnService extends BaseWarnService {
 
     private final String toUser;
 
-    /**
-     * 删除
-     */
-    public WorkWeXinWarnService() {
-        this.key = "";
-        this.toUser = "";
-    }
+//    /**
+//     * 删除
+//     */
+//    public WorkWeXinWarnService() {
+//        this.key = "";
+//        this.toUser = "";
+//    }
     public WorkWeXinWarnService(String key, String toUser) {
         this.key = key;
         this.toUser = toUser;
@@ -58,8 +68,33 @@ public class WorkWeXinWarnService extends BaseWarnService {
     protected void doSendText(String message) {
         String data = createPostData(WorkWeXinSendMsgTypeEnum.TEXT, message);
         String url = String.format(SEND_MESSAGE_URL, key);
-        String resp = HttpRequest.post(url).body(data).execute().body();
-        log.info("send work weixin message call [{}], param:{}, resp:{}", url, data, resp);
+        try {
+            HttpClient client = HttpClientBuilder.create().build();
+            HttpPost request = new HttpPost(url);
+            // 设置请求体为字符串实体
+            StringEntity entity = new StringEntity(data, "UTF-8");
+            // 计算Content - Length并设置请求头
+            request.setHeader("Content - Length", String.valueOf(data.getBytes().length));
+            request.setEntity(entity);
+            HttpResponse response = client.execute(request);
+            HttpEntity reSEntity = response.getEntity();
+            if (reSEntity != null) {
+                String resp = EntityUtils.toString(reSEntity);
+//                ObjectMapper objectMapper = new ObjectMapper();
+//                JsonNode jsonNode = objectMapper.readTree(resp);
+
+//                String resp = HttpRequest.post(url).body(data).execute().body();
+                log.info("send work weixin message call [{}], param:{}, resp:{}", url, data, resp);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        try {
+
+        } catch (Exception e) {
+            System.out.println("请求异常" + e.getMessage());
+        }
     }
 
     @Override

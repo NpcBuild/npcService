@@ -78,17 +78,18 @@ public class Login {
             // 登录验证
             userSubject.login(token);
             // 获取用户IP地址
-            String userIpAddress = IpUtils.getIpAddr(request);
-            Boolean flag = loginService.recordIpToRedis(userIpAddress, user.getAccount());
-            System.out.println("存储结果：" + flag);
+//            String userIpAddress = IpUtils.getIpAddr(request);
+//            Boolean flag = loginService.recordIpToRedis(userIpAddress, user.getAccount());
+//            System.out.println("存储结果：" + flag);
 
-//            KafkaMessage kafkaMessage = new KafkaMessage(0,"login","登录成功");
-//            kafkaLoginMailProducer.sendMsgSync(kafkaMessage);
+            // kafka 发送消息
+            // KafkaMessage kafkaMessage = new KafkaMessage(0,"login","登录成功");
+            // kafkaLoginMailProducer.sendMsgSync(kafkaMessage);
             // 获取当前用户的 Subject
-            Subject currentUser = SecurityUtils.getSubject();
+//            Subject currentUser = SecurityUtils.getSubject();
             UserResult userInfo = new UserResult();
-            if (currentUser.isAuthenticated()) {
-                userInfo = (UserResult)currentUser.getPrincipal();
+            if (userSubject.isAuthenticated()) {
+                userInfo = (UserResult)userSubject.getPrincipal();
             } else {
                 userInfo.setId(1);
             }

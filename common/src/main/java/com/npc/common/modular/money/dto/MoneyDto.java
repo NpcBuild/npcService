@@ -4,6 +4,7 @@ import com.npc.core.PageSearch;
 import lombok.Data;
 
 import java.time.LocalDate;
+import java.util.List;
 
 /**
  * @author NPC
@@ -36,4 +37,5 @@ public class MoneyDto extends PageSearch {
 
     private String dateStartS;
     private String dateEndS;
+    private String resType;
 }

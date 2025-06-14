@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.npc.common.modular.money.dto.MoneyDto;
 import com.npc.common.modular.money.entity.Money;
 import com.npc.common.modular.money.vo.MoneyReport;
+import com.npc.common.modular.money.vo.MoneyVO;
 
 import java.util.Map;
 
@@ -20,4 +21,6 @@ public interface IMoneyService extends IService<Money> {
     MoneyReport getInfo();
 
     IPage<Money> getListPage(MoneyDto dto);
+
+    Object getChart(MoneyDto moneyDto);
 }

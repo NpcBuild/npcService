@@ -1,6 +1,7 @@
 package com.npc.common.modular.plan.controller;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.npc.common.modular.plan.dto.PlanDto;
+import com.npc.common.modular.plan.vo.PlanTreeVo;
 import com.npc.common.modular.tags.entity.Tags;
 import com.npc.common.todo.entity.Todo;
 import com.npc.common.todo.service.ITodoService;
@@ -20,6 +21,7 @@ import com.npc.common.modular.plan.entity.Plan;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * <p>
@@ -112,6 +114,16 @@ public class PlanController {
         Page<Plan> pages = planService.page(page, queryWrapper);
         return ServerResponseVO.success(pages);
     }
+    /**
+     * 分页计划树
+     * @param planDto 查询对象
+     * @return List 分页对象
+     */
+    @RequestMapping(value = "/getPlanTree", method = RequestMethod.GET)
+    public ServerResponseVO<?> getPlanTree(@Validated PlanDto planDto) {
+        List<PlanTreeVo> planTreeVos = planService.getTree(planDto);
+        return ServerResponseVO.success(planTreeVos);
+    }
 
     /**
      * 查询计划根节点信息
@@ -127,6 +139,9 @@ public class PlanController {
      */
     @RequestMapping(value = "/addPlanRoot", method = RequestMethod.POST)
     public ServerResponseVO<?> addPlanRoot(@RequestBody Plan plan) {
+        if (Objects.isNull(plan.getSort())) {
+            plan.setSort(1);
+        }
         planService.save(plan);
         return ServerResponseVO.success(planService.getPlanRoot());
     }

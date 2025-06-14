@@ -15,6 +15,8 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * <p>
@@ -103,5 +105,17 @@ public class DailyScheduleController {
     public ServerResponseVO<?> getDailyScheduleList(@Validated DailyScheduleDto dailyScheduleDto) {
         IPage<DailyScheduleVO> page = dailyScheduleService.selectListByPage(dailyScheduleDto);
         return ServerResponseVO.success(page);
+    }
+    /**
+     * 查询指定时间的日程安排：
+     * @param date 查询时间
+     * @return PageList 分页对象
+     */
+    @RequestMapping(value = "/getDailyScheduleNow", method = RequestMethod.GET)
+    public ServerResponseVO<?> getDailyScheduleNow(@RequestParam(value = "date",required = false) String date) {
+        String now = dailyScheduleService.selectNowToDo(date);
+        Map<String,Object> map = new HashMap<>();
+        map.put("now",now);
+        return ServerResponseVO.success(map);
     }
 }

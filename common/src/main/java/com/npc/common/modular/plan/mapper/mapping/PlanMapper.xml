@@ -50,12 +50,24 @@
         <include refid="Base_Column_List"/>
         from t_plan
         <where>
-            t_plan.is_delete = 0
+            (t_plan.is_delete is null || t_plan.is_delete = 0)
             and ${column} in
             <foreach collection="ids" item="id" separator="," open="(" close=")">
                 ${id}
             </foreach>
         </where>
+    </select>
+    <select id="getTree" resultType="com.npc.common.modular.plan.entity.Plan">
+        WITH RECURSIVE tree AS (
+        SELECT id, parent_id, content, 0 AS level
+        FROM t_plan
+        WHERE parent_id = #{id}
+        UNION ALL
+        SELECT t.id, t.parent_id, t.content, tree.level + 1 AS level
+        FROM t_plan t
+        JOIN tree ON t.parent_id = tree.id
+        )
+        SELECT * FROM tree WHERE level &lt;= #{level};
     </select>
 
     <select id="getPlanRoot" resultMap="BaseResultMap">
@@ -63,7 +75,7 @@
         <include refid="Base_Column_List"/>
         from t_plan
         <where>
-            t_plan.is_delete = 0
+            (t_plan.is_delete is null || t_plan.is_delete = 0)
             and t_plan.parent_id is null
         </where>
     </select>

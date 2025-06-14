@@ -1,8 +1,7 @@
 package com.npc.redis.utils;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 import redis.clients.jedis.HostAndPort;
 import redis.clients.jedis.JedisCluster;
@@ -25,9 +24,6 @@ public class RedisPool {
 
     private static Boolean testOnBorrow = true;
 
-    @Autowired
-    private Environment environment;
-
 ////    @Value("${spring.redis.host}")
 //    private static String redisIP = "localhost";
 ////    @Value("${spring.redis.port}")
@@ -43,6 +39,8 @@ public class RedisPool {
         config.setMaxWaitMillis(maxWait);
 
         Set<HostAndPort> shareInfos = new LinkedHashSet<HostAndPort>();
+
+//        System.out.println("当前生效的环境配置是: " + activeProfile);
         //        dev环境
         shareInfos.add(new HostAndPort("localhost", 6380));
         shareInfos.add(new HostAndPort("localhost", 6381));
@@ -50,13 +48,20 @@ public class RedisPool {
         shareInfos.add(new HostAndPort("localhost", 6383));
         shareInfos.add(new HostAndPort("localhost", 6384));
         shareInfos.add(new HostAndPort("localhost", 6385));
+        //        docker环境
+        shareInfos.add(new HostAndPort("192.168.1.20", 6380));
+        shareInfos.add(new HostAndPort("192.168.1.20", 6381));
+        shareInfos.add(new HostAndPort("192.168.1.20", 6382));
+        shareInfos.add(new HostAndPort("192.168.1.20", 6383));
+        shareInfos.add(new HostAndPort("192.168.1.20", 6384));
+        shareInfos.add(new HostAndPort("192.168.1.20", 6385));
         //        pro环境
-        shareInfos.add(new HostAndPort("172.12.0.11", 6379));
-        shareInfos.add(new HostAndPort("172.12.0.12", 6379));
-        shareInfos.add(new HostAndPort("172.12.0.13", 6379));
-        shareInfos.add(new HostAndPort("172.12.0.14", 6379));
-        shareInfos.add(new HostAndPort("172.12.0.15", 6379));
-        shareInfos.add(new HostAndPort("172.12.0.16", 6379));
+        shareInfos.add(new HostAndPort("172.16.0.11", 6379));
+        shareInfos.add(new HostAndPort("172.16.0.12", 6379));
+        shareInfos.add(new HostAndPort("172.16.0.13", 6379));
+        shareInfos.add(new HostAndPort("172.16.0.14", 6379));
+        shareInfos.add(new HostAndPort("172.16.0.15", 6379));
+        shareInfos.add(new HostAndPort("172.16.0.16", 6379));
 
         pool = new JedisCluster(shareInfos, config);
     }

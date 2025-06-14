@@ -7,11 +7,12 @@
             <result column="id" property="id"/>
             <result column="userId" property="userId"/>
             <result column="voiceAssistant" property="voiceAssistant"/>
+            <result column="score" property="score"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-            id, userId, voiceAssistant
+            id, userId, voiceAssistant, score
     </sql>
 
     <sql id="commonConditionSQL">
@@ -28,6 +29,11 @@
                 </if>
         </where>
     </sql>
+    <update id="updateScore">
+        update t_setting
+        SET score = score + #{score}
+        WHERE id = #{id}
+    </update>
 
     <select id="getSettingListByColList" resultType="com.npc.common.modular.setting.entity.Setting">
         select

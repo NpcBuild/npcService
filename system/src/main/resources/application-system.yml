@@ -1,4 +1,37 @@
 spring:
+  config:
+    activate:
+      on-profile: dev
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 192.168.1.9:8848
+---
+spring:
+  config:
+    activate:
+      on-profile: pro
+  cloud:
+    nacos:
+      discovery:
+        enabled: false
+        server-addr: 192.168.1.9:8848
+  #    import:
+  #      - optional:nacos:${spring.application.name}:${spring.profiles.active}
+---
+spring:
+  config:
+    activate:
+      on-profile: docker
+  cloud:
+    nacos:
+      discovery:
+        enabled: false
+        server-addr: 192.168.1.20:8848
+  #    import:
+  #      - optional:nacos:${spring.application.name}:${spring.profiles.active}
+---
+spring:
   alarm:
     dingtalk:
       enabled: true
@@ -9,9 +42,9 @@ spring:
     wechat:
       enabled: true
       # 企业微信群机器人唯一key
-      key: xxxxxdsf
+      key: 629f44b3-f0d3-4438-9d01-27b09269c5c0
       # 被@人的手机号
-      to-user: 1314243
+      to-user: 15603397887
     mail:
       enabled: true
       smtpHost: smtp.qq.com
@@ -33,6 +66,10 @@ spring:
           templateId: errorTemp
           templateName: 服务异常模板
           templateContent: 这里是配置模板的内容
+        holidayErrorTemp:
+          templateId: holidayErrorTemp
+          templateName: 节假日获取失败
+          templateContent: 请检查节假日接口是否正常
 management:
   endpoints:
     web:
@@ -60,7 +97,7 @@ jwt:
   header: Authorization
   #  token有效时长 s
   expire:
-    accessToken: 3600
+    accessToken: 7200
     refreshToken: 604800
 limit:
 #  type: redis

@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.npc.common.todo.entity.Todo;
 import com.npc.common.todo.vo.TodoVO;
+import com.npc.common.todo.vo.TodoViewVO;
 
 import java.util.List;
 
@@ -18,7 +19,7 @@ import java.util.List;
 public interface ITodoService extends IService<Todo> {
 
     List<Todo> getList(TodoVO vo);
-    IPage<Todo> getListPage(TodoVO vo);
+    IPage<TodoViewVO> getListPage(TodoVO vo);
 
     /**
      * 扩展更多信息

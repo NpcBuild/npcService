@@ -104,7 +104,7 @@ public class DiaryController {
         Map<String,Object> map = new HashMap<>();
         map.put("date",diary.getDate());
         List<Diary> diaries =diaryService.listByMap(map);
-        return ServerResponseVO.success(diaries.get(0));
+        return ServerResponseVO.success(diaries.size() > 0 ? diaries.get(0) : "");
     }
 
 

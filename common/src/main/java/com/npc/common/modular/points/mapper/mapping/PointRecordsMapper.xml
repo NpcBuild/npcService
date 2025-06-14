@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.npc.common.modular.points.mapper.PointRecordsMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.npc.common.modular.points.entity.PointRecords">
+            <result column="id" property="id"/>
+            <result column="user_id" property="userId"/>
+            <result column="change_type" property="changeType"/>
+            <result column="points" property="points"/>
+            <result column="before_points" property="beforePoints"/>
+            <result column="after_points" property="afterPoints"/>
+            <result column="source" property="source"/>
+            <result column="remark" property="remark"/>
+            <result column="created_at" property="createdAt"/>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+            id, user_id, change_type, points, before_points, after_points, source, remark, created_at
+    </sql>
+
+    <sql id="commonConditionSQL">
+        <where>
+            point_records.is_delete = 0
+                <if test="id != '' and id != null">
+                    and point_records.id = #{id}
+                </if>
+                <if test="userId != '' and userId != null">
+                    and point_records.user_id = #{userId}
+                </if>
+                <if test="changeType != '' and changeType != null">
+                    and point_records.change_type = #{changeType}
+                </if>
+                <if test="points != '' and points != null">
+                    and point_records.points = #{points}
+                </if>
+                <if test="beforePoints != '' and beforePoints != null">
+                    and point_records.before_points = #{beforePoints}
+                </if>
+                <if test="afterPoints != '' and afterPoints != null">
+                    and point_records.after_points = #{afterPoints}
+                </if>
+                <if test="source != '' and source != null">
+                    and point_records.source = #{source}
+                </if>
+                <if test="remark != '' and remark != null">
+                    and point_records.remark = #{remark}
+                </if>
+                <if test="createdAt != '' and createdAt != null">
+                    and point_records.created_at = #{createdAt}
+                </if>
+        </where>
+    </sql>
+
+    <select id="getPointRecordsListByColList" resultType="com.npc.common.modular.points.entity.PointRecords">
+        select
+        <include refid="Base_Column_List"/>
+        from point_records
+        <where>
+            point_records.is_delete = 0
+            and ${column} in
+            <foreach collection="ids" item="id" separator="," open="(" close=")">
+                ${id}
+            </foreach>
+        </where>
+    </select>
+    <select id="getMyPointRecords" resultType="com.npc.common.modular.points.entity.PointRecords">
+        select
+        <include refid="Base_Column_List"/>
+        from point_records
+        <where>
+            user_id = #{userId}
+        </where>
+        order by created_at desc;
+    </select>
+
+</mapper>

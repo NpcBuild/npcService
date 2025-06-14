@@ -6,11 +6,13 @@ import com.npc.common.modular.money.dto.MoneyDto;
 import com.npc.common.modular.money.entity.Money;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.npc.common.modular.money.vo.MoneyReport;
+import com.npc.common.modular.money.vo.MoneyVO;
 import org.apache.ibatis.annotations.MapKey;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Mapper;
 
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 
@@ -40,5 +42,14 @@ public interface MoneyMapper extends BaseMapper<Money> {
      */
     MoneyReport getInfo(Money money);
 
+    BigDecimal getPaiedMoneyCount(@Param("startTime") String startTime, @Param("endTime") String endTime);
+
     IPage<Money> getList(Page<Money> page, @Param("dto") MoneyDto dto);
+
+    BigDecimal getSubMoneyCount(@Param("id") String id, @Param("startDay") String startDay, @Param("endDay") String endDay);
+
+    @MapKey("month")
+    Map<String, Object> getChart(@Param("categories") List<String> categories);
+
+    List<String> getCategory();
 }
