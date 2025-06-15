@@ -59,11 +59,11 @@
     </select>
     <select id="getTree" resultType="com.npc.common.modular.plan.entity.Plan">
         WITH RECURSIVE tree AS (
-        SELECT id, parent_id, content, 0 AS level
+        SELECT id, parent_id, content, remark, 0 AS level
         FROM t_plan
         WHERE parent_id = #{id}
         UNION ALL
-        SELECT t.id, t.parent_id, t.content, tree.level + 1 AS level
+        SELECT t.id, t.parent_id, t.content, t.remark, tree.level + 1 AS level
         FROM t_plan t
         JOIN tree ON t.parent_id = tree.id
         )

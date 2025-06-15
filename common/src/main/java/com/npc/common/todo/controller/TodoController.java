@@ -89,7 +89,7 @@ public class TodoController {
                     content = @Content(schema = @Schema(implementation = ServerResponseVO.class)))
     })
     @GetMapping("/getTodoList")
-    public ServerResponseVO getTodoList(@Validated @Parameter(description = "查询对象") TodoVO todoVO) {
+    public ServerResponseVO<?> getTodoList(@Validated @Parameter(description = "查询对象") TodoVO todoVO) {
         IPage<TodoViewVO> page = todoService.getListPage(todoVO);
         if (StringUtils.isNotEmpty(todoVO.getDate())) {
             List<TodoViewVO> records = page.getRecords();

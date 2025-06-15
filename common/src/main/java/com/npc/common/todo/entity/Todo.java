@@ -54,7 +54,13 @@ public class Todo implements Serializable {
     private String remark;
 
     /**
-     * 任务状态 0-未开始 1-进行中 2-已完成
+     * 任务状态
+     *     case pending = "0" // 未开始
+     *     case active = "1"    // 进行中
+     *     case paused = "11"    // 已暂停
+     *     case completed = "99" // 已完成
+     *     case canceled = "-1" // 已取消
+     *     case deferred = "-9" // 已延期
      */
     @Schema(description = "任务状态", example = "1")
     private String status;
