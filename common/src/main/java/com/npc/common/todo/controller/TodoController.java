@@ -32,6 +32,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.ObjectUtils;
 import org.springframework.validation.annotation.Validated;
@@ -135,6 +136,20 @@ public class TodoController {
         }
         return String.join(",",list);
     }
+    @GetMapping("getCompletedListIn")
+    public ServerResponseVO<?> getCompletedListIn(@Parameter(description = "查询的日期") String date, @Parameter(description = "ids") String ids) {
+        String[] split = ids.split(",");
+        List<Integer> idList = new ArrayList<>();
+        for (String string : split) {
+            idList.add(Integer.parseInt(string));
+        }
+        List<TodoCompleted> completedList = completedMapper.getCompletedListIn(date, idList);
+        String[] list = new String[completedList.size()];
+        for (int i = 0; i < completedList.size(); i++) {
+            list[i] = completedList.get(i).getTodoId().toString();
+        }
+        return ServerResponseVO.success(list);
+    }
 
     /**
      * 获取指定日历区间的任务列表
@@ -147,7 +162,7 @@ public class TodoController {
                     content = @Content(schema = @Schema(implementation = ServerResponseVO.class)))
     })
     @GetMapping("getTodoCalendar")
-    public ServerResponseVO getTodoCalendar(@Validated @Parameter(description = "查询的参数") TodoVO todoVO) {
+    public ServerResponseVO<?> getTodoCalendar(@Validated @Parameter(description = "查询的参数") TodoVO todoVO) {
         String startDate = todoVO.getStartDate();
         String endDate = todoVO.getEndDate();
         List<Todo> todos = todoService.getList(todoVO);
