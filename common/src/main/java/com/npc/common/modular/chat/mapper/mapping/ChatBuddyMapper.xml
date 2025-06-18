@@ -11,13 +11,20 @@
             <result column="gender" property="gender"/>
             <result column="tags" property="tags"/>
             <result column="intimacy_level" property="intimacyLevel"/>
+            <result column="gregorian_birthday" property="gregorianBirthday"/>
+            <result column="lunar_birthday" property="lunarBirthday"/>
             <result column="notes" property="notes"/>
             <result column="sort" property="sort"/>
+            <result column="bio" property="bio"/>
+            <result column="avatar" property="avatar"/>
+            <result column="photos" property="photos"/>
+            <result column="favorite" property="favorite"/>
+            <result column="character" property="character"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-            id, name, base64_icon, has_contact, gender, tags, intimacy_level, notes, sort
+            id, name, base64_icon, has_contact, gender, tags, intimacy_level, gregorian_birthday, lunar_birthday, notes, sort, bio, avatar, photos, favorite, character
     </sql>
 
     <sql id="commonConditionSQL">
@@ -44,11 +51,32 @@
                 <if test="intimacyLevel != '' and intimacyLevel != null">
                     and t_chat_buddy.intimacy_level = #{intimacyLevel}
                 </if>
+                <if test="gregorianBirthday != '' and gregorianBirthday != null">
+                    and t_chat_buddy.gregorian_birthday = #{gregorianBirthday}
+                </if>
+                <if test="lunarBirthday != '' and lunarBirthday != null">
+                    and t_chat_buddy.lunar_birthday = #{lunarBirthday}
+                </if>
                 <if test="notes != '' and notes != null">
                     and t_chat_buddy.notes = #{notes}
                 </if>
                 <if test="sort != '' and sort != null">
                     and t_chat_buddy.sort = #{sort}
+                </if>
+                <if test="bio != '' and bio != null">
+                    and t_chat_buddy.bio = #{bio}
+                </if>
+                <if test="avatar != '' and avatar != null">
+                    and t_chat_buddy.avatar = #{avatar}
+                </if>
+                <if test="photos != '' and photos != null">
+                    and t_chat_buddy.photos = #{photos}
+                </if>
+                <if test="favorite != '' and favorite != null">
+                    and t_chat_buddy.favorite = #{favorite}
+                </if>
+                <if test="character != '' and character != null">
+                    and t_chat_buddy.character = #{character}
                 </if>
         </where>
     </sql>

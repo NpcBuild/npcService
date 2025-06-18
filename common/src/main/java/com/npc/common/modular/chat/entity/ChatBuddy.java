@@ -72,6 +72,19 @@ public class ChatBuddy implements Serializable {
      */
     private Integer intimacyLevel;
 
+    /**
+     * 阳历生日
+     */
+    // @ApiModelProperty(value = "阳历生日")
+    private String gregorianBirthday;
+
+
+
+    /**
+     * 农历生日
+     */
+    // @ApiModelProperty(value = "农历生日")
+    private String lunarBirthday;
 
 
     /**
@@ -83,4 +96,44 @@ public class ChatBuddy implements Serializable {
      * 排序
      */
     private Integer sort;
+
+
+
+    /**
+     * 简介
+     */
+    // @ApiModelProperty(value = "简介")
+    private String bio;
+
+
+
+    /**
+     * 头像
+     */
+    // @ApiModelProperty(value = "头像")
+    private String avatar;
+
+
+
+    /**
+     * 照片url列表
+     */
+    // @ApiModelProperty(value = "照片url列表")
+    private String photos;
+
+
+
+    /**
+     * 星标
+     */
+    // @ApiModelProperty(value = "星标")
+    private Integer favorite;
+
+
+
+    /**
+     * 性格
+     */
+    // @ApiModelProperty(value = "性格")
+    private String character;
 }
