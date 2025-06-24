@@ -207,4 +207,23 @@ public class ChatBuddyController {
         String image = ImageUtil.convertImageToBase64Str(imgFileName);
         return ServerResponseVO.success(image);
     }
+
+    /**
+     * 查看图片列表
+     * @return ResponseDataModel转换结果
+     */
+    @GetMapping("picList")
+    public ServerResponseVO<?> picList(String buddyId) {
+        String fileDir = ServerService.IS_LINUX?LIUNX_DIR:WIN_DIR;
+        String dir = fileDir + buddyId;
+        File all = new File(dir);
+        if (!all.exists()) {
+            return ServerResponseVO.success(null);
+        }
+        List<String> allPic = new ArrayList<>();
+        for (File file : all.listFiles()) {
+            allPic.add(ImageUtil.convertImageToBase64Str(file.getAbsolutePath()));
+        }
+        return ServerResponseVO.success(allPic);
+    }
 }
