@@ -176,7 +176,7 @@ public class ChatBuddyController {
     }
 
     /**
-     * 查看图片
+     * 查看图片名列表（快捷指令使用）
      * @return ResponseDataModel转换结果
      */
     @GetMapping("loadPicList")
@@ -195,7 +195,7 @@ public class ChatBuddyController {
     }
 
     /**
-     * 查看图片
+     * 查看图片（快捷指令使用）
      * @return ResponseDataModel转换结果
      */
     @GetMapping("loadPic")
@@ -209,7 +209,7 @@ public class ChatBuddyController {
     }
 
     /**
-     * 查看图片列表
+     * 查看图片列表（相当于loadPicList+loadPic）
      * @return ResponseDataModel转换结果
      */
     @GetMapping("picList")

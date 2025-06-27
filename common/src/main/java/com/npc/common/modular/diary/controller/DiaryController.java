@@ -1,5 +1,7 @@
 package com.npc.common.modular.diary.controller;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.npc.common.modular.diary.dto.DiaryDto;
 import com.npc.common.modular.diary.entity.Diary;
 import com.npc.common.modular.diary.service.IDiaryService;
 import com.npc.core.ServerResponseEnum;
@@ -7,6 +9,7 @@ import com.npc.core.ServerResponseVO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -108,14 +111,16 @@ public class DiaryController {
     }
 
 
-//    /**
-//     * 分页查询数据：
-//     * @param diary 查询对象
-//     * @return PageList 分页对象
-//     */
-//    @RequestMapping(value = "/getDiaryList", method = RequestMethod.GET)
-//    public ServerResponseVO<?> getDiaryList(@Validated Diary diary) {
-//        Page<Diary> page = diaryService.selectListByPage(diary);
-//        return ServerResponseVO.success(page);
-//    }
+    /**
+     * 分页查询数据：
+     * @param diaryDto 查询对象
+     * @return PageList 分页对象
+     */
+    @RequestMapping(value = "/getDiaryList", method = RequestMethod.GET)
+    public ServerResponseVO<?> getDiaryList(@Validated DiaryDto diaryDto) {
+        Page<Diary> page = new Page(diaryDto.getPageNum(), diaryDto.getPageSize());
+        QueryWrapper<Diary> queryWrapper = new QueryWrapper(diaryDto);
+        Page<Diary> pages = diaryService.page(page, queryWrapper);
+        return ServerResponseVO.success(pages);
+    }
 }
