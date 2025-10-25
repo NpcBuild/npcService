@@ -40,7 +40,7 @@ public class RewardServiceImpl extends ServiceImpl<RewardMapper, Reward> impleme
             // 积分兑换
             if ("points".equals(rewardInfo.getType())) {
                 if (rewardInfo.getPointsRequired() != null && rewardInfo.getPointsRequired() > 0) {
-                    if (pointsService.changePoints(1L, -rewardInfo.getPointsRequired(), "兑换奖励")) {
+                    if (pointsService.changePoints(1L, -rewardInfo.getPointsRequired(), "兑换了" + rewardInfo.getName() + "奖励")) {
                         logger.info("用户兑换奖励成功");
                         RewardClaimLog rewardClaimLog = new RewardClaimLog();
                         rewardClaimLog.setUserId(1L);

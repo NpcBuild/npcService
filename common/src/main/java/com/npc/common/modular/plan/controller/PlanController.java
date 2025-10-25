@@ -1,10 +1,12 @@
 package com.npc.common.modular.plan.controller;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.npc.common.modular.plan.dto.PlanDto;
 import com.npc.common.modular.plan.vo.PlanTreeVo;
 import com.npc.common.modular.tags.entity.Tags;
 import com.npc.common.todo.entity.Todo;
 import com.npc.common.todo.service.ITodoService;
+import com.npc.common.todo.vo.TodoVO;
 import com.npc.core.ServerResponseEnum;
 import com.npc.core.ServerResponseVO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -173,5 +175,17 @@ public class PlanController {
     public ServerResponseVO<?> updatePlanPosition(@RequestBody List<Plan> planList) {
         planService.updatePlanPosition(planList);
         return ServerResponseVO.success();
+    }
+
+    /**
+     * 更新任务备注
+     */
+    @PostMapping("updatePlanRemark")
+    public ServerResponseVO<?> updatePlanRemark(@RequestBody PlanDto planDto) {
+        UpdateWrapper<Plan> updateWrapper = new UpdateWrapper<Plan>();
+        updateWrapper.eq("id", planDto.getId());
+        updateWrapper.set("remark", planDto.getRemark());
+        boolean update = planService.update(updateWrapper);
+        return ServerResponseVO.success(planService.getById(planDto.getId()));
     }
 }

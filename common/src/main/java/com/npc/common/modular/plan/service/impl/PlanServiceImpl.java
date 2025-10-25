@@ -43,6 +43,7 @@ public class PlanServiceImpl extends ServiceImpl<PlanMapper, Plan> implements IP
             vo.setId(tags.getId());
             vo.setContent(tags.getContent());
             vo.setParentId(tags.getParentId());
+            vo.setRemark(tags.getRemark());
             voList.add(vo);
         }
 

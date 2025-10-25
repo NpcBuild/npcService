@@ -44,6 +44,16 @@ public class Todo implements Serializable {
     private String type;
 
     /**
+     * 开始
+     */
+    private String start;
+
+    /**
+     * 结束
+     */
+    private String end;
+
+    /**
      * 标签
      */
     private String tag;
@@ -52,6 +62,10 @@ public class Todo implements Serializable {
      * 备注
      */
     private String remark;
+    /**
+     * 星标
+     */
+    private Boolean starMark;
 
     /**
      * 任务状态
@@ -141,6 +155,10 @@ public class Todo implements Serializable {
      * 循环类型
      */
     private String recurrenceType;
+    /**
+     * 循环次数（每个循环周期）
+     */
+    private int recurrenceCount;
 
 
 
@@ -148,7 +166,11 @@ public class Todo implements Serializable {
      * 自定义循环（如['Monday','Thursday']）
      */
     // @ApiModelProperty(value = "自定义循环（如['Monday','Thursday']）")
-    private String recurrenceParams;
+    private String recurrenceDays;
+    /**
+     * 间隔天数
+     */
+    private String recurrenceInterval;
 
 
 

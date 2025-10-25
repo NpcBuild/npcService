@@ -19,14 +19,17 @@
             <result column="avatar" property="avatar"/>
             <result column="photos" property="photos"/>
             <result column="favorite" property="favorite"/>
-            <result column="character" property="character"/>
+            <result column="disposition" property="disposition"/>
+            <result column="type_ids" property="relation"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-            id, name, base64_icon, has_contact, gender, tags, intimacy_level, gregorian_birthday, lunar_birthday, notes, sort, bio, avatar, photos, favorite, character
+            id, name, base64_icon, has_contact, gender, tags, intimacy_level, gregorian_birthday, lunar_birthday, notes, sort, bio, avatar, photos, favorite, disposition
     </sql>
-
+    <sql id="Tcb_Base_Column_List">
+            tcb.id, tcb.name, tcb.base64_icon, tcb.has_contact, tcb.gender, tcb.tags, tcb.intimacy_level, tcb.gregorian_birthday, tcb.lunar_birthday, tcb.notes, tcb.sort, tcb.bio, tcb.avatar, tcb.photos, tcb.favorite, tcb.disposition
+    </sql>
     <sql id="commonConditionSQL">
         <where>
             t_chat_buddy.is_delete = 0
@@ -75,8 +78,8 @@
                 <if test="favorite != '' and favorite != null">
                     and t_chat_buddy.favorite = #{favorite}
                 </if>
-                <if test="character != '' and character != null">
-                    and t_chat_buddy.character = #{character}
+                <if test="disposition != '' and disposition != null">
+                    and t_chat_buddy.disposition = #{disposition}
                 </if>
         </where>
     </sql>
@@ -93,40 +96,79 @@
             </foreach>
         </where>
     </select>
-    <select id="getList" resultType="com.npc.common.modular.chat.entity.ChatBuddy">
+    <select id="getList" resultMap="BaseResultMap">
         select
-        <include refid="Base_Column_List"/>
-        from t_chat_buddy
+            GROUP_CONCAT(tcbr.type_ids) as type_ids,
+            <include refid="Tcb_Base_Column_List"/>
+        from t_chat_buddy tcb
+        LEFT JOIN t_chat_buddy_relations tcbr ON tcbr.to_id = tcb.id
         <where>
             <if test="dto.id != '' and dto.id != null">
-                and id = #{dto.id}
+                and tcb.id = #{dto.id}
             </if>
             <if test="dto.name != '' and dto.name != null">
-                and name like CONCAT('%', #{dto.name}, '%')
+                and tcb.name like CONCAT('%', #{dto.name}, '%')
             </if>
             <if test="dto.hasContact != null and dto.hasContact">
-                and coalesce(has_contact, 1) = #{dto.hasContact}
+                and coalesce(tcb.has_contact, 1) = #{dto.hasContact}
             </if>
             <if test="dto.hasContact != null and dto.hasContact == false">
-                and has_contact = #{dto.hasContact}
+                and tcb.has_contact = #{dto.hasContact}
             </if>
             <if test="dto.gender != '' and dto.gender != null">
-                and gender = #{dto.gender}
+                and tcb.gender = #{dto.gender}
             </if>
             <if test="dto.tags != '' and dto.tags != null">
-                and tags = #{dto.tags}
+                and tcb.tags = #{dto.tags}
             </if>
             <if test="dto.intimacyLevel != '' and dto.intimacyLevel != null">
-                and intimacy_level = #{dto.intimacyLevel}
+                and tcb.intimacy_level = #{dto.intimacyLevel}
             </if>
             <if test="dto.notes != '' and dto.notes != null">
-                and notes like CONCAT('%', #{dto.notes}, '%')
+                and tcb.notes like CONCAT('%', #{dto.notes}, '%')
             </if>
             <if test="dto.sort != '' and dto.sort != null">
-                and sort = #{dto.sort}
+                and tcb.sort = #{dto.sort}
             </if>
         </where>
-        order by sort
+        group by tcb.id
+        order by tcb.sort
+    </select>
+    <select id="getListCount" resultType="int">
+    select count(*) from (
+    select tcb.id
+    from t_chat_buddy tcb
+    LEFT JOIN t_chat_buddy_relations tcbr ON tcbr.to_id = tcb.id
+    <where>
+        <if test="dto.id != '' and dto.id != null">
+            and tcb.id = #{dto.id}
+        </if>
+        <if test="dto.name != '' and dto.name != null">
+            and tcb.name like CONCAT('%', #{dto.name}, '%')
+        </if>
+        <if test="dto.hasContact != null and dto.hasContact">
+            and coalesce(tcb.has_contact, 1) = #{dto.hasContact}
+        </if>
+        <if test="dto.hasContact != null and dto.hasContact == false">
+            and tcb.has_contact = #{dto.hasContact}
+        </if>
+        <if test="dto.gender != '' and dto.gender != null">
+            and tcb.gender = #{dto.gender}
+        </if>
+        <if test="dto.tags != '' and dto.tags != null">
+            and tcb.tags = #{dto.tags}
+        </if>
+        <if test="dto.intimacyLevel != '' and dto.intimacyLevel != null">
+            and tcb.intimacy_level = #{dto.intimacyLevel}
+        </if>
+        <if test="dto.notes != '' and dto.notes != null">
+            and tcb.notes like CONCAT('%', #{dto.notes}, '%')
+        </if>
+        <if test="dto.sort != '' and dto.sort != null">
+            and tcb.sort = #{dto.sort}
+        </if>
+    </where>
+    group by tcb.id) tmp_count
     </select>
 
 </mapper>

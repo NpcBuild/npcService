@@ -14,6 +14,9 @@ import oshi.software.os.OSFileStore;
 import oshi.software.os.OperatingSystem;
 import oshi.util.Util;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.UnknownHostException;
 import java.util.LinkedList;
 import java.util.List;
@@ -67,7 +70,14 @@ public class Server
 
         setJvmInfo();
 
-        setSysFiles(si.getOperatingSystem());
+        if (sys.getOsName().toLowerCase().contains("win"))
+        {
+            setSysFiles(si.getOperatingSystem());
+        }
+        else
+        {
+            setSysFiles();
+        }
     }
 
     /**
@@ -141,6 +151,12 @@ public class Server
         List<OSFileStore> fsArray = fileSystem.getFileStores();
         for (OSFileStore fs : fsArray)
         {
+            // 过滤掉一些特殊的文件系统类型，如 tmpfs、overlay 等
+            String type = fs.getType().toLowerCase();
+            if (type.contains("tmpfs") || type.contains("overlay")) {
+                continue;
+            }
+
             long free = fs.getUsableSpace();
             long total = fs.getTotalSpace();
             long used = total - free;
@@ -155,6 +171,49 @@ public class Server
             sysFiles.add(sysFile);
         }
     }
+
+    /**
+     * 设置磁盘信息 (OSHI 无法正确获取磁盘信息，直接调用系统命令（如 df -h）来获取磁盘信息)
+     */
+    private void setSysFiles() throws IOException {
+        // 修改命令为 df -Th
+        Process process = Runtime.getRuntime().exec("df -Th");
+        BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+        String line;
+        boolean isHeader = true;
+        while ((line = reader.readLine()) != null) {
+            if (isHeader) {
+                isHeader = false;
+                continue;
+            }
+            String[] parts = line.trim().split("\\s+");
+            // 由于 df -Th 输出多了文件系统类型，判断条件改为 parts.length >= 7
+            if (parts.length >= 7) {
+                String dirName = parts[6];
+                String sysTypeName = parts[1];
+                // 这里假设文件系统名称使用设备名，对应 parts[0]
+                String typeName = parts[0];
+                String total = parts[2];
+                String used = parts[3];
+                String free = parts[4];
+                String usage = parts[5].replace("%", "");
+
+                SysFile sysFile = new SysFile();
+                sysFile.setDirName(dirName);
+                // 给 sysTypeName 属性赋值
+                sysFile.setSysTypeName(sysTypeName);
+                // 给 typeName 属性赋值
+                sysFile.setTypeName(typeName);
+                sysFile.setTotal(total);
+                sysFile.setUsed(used);
+                sysFile.setFree(free);
+                sysFile.setUsage(Double.parseDouble(usage));
+                sysFiles.add(sysFile);
+            }
+        }
+        reader.close();
+    }
+
 
     /**
      * 字节转换

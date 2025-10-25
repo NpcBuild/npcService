@@ -1,6 +1,8 @@
 package com.npc.common.modular.diary.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.npc.common.modular.chat.entity.ChatBuddy;
 import com.npc.common.modular.diary.dto.DiaryDto;
 import com.npc.common.modular.diary.entity.Diary;
 import com.npc.common.modular.diary.service.IDiaryService;
@@ -118,9 +120,7 @@ public class DiaryController {
      */
     @RequestMapping(value = "/getDiaryList", method = RequestMethod.GET)
     public ServerResponseVO<?> getDiaryList(@Validated DiaryDto diaryDto) {
-        Page<Diary> page = new Page(diaryDto.getPageNum(), diaryDto.getPageSize());
-        QueryWrapper<Diary> queryWrapper = new QueryWrapper(diaryDto);
-        Page<Diary> pages = diaryService.page(page, queryWrapper);
-        return ServerResponseVO.success(pages);
+        IPage<Diary> page = diaryService.selectListByPage(diaryDto);
+        return ServerResponseVO.success(page);
     }
 }

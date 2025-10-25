@@ -1,5 +1,10 @@
 package com.npc.common.modular.diary.mapper;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.npc.common.modular.chat.entity.ChatBuddy;
+import com.npc.common.modular.chat.vo.BuddyVO;
+import com.npc.common.modular.diary.dto.DiaryDto;
 import com.npc.common.modular.diary.entity.Diary;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Mapper;
@@ -26,4 +31,5 @@ public interface DiaryMapper extends BaseMapper<Diary> {
      */
     List<Diary> getDiaryListByColList(@Param("column") String column, @Param("ids") List<Integer> ids);
 
+    IPage<Diary> getList(Page<Diary> page, @Param("dto")  DiaryDto diaryDto);
 }

@@ -7,8 +7,11 @@
             <result column="id" property="id"/>
             <result column="todo_name" property="todoName"/>
             <result column="type" property="type"/>
+            <result column="start" property="start"/>
+            <result column="end" property="end"/>
             <result column="tag" property="tag"/>
             <result column="remark" property="remark"/>
+            <result column="star_mark" property="starMark"/>
             <result column="status" property="status"/>
             <result column="quartz_id" property="quartzId"/>
             <result column="plan_id" property="planId"/>
@@ -25,7 +28,8 @@
             <result column="done_score" property="doneScore"/>
             <result column="done_get" property="doneGet"/>
             <result column="recurrence_type" property="recurrenceType"/>
-            <result column="recurrence_params" property="recurrenceParams"/>
+            <result column="recurrence_count" property="recurrenceCount"/>
+            <result column="recurrence_days" property="recurrenceDays"/>
             <result column="recurrence_interval" property="recurrenceInterval"/>
             <result column="next_due_date" property="nextDueDate"/>
     </resultMap>
@@ -33,8 +37,11 @@
             <result column="id" property="id"/>
             <result column="todo_name" property="todoName"/>
             <result column="type" property="type"/>
+            <result column="start" property="start"/>
+            <result column="end" property="end"/>
             <result column="tag" property="tag"/>
             <result column="remark" property="remark"/>
+            <result column="star_mark" property="starMark"/>
             <result column="status" property="status"/>
             <result column="quartz_id" property="quartzId"/>
             <result column="plan_id" property="planId"/>
@@ -51,6 +58,7 @@
             <result column="done_score" property="doneScore"/>
             <result column="done_get" property="doneGet"/>
             <result column="recurrence_type" property="recurrenceType"/>
+            <result column="recurrence_count" property="recurrenceCount"/>
             <result column="recurrence_days" property="recurrenceDays"/>
             <result column="recurrence_interval" property="recurrenceInterval"/>
             <result column="next_due_date" property="nextDueDate"/>
@@ -58,10 +66,10 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-            id, todo_name, type, tag, remark, status, quartz_id, plan_id, problem_id, start_time, end_time, remind, remind_type, remind_week, remind_day, remind_time, remind_lunar_day, remind_todo, done_score, done_get, recurrence_type, recurrence_params, next_due_date
+            id, todo_name, type, start, end,tag, remark, star_mark, status, quartz_id, plan_id, problem_id, start_time, end_time, remind, remind_type, remind_week, remind_day, remind_time, remind_lunar_day, remind_todo, done_score, done_get, recurrence_type, recurrence_count, recurrence_days,  recurrence_interval, next_due_date
     </sql>
     <sql id="Prefixed_Base_Column_List">
-        td.id, td.todo_name, td.type, td.tag, td.remark, td.status, td.quartz_id, td.plan_id, td.problem_id, td.start_time, td.end_time, td.remind, td.remind_type, td.remind_week, td.remind_day, td.remind_time, td.remind_lunar_day, td.remind_todo, td.done_score, td.done_get, td.recurrence_type, td.recurrence_params, td.next_due_date
+        td.id, td.todo_name, td.type, td.start, td.end, td.tag, td.remark, td.star_mark, td.status, td.quartz_id, td.plan_id, td.problem_id, td.start_time, td.end_time, td.remind, td.remind_type, td.remind_week, td.remind_day, td.remind_time, td.remind_lunar_day, td.remind_todo, td.done_score, td.done_get, td.recurrence_type, td.recurrence_count, td.recurrence_days,  td.recurrence_interval, td.next_due_date
     </sql>
 
 
@@ -77,11 +85,20 @@
                 <if test="type != '' and type != null">
                     and t_todo.type = #{type}
                 </if>
+                <if test="start != '' and start != null">
+                    and t_todo.start = #{start}
+                </if>
+                <if test="end != '' and end != null">
+                    and t_todo.end = #{end}
+                </if>
                 <if test="tag != '' and tag != null">
                     and t_todo.tag = #{tag}
                 </if>
                 <if test="remark != '' and remark != null">
                     and t_todo.remark = #{remark}
+                </if>
+                <if test="starMark != '' and starMark != null">
+                    and t_todo.star_mark = #{starMark}
                 </if>
                 <if test="status != '' and status != null">
                     and t_todo.status = #{status}
@@ -131,8 +148,14 @@
                 <if test="recurrenceType != '' and recurrenceType != null">
                     and t_todo.recurrence_type = #{recurrenceType}
                 </if>
-                <if test="recurrenceParams != '' and recurrenceParams != null">
-                    and t_todo.recurrence_params = #{recurrenceParams}
+                <if test="recurrenceCount != '' and recurrenceCount != null">
+                    and t_todo.recurrence_count = #{recurrenceCount}
+                </if>
+                <if test="recurrenceDays != '' and recurrenceDays != null">
+                    and t_todo.recurrence_days = #{recurrenceDays}
+                </if>
+                <if test="recurrenceInterval != '' and recurrenceInterval != null">
+                    and t_todo.recurrence_interval = #{recurrenceInterval}
                 </if>
                 <if test="nextDueDate != '' and nextDueDate != null">
                     and t_todo.next_due_date = #{nextDueDate}
@@ -163,6 +186,9 @@
             </if>
             <if test="vo.endDate != null and vo.endDate != ''">
                 and td.end_time > #{vo.endDate}
+            </if>
+            <if test="vo.status != null and vo.status != ''">
+                and td.status = #{vo.status}
             </if>
             <if test="vo.type != null and vo.type != ''">
                 and td.type = #{vo.type}

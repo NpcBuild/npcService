@@ -46,6 +46,11 @@ public class TodoCompleted implements Serializable {
      */
     @Schema(description = "完成状态", example = "2")
     private String status;
+    /**
+     * 完成次数（针对计数的任务）
+     */
+    @Schema(description = "完成次数", example = "-")
+    private Integer completeNum;
 
 
 

@@ -3,6 +3,7 @@ package com.npc.common.modular.problem.controller;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.google.common.net.HttpHeaders;
 import com.npc.common.modular.problem.dto.ProblemDto;
+import com.npc.common.modular.problem.dto.UploadDto;
 import com.npc.common.modular.problem.entity.Problem;
 import com.npc.common.modular.problem.service.IProblemService;
 import com.npc.common.modular.problem.vo.ProblemVO;
@@ -100,25 +101,15 @@ public class ProblemController {
      * @param files 传递的实体
      * @return ResponseDataModel转换结果
      */
-    @RequestMapping(value = "/upload", method = RequestMethod.POST)
-    public ServerResponseVO<?> upload(@RequestParam("id") String id
-                                        ,@RequestParam(required = false, name = "pic") List<MultipartFile> files
-                                        ,@RequestParam("fileName") String fileName
-                                        ,@RequestParam(required = false, name = "pic1") MultipartFile file1
-                                        ,@RequestParam(required = false, name = "pic2") MultipartFile file2
-                                        ,@RequestParam(required = false, name = "pic3") MultipartFile file3
-                                        ,@RequestParam(required = false, name = "pic4") MultipartFile file4
-                                        ,@RequestParam(required = false, name = "pic5") MultipartFile file5
-                                        ,@RequestParam(required = false, name = "pic6") MultipartFile file6
-                                        ,@RequestParam(required = false, name = "pic7") MultipartFile file7
-                                        ,@RequestParam(required = false, name = "pic8") MultipartFile file8
-                                        ,@RequestParam(required = false, name = "pic9") MultipartFile file9) {
+    @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ServerResponseVO<?> upload(UploadDto uploadDto) {
         try {
-            if (CollectionUtils.isEmpty(files) && ObjectUtils.isEmpty(file1)) {
+            List<MultipartFile> files = uploadDto.getPic();
+            if (CollectionUtils.isEmpty(files) && ObjectUtils.isEmpty(uploadDto.getFile1())) {
                 return ServerResponseVO.error(ServerResponseEnum.SAVE_FAILED);
             }
             String fileDir = ServerService.IS_LINUX?LIUNX_DIR:WIN_DIR;
-            String dir = fileDir + id;
+            String dir = fileDir + uploadDto.getId();
             File dirFile = new File(dir);
             if (dirFile != null && !dirFile.exists()) {
                 boolean created = dirFile.mkdirs(); // 创建父目录
@@ -135,15 +126,15 @@ public class ProblemController {
             }
             if (ObjectUtils.isEmpty(files)) {
                 files = new ArrayList<>();
-                files.add(file1);
-                files.add(file2);
-                files.add(file3);
-                files.add(file4);
-                files.add(file5);
-                files.add(file6);
-                files.add(file7);
-                files.add(file8);
-                files.add(file9);
+                files.add(uploadDto.getFile1());
+                files.add(uploadDto.getFile2());
+                files.add(uploadDto.getFile3());
+                files.add(uploadDto.getFile4());
+                files.add(uploadDto.getFile5());
+                files.add(uploadDto.getFile6());
+                files.add(uploadDto.getFile7());
+                files.add(uploadDto.getFile8());
+                files.add(uploadDto.getFile9());
             }
             int noNullCount = 0;
             for (MultipartFile file : files) {
@@ -157,6 +148,7 @@ public class ProblemController {
                     continue;
                 }
                 String suffix = FileUtils.getFileSuffix(file);
+                String fileName = StringUtils.isEmpty(uploadDto.getFileName()) ? "" : uploadDto.getFileName();
                 String imgFileName = StringUtils.isEmpty(fileName) ? file.getOriginalFilename() : (fileName + "(" + (i+1) +")" +  "." + suffix);
                 if (noNullCount == 1) {
                     imgFileName = StringUtils.isEmpty(fileName) ? file.getOriginalFilename() : (fileName +  "." + suffix);
@@ -180,6 +172,56 @@ public class ProblemController {
      */
     @RequestMapping(value = "/picList", method = RequestMethod.GET)
     public ServerResponseVO<?> picList(@RequestParam("id") String id) {
+        try {
+            String fileDir = ServerService.IS_LINUX?LIUNX_DIR:WIN_DIR;
+            String dir = fileDir + id;
+            File all = new File(dir);
+            if (!all.exists()) {
+                return ServerResponseVO.success(new ArrayList<>());
+            }
+            List<String> allPic = new ArrayList<>();
+            // 递归遍历所有文件和文件夹
+            getAllImageFiles(all, allPic);
+            return ServerResponseVO.success(allPic);
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.error("异常：" + e.getMessage());
+            return ServerResponseVO.error(ServerResponseEnum.DATA_EXCEPTION);
+        }
+    }
+
+    /**
+     * 递归获取文件夹中的所有图片文件
+     * @param directory 文件夹
+     * @param imageFiles 图片文件列表
+     */
+    private void getAllImageFiles(File directory, List<String> imageFiles) {
+        File[] files = directory.listFiles();
+        if (files != null) {
+            for (File file : files) {
+                if (file.isDirectory()) {
+                    // 递归处理子文件夹
+                    getAllImageFiles(file, imageFiles);
+                } else {
+                    // 处理文件，检查是否为图片文件
+                    String fileName = file.getName().toLowerCase();
+                    if (fileName.endsWith(".jpg") || fileName.endsWith(".jpeg") ||
+                            fileName.endsWith(".png") || fileName.endsWith(".gif") ||
+                            fileName.endsWith(".bmp")) {
+                        imageFiles.add(ImageUtil.convertImageToBase64Str(file.getAbsolutePath()));
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * 获取图片列表
+     * @param id 问题ID
+     * @return ResponseDataModel转换结果
+     */
+    @RequestMapping(value = "/picListName", method = RequestMethod.GET)
+    public ServerResponseVO<?> picListName(@RequestParam("id") String id) {
         try {
             String fileDir = ServerService.IS_LINUX?LIUNX_DIR:WIN_DIR;
             String dir = fileDir + id;

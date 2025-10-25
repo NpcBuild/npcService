@@ -81,7 +81,7 @@ public class ScheduleRuleUtil {
             Todo rule = new Todo();
             rule.setId(Integer.valueOf(input.getTaskId()));
             rule.setRecurrenceType(repeatType);
-            rule.setRecurrenceParams(objectMapper.writeValueAsString(repeatValue));
+            rule.setRecurrenceDays(objectMapper.writeValueAsString(repeatValue));
             rule.setStartTime(LocalDateTime.parse(input.getStartDate()));
             rule.setEndTime(LocalDateTime.parse(input.getEndDate()));
             return rule;
@@ -95,7 +95,7 @@ public class ScheduleRuleUtil {
      */
     public static String format(Todo rule) {
         String repeatType = rule.getRecurrenceType();
-        String repeatValueJson = rule.getRecurrenceParams();
+        String repeatValueJson = rule.getRecurrenceDays();
 
         try {
             Map<String, Object> value = objectMapper.readValue(repeatValueJson, new TypeReference<Map<String, Object>>() {});

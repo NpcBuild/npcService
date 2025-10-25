@@ -26,4 +26,5 @@ public interface AssetsMapper extends BaseMapper<Assets> {
      */
     List<Assets> getAssetsListByColList(@Param("column") String column, @Param("ids") List<Integer> ids);
 
+    List<Assets> getMyAssetsList(int userId);
 }

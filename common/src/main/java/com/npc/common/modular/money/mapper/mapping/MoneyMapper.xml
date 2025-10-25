@@ -84,10 +84,13 @@
     </select>
     <select id="getList" resultType="com.npc.common.modular.money.entity.Money" parameterType="com.npc.common.modular.money.dto.MoneyDto">
         SELECT
+        <include refid="Base_Column_List"/>
+        <!--
         description,
         amount,
         category,
         payment_time
+        -->
         FROM
         t_money
         <where>

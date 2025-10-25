@@ -3,6 +3,7 @@ package com.npc.common.todo.service;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.npc.common.todo.entity.Todo;
+import com.npc.common.todo.enums.TodoTypeEnum;
 import com.npc.common.todo.vo.TodoVO;
 import com.npc.common.todo.vo.TodoViewVO;
 
@@ -20,6 +21,9 @@ public interface ITodoService extends IService<Todo> {
 
     List<Todo> getList(TodoVO vo);
     IPage<TodoViewVO> getListPage(TodoVO vo);
+
+    // 获取任务类型
+    TodoTypeEnum getTodoType(Todo todo);
 
     /**
      * 扩展更多信息

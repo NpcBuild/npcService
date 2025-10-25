@@ -10,6 +10,9 @@ import com.npc.common.modular.assets.mapper.AssetsMapper;
 import com.npc.common.modular.assets.service.IAssetsService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 
+import javax.annotation.Resource;
+import java.util.List;
+
 /**
  * <p>
  * 物品表 服务实现类
@@ -22,4 +25,14 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 public class AssetsServiceImpl extends ServiceImpl<AssetsMapper, Assets> implements IAssetsService {
 
     private static final Logger logger = LoggerFactory.getLogger(AssetsServiceImpl.class);
+
+    @Resource
+    private AssetsMapper assetsMapper;
+
+    @Override
+    public List<Assets> getMyAssetsList() {
+        int userId = 1;
+        List<Assets> assetsList = assetsMapper.getMyAssetsList(userId);
+        return assetsList;
+    }
 }

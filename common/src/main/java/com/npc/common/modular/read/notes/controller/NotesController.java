@@ -25,7 +25,7 @@ import java.util.Arrays;
  * @since 2025-04-06
  */
 @RestController
-@RequestMapping("/notes")
+@RequestMapping("/read/notes")
 public class NotesController {
     
     private static final Logger logger = LoggerFactory.getLogger(NotesController.class);

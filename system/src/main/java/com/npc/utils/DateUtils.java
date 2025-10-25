@@ -204,6 +204,32 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils
 //    ----------------------------------------------天数计算---------------------------------------------------
 
     /**
+     * 获取给定日期的周初第一天
+     *
+     * @param date 给定的日期
+     * @return 该周初的第一天
+     */
+    public static String getFirstDayOfWeek(LocalDate date) {
+        // 获取本周的第一天（周一）
+        LocalDate firstDayOfWeek = date.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
+        Date toDate = toDate(firstDayOfWeek);
+        return dateTime(toDate);
+    }
+
+    /**
+     * 获取给定日期的下一周的第一天
+     *
+     * @param date 给定的日期
+     * @return 下一周的第一天
+     */
+    public static String getFirstDayOfNextWeek(LocalDate date) {
+        // 获取下周的第一天（周一）
+        LocalDate firstDayOfNextWeek = date.with(TemporalAdjusters.next(DayOfWeek.MONDAY));
+        Date toDate = toDate(firstDayOfNextWeek);
+        return dateTime(toDate);
+    }
+
+    /**
      * 获取给定日期的月初第一天
      *
      * @param date 给定的日期

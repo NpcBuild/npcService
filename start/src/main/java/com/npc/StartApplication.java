@@ -10,12 +10,14 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
+import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
 @SpringBootApplication
 @MapperScan(basePackages = {"com.npc"},annotationClass = Mapper.class)
 @EnableScheduling   //开启定时任务
+@EnableDiscoveryClient
 public class StartApplication extends SpringBootServletInitializer {
     private final static Logger logger = LoggerFactory.getLogger(StartApplication.class);
 

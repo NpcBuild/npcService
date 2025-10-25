@@ -69,7 +69,7 @@ public class Login {
     JwtTokenUtil jwtTokenUtil;
 
     @Alarm(title = "登录业务告警", messageType = MessageTypes.TEXT, templateId = "errorTemp")
-    @RedisLimit(identifier = "account", watch = 30, lock = 600, times = 10)
+//    @RedisLimit(identifier = "account", watch = 30, lock = 600, times = 10)
     @PostMapping("/login")
     public ServerResponseVO login(@RequestBody User user, HttpServletRequest request) {
         Subject userSubject = SecurityUtils.getSubject();

@@ -12,4 +12,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
  * @since 2025-04-06
  */
 public interface IRecipesService extends IService<Recipes> {
+    // 按照菜名判断更新
+    boolean saveIfNotExists(String recipeName);
+
 }

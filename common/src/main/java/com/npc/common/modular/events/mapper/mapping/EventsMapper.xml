@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.npc.common.modular.events.mapper.EventsMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.npc.common.modular.events.entity.Events">
+            <result column="id" property="id"/>
+            <result column="name" property="name"/>
+            <result column="event_date" property="eventDate"/>
+            <result column="type" property="type"/>
+            <result column="description" property="description"/>
+            <result column="reminder" property="reminder"/>
+            <result column="created_at" property="createdAt"/>
+            <result column="updated_at" property="updatedAt"/>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+            id, name, event_date, type, description, reminder, created_at, updated_at
+    </sql>
+
+    <sql id="commonConditionSQL">
+        <where>
+            t_events.is_delete = 0
+                <if test="id != '' and id != null">
+                    and t_events.id = #{id}
+                </if>
+                <if test="name != '' and name != null">
+                    and t_events.name = #{name}
+                </if>
+                <if test="eventDate != '' and eventDate != null">
+                    and t_events.event_date = #{eventDate}
+                </if>
+                <if test="type != '' and type != null">
+                    and t_events.type = #{type}
+                </if>
+                <if test="description != '' and description != null">
+                    and t_events.description = #{description}
+                </if>
+                <if test="reminder != '' and reminder != null">
+                    and t_events.reminder = #{reminder}
+                </if>
+                <if test="createdAt != '' and createdAt != null">
+                    and t_events.created_at = #{createdAt}
+                </if>
+                <if test="updatedAt != '' and updatedAt != null">
+                    and t_events.updated_at = #{updatedAt}
+                </if>
+        </where>
+    </sql>
+
+    <select id="getEventsListByColList" resultType="com.npc.common.modular.events.entity.Events">
+        select
+        <include refid="Base_Column_List"/>
+        from t_events
+        <where>
+            t_events.is_delete = 0
+            and ${column} in
+            <foreach collection="ids" item="id" separator="," open="(" close=")">
+                ${id}
+            </foreach>
+        </where>
+    </select>
+
+</mapper>

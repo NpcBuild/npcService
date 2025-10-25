@@ -1,10 +1,14 @@
 package com.npc.common.modular.read.content.dto;
 
-import com.npc.core.PageSearch;
-import lombok.Data;
-
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.time.Year;
+
+import com.npc.core.PageSearch;
+import lombok.Data;
 
 /**
  * <p>
@@ -12,10 +16,10 @@ import java.time.Year;
  * </p>
  *
  * @author yangfei
- * @since 2025-04-06
+ * @since 2025-10-12
  */
 @Data
-public class ContentDto extends PageSearch {
+public class ReadContentDto extends PageSearch {
 
     private Integer id; 
 
@@ -26,6 +30,8 @@ public class ContentDto extends PageSearch {
     private String author;  // 创作者 
 
     private Year releaseYear;  // 出版 / 上映年份 
+
+    private Double rating;  // 评分 
 
     private String genre;  // 类别（如 科幻 / 悬疑） 
 

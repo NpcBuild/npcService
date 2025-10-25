@@ -17,59 +17,58 @@
             <result column="pub" property="pub"/>
             <result column="read_status" property="readStatus"/>
             <result column="rating" property="rating"/>
-            <result column="timestamp" property="timestamp"/>
+            <result column="created_at" property="createdAt"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-            id, user_id, date, title, content, mood, location, tags, weather, reminder, pub, read_status, rating, timestamp
+            id, user_id, date, title, content, mood, location, tags, weather, reminder, pub, read_status, rating, created_at
     </sql>
 
     <sql id="commonConditionSQL">
         <where>
-            t_diary.is_delete = 0
-                <if test="id != '' and id != null">
-                    and t_diary.id = #{id}
-                </if>
-                <if test="userId != '' and userId != null">
-                    and t_diary.user_id = #{userId}
-                </if>
-                <if test="date != '' and date != null">
-                    and t_diary.date = #{date}
-                </if>
-                <if test="title != '' and title != null">
-                    and t_diary.title = #{title}
-                </if>
-                <if test="content != '' and content != null">
-                    and t_diary.content = #{content}
-                </if>
-                <if test="mood != '' and mood != null">
-                    and t_diary.mood = #{mood}
-                </if>
-                <if test="location != '' and location != null">
-                    and t_diary.location = #{location}
-                </if>
-                <if test="tags != '' and tags != null">
-                    and t_diary.tags = #{tags}
-                </if>
-                <if test="weather != '' and weather != null">
-                    and t_diary.weather = #{weather}
-                </if>
-                <if test="reminder != '' and reminder != null">
-                    and t_diary.reminder = #{reminder}
-                </if>
-                <if test="pub != '' and pub != null">
-                    and t_diary.pub = #{pub}
-                </if>
-                <if test="readStatus != '' and readStatus != null">
-                    and t_diary.read_status = #{readStatus}
-                </if>
-                <if test="rating != '' and rating != null">
-                    and t_diary.rating = #{rating}
-                </if>
-                <if test="timestamp != '' and timestamp != null">
-                    and t_diary.timestamp = #{timestamp}
-                </if>
+            <if test="id != '' and id != null">
+                and t_diary.id = #{id}
+            </if>
+            <if test="userId != '' and userId != null">
+                and t_diary.user_id = #{userId}
+            </if>
+            <if test="date != '' and date != null">
+                and t_diary.date = #{date}
+            </if>
+            <if test="title != '' and title != null">
+                and t_diary.title like CONCAT('%', #{title}, '%')
+            </if>
+            <if test="content != '' and content != null">
+                and t_diary.content like CONCAT('%', #{content}, '%')
+            </if>
+            <if test="mood != '' and mood != null">
+                and t_diary.mood = #{mood}
+            </if>
+            <if test="location != '' and location != null">
+                and t_diary.location = #{location}
+            </if>
+            <if test="tags != '' and tags != null">
+                and t_diary.tags = #{tags}
+            </if>
+            <if test="weather != '' and weather != null">
+                and t_diary.weather = #{weather}
+            </if>
+            <if test="reminder != '' and reminder != null">
+                and t_diary.reminder = #{reminder}
+            </if>
+            <if test="pub != '' and pub != null">
+                and t_diary.pub = #{pub}
+            </if>
+            <if test="readStatus != '' and readStatus != null">
+                and t_diary.read_status = #{readStatus}
+            </if>
+            <if test="rating != '' and rating != null">
+                and t_diary.rating = #{rating}
+            </if>
+            <if test="createdAt != '' and createdAt != null">
+                and t_diary.created_at = #{createdAt}
+            </if>
         </where>
     </sql>
 
@@ -85,5 +84,48 @@
             </foreach>
         </where>
     </select>
-
+    <select id="getList" resultType="com.npc.common.modular.diary.entity.Diary">
+        select
+        <include refid="Base_Column_List"/>
+        from t_diary
+        <where>
+            <if test="dto.id != '' and dto.id != null">
+                and t_diary.id = #{dto.id}
+            </if>
+            <if test="dto.userId != '' and dto.userId != null">
+                and t_diary.user_id = #{dto.userId}
+            </if>
+            <if test="dto.date != '' and dto.date != null">
+                and t_diary.date = #{dto.date}
+            </if>
+            <if test="dto.title != '' and dto.title != null">
+                and t_diary.title like CONCAT('%', #{dto.title}, '%')
+            </if>
+            <if test="dto.content != '' and dto.content != null">
+                and t_diary.content like CONCAT('%', #{dto.content}, '%')
+            </if>
+            <if test="dto.mood != '' and dto.mood != null">
+                and t_diary.mood = #{dto.mood}
+            </if>
+<!--            <if test="tags != '' and tags != null">-->
+<!--                and t_diary.tags = #{tags}-->
+<!--            </if>-->
+            <if test="dto.weather != '' and dto.weather != null">
+                and t_diary.weather = #{dto.weather}
+            </if>
+            <if test="dto.reminder != '' and dto.reminder != null">
+                and t_diary.reminder = #{dto.reminder}
+            </if>
+            <if test="dto.pub != '' and dto.pub != null">
+                and t_diary.pub = #{dto.pub}
+            </if>
+            <if test="dto.readStatus != '' and dto.readStatus != null">
+                and t_diary.read_status = #{dto.readStatus}
+            </if>
+            <if test="dto.rating != '' and dto.rating != null">
+                and t_diary.rating = #{dto.rating}
+            </if>
+        </where>
+        order by t_diary.created_at desc
+    </select>
 </mapper>

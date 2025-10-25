@@ -32,7 +32,14 @@ public interface TodoCompletedMapper extends BaseMapper<TodoCompleted> {
      * @return
      */
     List<TodoCompleted> getCompletedList(@Param("date") String date);
-    List<TodoCompleted> getCompletedListSE(@Param("startDate") String startDate, @Param("endDate") String endDate);
+
+    // 获取指定日期区间的已完成任务
+    List<TodoCompleted> getCompletedListSEIn(@Param("startDate") String startDate, @Param("endDate") String endDate, @Param("ids") List<Integer> ids);
+
+    // 查询指定日期的已完成任务
     List<TodoCompleted> getCompletedListIn(@Param("date") String date, @Param("ids") List<Integer> ids);
+
+    // 获取上次完成的任务记录
+    List<TodoCompleted> getLastCompletedList(@Param("ids") List<Integer> ids);
 
 }

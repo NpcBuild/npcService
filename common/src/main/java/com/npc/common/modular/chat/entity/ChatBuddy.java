@@ -1,6 +1,7 @@
 package com.npc.common.modular.chat.entity;
 
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
@@ -135,5 +136,9 @@ public class ChatBuddy implements Serializable {
      * 性格
      */
     // @ApiModelProperty(value = "性格")
-    private String character;
+    private String disposition;
+
+    // 关系
+    @TableField(exist = false)
+    private String relation;
 }

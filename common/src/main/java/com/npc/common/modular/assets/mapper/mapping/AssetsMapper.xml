@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.npc.common.modular.assets.mapper.AssetsMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.npc.common.modular.assets.entity.Assets">
+            <result column="id" property="id"/>
+            <result column="name" property="name"/>
+            <result column="category" property="category"/>
+            <result column="model" property="model"/>
+            <result column="purchase_date" property="purchaseDate"/>
+            <result column="price" property="price"/>
+            <result column="quantity" property="quantity"/>
+            <result column="unit" property="unit"/>
+            <result column="location" property="location"/>
+            <result column="status" property="status"/>
+            <result column="notes" property="notes"/>
+            <result column="expiration_date" property="expirationDate"/>
+            <result column="image_url" property="imageUrl"/>
+            <result column="create_time" property="createTime"/>
+            <result column="update_time" property="updateTime"/>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+            id, name, category, model, purchase_date, price, quantity, unit, location, status, notes, expiration_date, image_url, create_time, update_time
+    </sql>
+
+    <sql id="commonConditionSQL">
+        <where>
+            t_assets.is_delete = 0
+                <if test="id != '' and id != null">
+                    and t_assets.id = #{id}
+                </if>
+                <if test="name != '' and name != null">
+                    and t_assets.name = #{name}
+                </if>
+                <if test="category != '' and category != null">
+                    and t_assets.category = #{category}
+                </if>
+                <if test="model != '' and model != null">
+                    and t_assets.model = #{model}
+                </if>
+                <if test="purchaseDate != '' and purchaseDate != null">
+                    and t_assets.purchase_date = #{purchaseDate}
+                </if>
+                <if test="price != '' and price != null">
+                    and t_assets.price = #{price}
+                </if>
+                <if test="quantity != '' and quantity != null">
+                    and t_assets.quantity = #{quantity}
+                </if>
+                <if test="unit != '' and unit != null">
+                    and t_assets.unit = #{unit}
+                </if>
+                <if test="location != '' and location != null">
+                    and t_assets.location = #{location}
+                </if>
+                <if test="status != '' and status != null">
+                    and t_assets.status = #{status}
+                </if>
+                <if test="notes != '' and notes != null">
+                    and t_assets.notes = #{notes}
+                </if>
+                <if test="expirationDate != '' and expirationDate != null">
+                    and t_assets.expiration_date = #{expirationDate}
+                </if>
+                <if test="imageUrl != '' and imageUrl != null">
+                    and t_assets.image_url = #{imageUrl}
+                </if>
+                <if test="createTime != '' and createTime != null">
+                    and t_assets.create_time = #{createTime}
+                </if>
+                <if test="updateTime != '' and updateTime != null">
+                    and t_assets.update_time = #{updateTime}
+                </if>
+        </where>
+    </sql>
+
+    <select id="getAssetsListByColList" resultType="com.npc.common.modular.assets.entity.Assets">
+        select
+        <include refid="Base_Column_List"/>
+        from t_assets
+        <where>
+            t_assets.is_delete = 0
+            and ${column} in
+            <foreach collection="ids" item="id" separator="," open="(" close=")">
+                ${id}
+            </foreach>
+        </where>
+    </select>
+    <select id="getMyAssetsList" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_assets
+        <where>
+            expiration_date > now()
+        </where>
+    </select>
+
+</mapper>

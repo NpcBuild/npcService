@@ -75,6 +75,11 @@ public class SubscribeVO implements Serializable {
      */
     private String notes;
 
-    private String subTime; // 订阅时间
+    private LocalDateTime subTime; // 订阅时间
+
+    /**
+     * 剩余还款周期数
+     */
+    private Long remainingPeriods;
 
 }

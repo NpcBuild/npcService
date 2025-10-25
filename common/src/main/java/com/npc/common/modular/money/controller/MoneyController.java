@@ -1,10 +1,17 @@
 package com.npc.common.modular.money.controller;
 
 import cn.hutool.core.bean.BeanUtil;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.npc.common.modular.assets.entity.Assets;
+import com.npc.common.modular.assets.service.IAssetsService;
+import com.npc.common.modular.diet.recipes.entity.Recipes;
+import com.npc.common.modular.diet.recipes.service.IRecipesService;
 import com.npc.common.modular.money.dto.MoneyDto;
 import com.npc.common.modular.money.entity.Money;
+import com.npc.common.modular.money.entity.MoneyAccount;
 import com.npc.common.modular.money.mapper.MoneyMapper;
+import com.npc.common.modular.money.service.IMoneyAccountService;
 import com.npc.common.modular.money.service.IMoneyService;
 import com.npc.common.modular.money.vo.MoneyReport;
 import com.npc.common.modular.money.vo.MoneyVO;
@@ -26,8 +33,8 @@ import org.springframework.web.bind.annotation.*;
 import javax.annotation.Resource;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.Map;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
 
 /**
  * <p>
@@ -47,6 +54,12 @@ public class MoneyController {
     public IMoneyService moneyService;
     @Resource
     private MoneyMapper moneyMapper;
+    @Autowired
+    private IRecipesService recipesService;
+    @Autowired
+    private IAssetsService assetsService;
+    @Autowired
+    private IMoneyAccountService moneyAccountService;
 
 
     /**
@@ -75,6 +88,17 @@ public class MoneyController {
                 Money money1 = new Money();
                 BeanUtil.copyProperties(money,money1);
                 moneyService.saveOrUpdate(money1);
+            }
+            // 当 category 包含 "午餐" 时，处理菜谱信息
+            if (money.getDescription().contains("午餐")) {
+                String recipeInfo = money.getDescription();
+                if (recipeInfo.startsWith("午餐 ")) {
+                    String[] recipeNames = recipeInfo.substring(3).split("、");
+                    for (String recipeName : recipeNames) {
+                        // 调用新方法保存菜谱信息
+                        recipesService.saveIfNotExists(recipeName.trim());
+                    }
+                }
             }
             boolean obj = moneyService.saveOrUpdate(money);
             return ServerResponseVO.success(obj);
@@ -174,16 +198,27 @@ public class MoneyController {
         String dateStartS = null;
         BigDecimal point = BigDecimal.ZERO;
         // 查询固定时间的资产
-        String moneyPoint = RedisPoolUtil.get("money_point");
-        logger.info("moneyPoint:{}", moneyPoint);
-        if (StringUtils.isNotEmpty(moneyPoint)) {
-            String[] split = moneyPoint.split(",");
-            dateStartS = split[0];
-            if (split.length >= 2) {
-                point = new BigDecimal(split[1]);
+//        String moneyPoint = RedisPoolUtil.get("money_point");
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq("status", 1);
+        List<MoneyAccount> list = moneyAccountService.list(queryWrapper);
+        LocalDateTime latestUpdatedAt = null;
+        for (MoneyAccount moneyAccount : list) {
+            if (moneyAccount.getSavings() != null) {
+                point = point.add(moneyAccount.getSavings());
             }
-            logger.info("dateStartS:{}", dateStartS);
+            if (moneyAccount.getDebt() != null) {
+                point = point.subtract(moneyAccount.getDebt());
+            }
+            // 获取最新的 updatedAt
+            if (moneyAccount.getUpdatedAt() != null) {
+                if (latestUpdatedAt == null || moneyAccount.getUpdatedAt().isAfter(latestUpdatedAt)) {
+                    latestUpdatedAt = moneyAccount.getUpdatedAt();
+                }
+            }
         }
+        logger.info("moneyPoint:{},updatedAt:{}", point, latestUpdatedAt);
+        dateStartS = latestUpdatedAt.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
         BigDecimal payedMoney = moneyMapper.getPaiedMoneyCount(dateStartS, moneyDto.getDateEndS());
         if (payedMoney == null) payedMoney = BigDecimal.ZERO;
         BigDecimal willPayMoney = moneyMapper.getSubMoneyCount(ObjectUtils.isEmpty(moneyDto.getId()) ? null : moneyDto.getId().toString(), DateUtils.getTime(), moneyDto.getDateEndS());
@@ -193,5 +228,60 @@ public class MoneyController {
             if (LocalDateTime.now().isBefore(LocalDateTime.parse("2026-11-30T08:59:41"))) result = result.add(new BigDecimal("19212"));
         }
         return ServerResponseVO.success(result);
+    }
+
+    @GetMapping("/allInfo")
+    public ServerResponseVO<?> getAllInfo(@Validated MoneyDto moneyDto) {
+        // 负债、资产、净资产【金钱】、物品资产【非金钱】
+        String dateStartS = null;
+        BigDecimal point = BigDecimal.ZERO;
+        // 查询固定时间的资产
+//        String moneyPoint = RedisPoolUtil.get("money_point");
+//        if (StringUtils.isNotEmpty(moneyPoint)) {
+//            String[] split = moneyPoint.split(",");
+//            dateStartS = split[0];
+//            if (split.length >= 2) {
+//                point = new BigDecimal(split[1]);
+//            }
+//        }
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq("status", 1);
+        List<MoneyAccount> list = moneyAccountService.list(queryWrapper);
+        LocalDateTime latestUpdatedAt = null;
+        for (MoneyAccount moneyAccount : list) {
+            if (moneyAccount.getSavings() != null) {
+                point = point.add(moneyAccount.getSavings());
+            }
+            if (moneyAccount.getDebt() != null) {
+                point = point.subtract(moneyAccount.getDebt());
+            }
+            // 获取最新的 updatedAt
+            if (moneyAccount.getUpdatedAt() != null) {
+                if (latestUpdatedAt == null || moneyAccount.getUpdatedAt().isAfter(latestUpdatedAt)) {
+                    latestUpdatedAt = moneyAccount.getUpdatedAt();
+                }
+            }
+        }
+        logger.info("moneyPoint:{},updatedAt:{}", point, latestUpdatedAt);
+        dateStartS = latestUpdatedAt.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+        BigDecimal payedMoney = moneyMapper.getPaiedMoneyCount(dateStartS, moneyDto.getDateEndS());
+        if (payedMoney == null) payedMoney = BigDecimal.ZERO;
+        BigDecimal willPayMoney = moneyMapper.getSubMoneyCount(ObjectUtils.isEmpty(moneyDto.getId()) ? null : moneyDto.getId().toString(), DateUtils.getTime(), moneyDto.getDateEndS());
+        BigDecimal result = point.subtract(payedMoney).subtract(willPayMoney);
+        if (moneyDto.getId() == null || moneyDto.getId().equals(2)) {
+            // 提前还款
+            if (LocalDateTime.now().isBefore(LocalDateTime.parse("2026-11-30T08:59:41"))) {
+                result = result.add(new BigDecimal("19212"));
+                willPayMoney = willPayMoney.subtract(new BigDecimal("19212"));
+            }
+        }
+        List<Assets> assetsList = assetsService.getMyAssetsList();
+        BigDecimal realAssets = assetsList.stream().map(Assets::getPrice).reduce(BigDecimal::add).orElse(new BigDecimal("0"));
+        Map<String, Object> res = new HashMap<>();
+        res.put("willPayMoney", willPayMoney); // 待还
+        res.put("assets", point.subtract(payedMoney)); // 资金
+        res.put("netAssets", result); // 净资产
+        res.put("realAssets", realAssets); // 物品资产
+        return ServerResponseVO.success(res);
     }
 }

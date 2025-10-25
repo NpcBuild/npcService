@@ -42,12 +42,13 @@ public class ProblemServiceImpl extends ServiceImpl<ProblemMapper, Problem> impl
     private static final Logger logger = LoggerFactory.getLogger(ProblemServiceImpl.class);
 
     private static Map<Integer, String> TAG_MAP = new HashMap<>();
+    private static Map<Integer, Tags> TAG_OBJ = new HashMap<>();
 
     @PostConstruct
     public void loadTagsFromDB() {
         List<Tags> list = tagsService.list();
-        TAG_MAP = list.stream()
-                .collect(Collectors.toMap(Tags::getId, Tags::getName));
+        TAG_MAP = list.stream().collect(Collectors.toMap(Tags::getId, Tags::getName));
+        TAG_OBJ = list.stream().collect(Collectors.toMap(Tags::getId, tag -> tag));
     }
 
     /**获取列表分页*/
@@ -81,10 +82,13 @@ public class ProblemServiceImpl extends ServiceImpl<ProblemMapper, Problem> impl
         if (!ObjectUtils.isEmpty(record.getTags())) {
             String[] split = record.getTags().split(",");
             List<String> tagNameList = new ArrayList<>();
+            List<Tags> tagObjList = new ArrayList<>();
             for (String tag : split) {
                 tagNameList.add(TAG_MAP.get(Integer.valueOf(tag)));
+                tagObjList.add(TAG_OBJ.get(Integer.valueOf(tag)));
             }
             vo.setTagName(String.join(",", tagNameList));
+            vo.setTagList(tagObjList);
         }
         return vo;
     }

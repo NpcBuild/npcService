@@ -36,6 +36,16 @@ public class TodoViewVO implements Serializable {
     private String type;
 
     /**
+     * 开始
+     */
+    private String start;
+
+    /**
+     * 结束
+     */
+    private String end;
+
+    /**
      * 标签
      */
     private String tag;
@@ -44,6 +54,10 @@ public class TodoViewVO implements Serializable {
      * 备注
      */
     private String remark;
+    /**
+     * 星标
+     */
+    private Boolean starMark;
 
     /**
      * 任务状态 0-未开始 1-进行中 2-已完成
@@ -122,6 +136,10 @@ public class TodoViewVO implements Serializable {
      * 循环类型
      */
     private String recurrenceType;
+    /**
+     * 循环次数（每个循环周期）
+     */
+    private int recurrenceCount;
 
 
 
@@ -147,6 +165,12 @@ public class TodoViewVO implements Serializable {
 
     @Schema(description = "完成状态", example = "0")
     private String completedStatus; // 今日完成情况（查询任务列表用） 0-进行中 1-已完成
+    private LocalDateTime lastCompletedDate; // 上次任务完成时间
 
     private String content; // 对应计划名称
+
+    /**
+     * 循环次数（每个循环周期）
+     */
+    private Integer nowCount;
 }

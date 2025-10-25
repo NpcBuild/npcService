@@ -1,10 +1,12 @@
 package com.npc.common.modular.problem.vo;
 
+import com.npc.common.modular.tags.entity.Tags;
 import com.npc.core.PageSearch;
 import lombok.Data;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * @author NPC
@@ -56,6 +58,8 @@ public class ProblemVO extends PageSearch {
     private String tags;
     // 标签名
     private String tagName;
+    // 标签列表
+    private List<Tags> tagList;
 
     /**
      * 问题状态（未解决、已解决等）

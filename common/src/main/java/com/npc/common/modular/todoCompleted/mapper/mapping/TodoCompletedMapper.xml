@@ -7,13 +7,14 @@
             <result column="id" property="id"/>
             <result column="todo_id" property="todoId"/>
             <result column="status" property="status"/>
+            <result column="complete_num" property="completeNum"/>
             <result column="finish_time" property="finishTime"/>
             <result column="score" property="score"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-            id, todo_id, status, finish_time, score
+            id, todo_id, status, complete_num, finish_time, score
     </sql>
 
     <sql id="commonConditionSQL">
@@ -53,23 +54,48 @@
         from t_todo_completed
         WHERE status = '2' and finish_time LIKE CONCAT(#{date},'%')
     </select>
-    <select id="getCompletedListSE" resultType="com.npc.common.modular.todoCompleted.entity.TodoCompleted">
+    <select id="getCompletedListSEIn" resultType="com.npc.common.modular.todoCompleted.entity.TodoCompleted">
         select
         <include refid="Base_Column_List"/>
         from t_todo_completed
         WHERE status = '2' and finish_time &lt; #{endDate} and finish_time &gt; #{startDate}
+        <if test="ids!= null and ids.size()>0">
+            and todo_id in
+            <foreach collection="ids" item="id" separator="," open="(" close=")">
+                #{id}
+            </foreach>
+        </if>
     </select>
     <select id="getCompletedListIn" resultType="com.npc.common.modular.todoCompleted.entity.TodoCompleted">
         select
         <include refid="Base_Column_List"/>
         from t_todo_completed
-        WHERE status = '2' and finish_time LIKE CONCAT(#{date},'%')
+        WHERE status = '2'
+            <if test="date!= null and date != ''">
+                and finish_time LIKE CONCAT(#{date},'%')
+            </if>
           <if test="ids!= null and ids.size()>0">
               and todo_id in
               <foreach collection="ids" item="id" separator="," open="(" close=")">
                   #{id}
               </foreach>
           </if>
+        order by finish_time desc
+    </select>
+    <select id="getLastCompletedList" resultType="com.npc.common.modular.todoCompleted.entity.TodoCompleted">
+        select
+        <include refid="Base_Column_List"/>
+        from t_todo_completed
+        WHERE (todo_id, finish_time) IN (
+            SELECT todo_id, MAX(finish_time)
+            FROM t_todo_completed
+            WHERE status = '2'
+            AND todo_id IN
+            <foreach collection="ids" item="id" separator="," open="(" close=")">
+                #{id}
+            </foreach>
+            GROUP BY todo_id
+        )
     </select>
 
 </mapper>

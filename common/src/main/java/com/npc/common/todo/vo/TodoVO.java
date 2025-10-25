@@ -35,6 +35,16 @@ public class TodoVO extends QuartzJobVO {
     private String type;
 
     /**
+     * 开始
+     */
+    private String start;
+
+    /**
+     * 结束
+     */
+    private String end;
+
+    /**
      * 标签
      */
     private String tag;
@@ -43,6 +53,10 @@ public class TodoVO extends QuartzJobVO {
      * 备注
      */
     private String remark;
+    /**
+     * 星标
+     */
+    private Boolean starMark;
 
     /**
      * 任务状态 0-未开始 1-进行中 2-已完成
@@ -62,6 +76,10 @@ public class TodoVO extends QuartzJobVO {
      * 循环类型
      */
     private String recurrenceType;
+    /**
+     * 循环次数（每个循环周期）
+     */
+    private int recurrenceCount;
 
 
 

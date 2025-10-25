@@ -4,19 +4,18 @@ import cn.hutool.core.bean.BeanUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.mchange.lang.IntegerUtils;
 import com.npc.common.modular.points.service.IPointsService;
 import com.npc.common.modular.quartzJob.entity.QuartzJob;
 import com.npc.common.modular.quartzJob.service.IQuartzJobService;
 import com.npc.common.modular.quartzJob.vo.QuartzJobVO;
 import com.npc.common.modular.setting.mapper.SettingMapper;
-import com.npc.common.modular.setting.service.ISettingService;
 import com.npc.common.modular.todoCompleted.entity.TodoCompleted;
 import com.npc.common.modular.todoCompleted.mapper.TodoCompletedMapper;
 import com.npc.common.modular.todoCompleted.service.ITodoCompletedService;
 import com.npc.common.quartz.Quartz;
 import com.npc.common.quartz.job.ToDoNoticeJob;
 import com.npc.common.todo.entity.Todo;
+import com.npc.common.todo.enums.TodoTypeEnum;
 import com.npc.common.todo.service.ITodoService;
 import com.npc.common.todo.vo.TodoVO;
 import com.npc.common.todo.vo.TodoViewVO;
@@ -32,7 +31,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.ObjectUtils;
 import org.springframework.validation.annotation.Validated;
@@ -98,21 +96,125 @@ public class TodoController {
             records.forEach((item) -> {
                 todoIds.add(item.getId());
             });
-            List<TodoCompleted> completedList = completedMapper.getCompletedListIn(todoVO.getDate(), todoIds);
 
-            // 结果处理
-            Map<Integer,String> map = new HashMap<>();
-            for (TodoCompleted todoCompleted : completedList) {
-                map.put(todoCompleted.getTodoId(), todoCompleted.getStatus());
+            List<TodoCompleted> lastCompletedList = completedMapper.getLastCompletedList(todoIds);
+            Map<Integer,LocalDateTime> lastTimeMap = new HashMap<>();
+            for (TodoCompleted todoCompleted : lastCompletedList) {
+                lastTimeMap.put(todoCompleted.getTodoId(), todoCompleted.getFinishTime());
             }
-            for (TodoViewVO todo : records) {
-                String oldV = todo.getTodoName();
-                if (map.containsKey(todo.getId()) && "2".equals(map.get(todo.getId()))) {
-                    todo.setCompletedStatus("1");
-                } else {
-                    todo.setCompletedStatus("0");
+
+            // 检查任务是否完成了/获取任务完成次数
+            // 普通任务--查当天的任务完成次数；计数任务--查累计任务完成次数；周期任务--查指定日期内任务完成次数
+            for (int i = 0; i < records.size(); i++) {
+                // 初始化数据状态
+                records.get(i).setCompletedStatus("0");
+
+                Todo todoInfo = todoService.getById(records.get(i).getId());
+                if (todoInfo.getRecurrenceCount() == 1) {
+                    records.get(i).setLastCompletedDate(lastTimeMap.get(todoInfo.getId()));
+                }
+                TodoTypeEnum todoType = todoService.getTodoType(todoInfo);
+                List<TodoCompleted> searchRes = new ArrayList<>();
+                switch (todoType) {
+                    case Normal:
+                        searchRes = completedMapper.getCompletedListIn(DateUtils.getDate(), Collections.singletonList(todoInfo.getId()));
+                        if (searchRes.size() > 0) {
+                            records.get(i).setCompletedStatus("1");
+                            records.get(i).setLastCompletedDate(searchRes.get(0).getFinishTime());
+                        }
+                        break;
+                    case Counting:
+                        searchRes = completedMapper.getCompletedListIn(null, Collections.singletonList(todoInfo.getId()));
+                        int count = 0;
+                        for (TodoCompleted searchRe : searchRes) {
+                            count += searchRe.getCompleteNum();
+                        }
+                        Integer start = Integer.valueOf(StringUtils.isEmpty(todoInfo.getStart()) ? "0" : todoInfo.getStart());
+                        Integer end = Integer.valueOf(StringUtils.isEmpty(todoInfo.getEnd()) ? "0" : todoInfo.getEnd());
+
+                        if (Math.abs(end - start) < Math.abs(count)) {
+                            records.get(i).setCompletedStatus("1");
+                        }
+                        if (searchRes.size() > 0) {
+                            records.get(i).setLastCompletedDate(searchRes.get(0).getFinishTime());
+                        }
+                        records.get(i).setNowCount(start +count);
+                        break;
+                    case Periodic:
+                        String startDate = DateUtils.dateTime(DateUtils.toDate(todoInfo.getStartTime()));
+                        String endDate = DateUtils.dateTime(DateUtils.toDate(todoInfo.getEndTime()));;
+                        searchRes = completedMapper.getCompletedListSEIn(startDate, endDate, Collections.singletonList(todoInfo.getId()));
+                        switch (todoInfo.getRecurrenceType()) {
+                            case "daily":
+                                String dailyStart = DateUtils.getDate();
+                                // 获取明天日期
+                                String dailyEnd = DateUtils.dateTime(DateUtils.toDate(DateUtils.getNextDay(LocalDate.now())));
+                                List<TodoCompleted> completedListSEIn = completedMapper.getCompletedListSEIn(dailyStart, dailyEnd, Collections.singletonList(todoInfo.getId()));
+                                int count1 = 0;
+                                for (TodoCompleted completed : completedListSEIn) {
+                                    count1 += completed.getCompleteNum();
+                                }
+                                if (count1 >= todoInfo.getRecurrenceCount()) {
+                                    records.get(i).setCompletedStatus("1");
+                                }
+                                records.get(i).setNowCount(count1);
+                                break;
+                            case "weekly":
+                                String weeklyStart = DateUtils.getFirstDayOfWeek(LocalDate.now());
+                                // 获取下周一日期
+                                String weeklyEnd = DateUtils.getFirstDayOfNextWeek(LocalDate.now());
+                                List<TodoCompleted> completedListSEInWeek = completedMapper.getCompletedListSEIn(weeklyStart, weeklyEnd, Collections.singletonList(todoInfo.getId()));
+                                int count2 = 0;
+                                for (TodoCompleted completed : completedListSEInWeek) {
+                                    count2 += completed.getCompleteNum();
+                                }
+                                if (count2 >= todoInfo.getRecurrenceCount()) {
+                                    records.get(i).setCompletedStatus("1");
+                                }
+                                records.get(i).setNowCount(count2);
+                                break;
+                            case "monthly":
+                                String monthlyStart = DateUtils.getFirstDayOfMonth(LocalDate.now());
+                                // 获取下周一日期
+                                String monthlyEnd = DateUtils.getFirstDayOfNextMonth(LocalDate.now());
+                                List<TodoCompleted> completedListSEInMonth = completedMapper.getCompletedListSEIn(monthlyStart, monthlyEnd, Collections.singletonList(todoInfo.getId()));
+                                int count3 = 0;
+                                for (TodoCompleted completed : completedListSEInMonth) {
+                                    count3 += completed.getCompleteNum();
+                                }
+                                if (count3 >= todoInfo.getRecurrenceCount()) {
+                                    records.get(i).setCompletedStatus("1");
+                                }
+                                records.get(i).setNowCount(count3);
+                                break;
+                        }
+//                        records.get(i).setLastCompletedDate(searchRes.get(0).getFinishTime());
+                        break;
                 }
             }
+
+
+
+            List<TodoCompleted> completedList = completedMapper.getCompletedListIn(todoVO.getDate(), todoIds);
+
+//            // 结果处理
+//            Map<Integer,String> map = new HashMap<>();
+//            for (TodoCompleted todoCompleted : completedList) {
+//                map.put(todoCompleted.getTodoId(), todoCompleted.getStatus());
+//            }
+//            Map<Integer,LocalDateTime> map2 = new HashMap<>();
+//            for (TodoCompleted todoCompleted : lastCompletedList) {
+//                map2.put(todoCompleted.getTodoId(), todoCompleted.getFinishTime());
+//            }
+//            for (TodoViewVO todo : records) {
+//                String oldV = todo.getTodoName();
+//                if (map.containsKey(todo.getId()) && "2".equals(map.get(todo.getId()))) {
+//                    todo.setCompletedStatus("1");
+//                } else {
+//                    todo.setCompletedStatus("0");
+//                }
+//                todo.setLastCompletedDate(map2.get(todo.getId()));
+//            }
         }
         return ServerResponseVO.success(page);
     }
@@ -144,11 +246,11 @@ public class TodoController {
             idList.add(Integer.parseInt(string));
         }
         List<TodoCompleted> completedList = completedMapper.getCompletedListIn(date, idList);
-        String[] list = new String[completedList.size()];
-        for (int i = 0; i < completedList.size(); i++) {
-            list[i] = completedList.get(i).getTodoId().toString();
-        }
-        return ServerResponseVO.success(list);
+//        String[] list = new String[completedList.size()];
+//        for (int i = 0; i < completedList.size(); i++) {
+//            list[i] = completedList.get(i).getTodoId().toString();
+//        }
+        return ServerResponseVO.success(completedList);
     }
 
     /**
@@ -166,7 +268,7 @@ public class TodoController {
         String startDate = todoVO.getStartDate();
         String endDate = todoVO.getEndDate();
         List<Todo> todos = todoService.getList(todoVO);
-        List<TodoCompleted> completedList = completedMapper.getCompletedListSE(startDate,endDate);
+        List<TodoCompleted> completedList = completedMapper.getCompletedListSEIn(startDate,endDate, null);
         Map<String, Map> res = new HashMap<>();
         List res2 = new ArrayList();
         LocalDate nextDay = LocalDate.parse(startDate);
@@ -338,11 +440,23 @@ public class TodoController {
                     System.out.println("取消了任务：" + byId.getTodoName());
                 }
                 if (!ObjectUtils.isEmpty(byId.getDoneScore())) {
-                    pointsService.changePoints(1L, byId.getDoneScore(), "任务");
+                    pointsService.changePoints(1L, byId.getDoneScore(), "完成了" + byId.getTodoName() + "任务");
                 }
             }
         }
         return true;
+    }
+
+    @PostMapping("/incrementTask")
+    public ServerResponseVO incrementTask(@Parameter(description = "任务ID") String id,
+                                          @Parameter(description = "完成次数") Integer completeNum) {
+        TodoCompleted completed = new TodoCompleted();
+        completed.setTodoId(Integer.valueOf(id));
+        completed.setCompleteNum(completeNum);
+        completed.setStatus("2");
+        completed.setFinishTime(LocalDateTime.now());
+        completedService.save(completed);
+        return ServerResponseVO.success(true);
     }
 
     /**

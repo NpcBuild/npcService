@@ -8,6 +8,8 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.npc.common.modular.todoCompleted.entity.TodoCompleted;
 import com.npc.common.modular.todoCompleted.service.ITodoCompletedService;
 import com.npc.common.todo.entity.Todo;
+import com.npc.common.todo.enums.TodoEnum;
+import com.npc.common.todo.enums.TodoTypeEnum;
 import com.npc.common.todo.mapper.TodoMapper;
 import com.npc.common.todo.service.ITodoService;
 import com.npc.common.todo.vo.TodoVO;
@@ -71,6 +73,29 @@ public class TodoServiceImpl extends ServiceImpl<TodoMapper, Todo> implements IT
         return this.baseMapper.getList(page, vo);
     }
 
+    /**
+     * 任务类型判断方法
+     * 1. 无循环 none
+     * 2. 每天 daily
+     * 3. 每周 weekly 周期任务
+     * 4. 每月 monthly 周期任务
+     * 5. 工作日 workDay
+     * 6. 休息日 restDay
+     * 7. 自定义 custom
+     * @param todo
+     * @return
+     */
+    @Override
+    public TodoTypeEnum getTodoType(Todo todo) {
+        if ((StringUtils.isNotEmpty(todo.getStart()) || StringUtils.isNotEmpty(todo.getEnd())) && "none".equals(todo.getRecurrenceType())) {
+            return TodoTypeEnum.Counting;
+        } else if (todo.getRecurrenceCount() > 1) {
+            return TodoTypeEnum.Periodic;
+        } else {
+            return TodoTypeEnum.Normal;
+        }
+    }
+
     @Override
     public List<TodoVO> getMoreInfo(List<Todo> todos, String day) {
         List<TodoVO> res = new ArrayList<>();
@@ -89,6 +114,7 @@ public class TodoServiceImpl extends ServiceImpl<TodoMapper, Todo> implements IT
     }
 
     static void setQueryDate(TodoVO vo) {
+        vo.setStatus(TodoEnum.ACTIVE.getValue());
         if (StringUtils.isNotEmpty(vo.getDate())) {
             vo.setStartDate(vo.getDate());
             vo.setEndDate(DateUtils.getNextDay(LocalDate.parse(vo.getDate())).toString());

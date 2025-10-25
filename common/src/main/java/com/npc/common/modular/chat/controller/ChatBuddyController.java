@@ -58,6 +58,26 @@ public class ChatBuddyController {
             return ServerResponseVO.error(ServerResponseEnum.SAVE_FAILED);
         }
     }
+
+    /**
+     * 修改关系
+     * @param chatBuddy 传递的实体
+     * @return ResponseDataModel转换结果
+     */
+    @RequestMapping(value = "/saveRelations", method = RequestMethod.POST)
+    public ServerResponseVO<?> saveRelations(@RequestBody @Validated ChatBuddy chatBuddy) {
+        try {
+            UpdateWrapper updateWrapper = new UpdateWrapper();
+            updateWrapper.eq("id",chatBuddy.getId());
+            updateWrapper.eq("relation",chatBuddy.getRelation());
+            boolean update = chatBuddyService.update(updateWrapper);
+            return ServerResponseVO.success(update);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ServerResponseVO.error(ServerResponseEnum.SAVE_FAILED);
+        }
+    }
+
     /**
      * 修改备注
      * @param chatBuddy 传递的实体

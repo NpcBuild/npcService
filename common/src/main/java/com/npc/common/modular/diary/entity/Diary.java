@@ -121,6 +121,6 @@ public class Diary implements Serializable {
     /**
      * 创建或最后修改时间
      */
-    private LocalDateTime timestamp;
+    private LocalDateTime createdAt;
 
 }
