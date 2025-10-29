@@ -1,0 +1,16 @@
+spring:
+  datasource:
+    url: jdbc:mysql://192.168.1.20:3306/yf?autoReconnect=true&useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=CONVERT_TO_NULL&useSSL=false&allowPublicKeyRetrieval=true
+  redis:
+    host: 192.168.1.20
+    cluster:
+      nodes:
+        - 192.168.1.20:6380
+        - 192.168.1.20:6381
+        - 192.168.1.20:6382
+        - 192.168.1.20:6383
+        - 192.168.1.20:6384
+        - 192.168.1.20:6385
+logging:
+  level:
+    org.apache.kafka.clients: ERROR

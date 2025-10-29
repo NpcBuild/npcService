@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.npc.common.modular.read.content.mapper.ReadContentMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.npc.common.modular.read.content.entity.ReadContent">
+            <result column="id" property="id"/>
+            <result column="type" property="type"/>
+            <result column="title" property="title"/>
+            <result column="author" property="author"/>
+            <result column="release_year" property="releaseYear"/>
+            <result column="rating" property="rating"/>
+            <result column="genre" property="genre"/>
+            <result column="cover_url" property="coverUrl"/>
+            <result column="description" property="description"/>
+            <result column="status" property="status"/>
+            <result column="created_at" property="createdAt"/>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+            id, type, title, author, release_year, rating, genre, cover_url, description, status, created_at
+    </sql>
+
+    <sql id="commonConditionSQL">
+        <where>
+            read_content.is_delete = 0
+                <if test="id != '' and id != null">
+                    and read_content.id = #{id}
+                </if>
+                <if test="type != '' and type != null">
+                    and read_content.type = #{type}
+                </if>
+                <if test="title != '' and title != null">
+                    and read_content.title = #{title}
+                </if>
+                <if test="author != '' and author != null">
+                    and read_content.author = #{author}
+                </if>
+                <if test="releaseYear != '' and releaseYear != null">
+                    and read_content.release_year = #{releaseYear}
+                </if>
+                <if test="rating != '' and rating != null">
+                    and read_content.rating = #{rating}
+                </if>
+                <if test="genre != '' and genre != null">
+                    and read_content.genre = #{genre}
+                </if>
+                <if test="coverUrl != '' and coverUrl != null">
+                    and read_content.cover_url = #{coverUrl}
+                </if>
+                <if test="description != '' and description != null">
+                    and read_content.description = #{description}
+                </if>
+                <if test="status != '' and status != null">
+                    and read_content.status = #{status}
+                </if>
+                <if test="createdAt != '' and createdAt != null">
+                    and read_content.created_at = #{createdAt}
+                </if>
+        </where>
+    </sql>
+
+    <select id="getReadContentListByColList" resultType="com.npc.common.modular.read.content.entity.ReadContent">
+        select
+        <include refid="Base_Column_List"/>
+        from read_content
+        <where>
+            read_content.is_delete = 0
+            and ${column} in
+            <foreach collection="ids" item="id" separator="," open="(" close=")">
+                ${id}
+            </foreach>
+        </where>
+    </select>
+
+</mapper>
