@@ -39,6 +39,15 @@ public class Problem implements Serializable {
      */
     private LocalDate date;
 
+    /**
+     * 计划id
+     */
+    private Integer planId;
+    /**
+     * 待办id
+     */
+    private Integer todoId;
+
 
 
     /**

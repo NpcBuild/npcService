@@ -83,6 +83,9 @@ public class ServerResponseVO<T> implements Serializable {
         return new ServerResponseVO(responseCode);
     }
 
+    public static ServerResponseVO error(String message) {
+        return new ServerResponseVO(ServerResponseEnum.INTERNAL_SERVER_ERROR.getCode(), message);
+    }
     public static ServerResponseVO error(Integer code, String message) {
         return new ServerResponseVO(code,message);
     }

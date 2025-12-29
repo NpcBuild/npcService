@@ -11,6 +11,9 @@ spring:
       enabled: true
       max-file-size: 100MB
       max-request-size: 100MB
+  cloud:
+    compatibility-verifier:
+      enabled: false
   data:
     elasticsearch:
       repositories:
@@ -19,8 +22,8 @@ spring:
 #        是否正确？
         rest:
           endpoints: 127.0.0.1:9200
-          username:
-          password:
+          username: ""
+          password: ""
   quartz:
 #      将 Quartz 持久化方式修改为 jdbc
     job-store-type: jdbc
@@ -99,6 +102,20 @@ spring:
         allow: 127.0.0.1                # 允许访问的地址，如果allow没有配置或者为空，则允许所有访问
         deny:                           # 拒绝访问的地址，deny优先于allow，如果在deny列表中，就算在allow列表中，也会被拒绝
   redis:
+    # 自定义 Redis 配置
+    custom:
+      # 单机模式地址
+      single-host: 192.168.1.20
+      single-port: 6379
+      # 集群模式地址
+      cluster-nodes:
+        - 192.168.1.20:6380
+        - 192.168.1.20:6381
+        - 192.168.1.20:6382
+        - 192.168.1.20:6383
+        - 192.168.1.20:6384
+        - 192.168.1.20:6385
+    # 默认配置（会被动态覆盖）
     host: localhost
     timeout: 1000   #连接超时时间
     database: 0
@@ -131,8 +148,8 @@ spring:
         fallback: false
         port: 465
   kafka:
-    bootstrap-servers: #定义主机列表
-      localhost:9092
+    #定义主机列表
+    bootstrap-servers: localhost:9092
     template:
       default-topic: yftopic   #定义主题名称
 #      loginEmail-topic:loginMailTopic
@@ -223,6 +240,15 @@ chatgpt:
 #  endpoint: https://api.chatgpt.com/v1/generate
   endpoint: https://api.openai.com/v1/completions
   apiKey: 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
+
+# minio配置
+vehicle:
+  minio:
+    url: http://192.168.1.20:9002 # 连接地址，如果是线上的将：localhost->ip
+    username: admin # 登录用户名
+    password: bdgh1314 # 登录密码
+    bucketName: pic # 存储文件的桶的名字
+    expire: 7200 # 过期时间
 
 yf:
   basic-dir: "E:\\Data"

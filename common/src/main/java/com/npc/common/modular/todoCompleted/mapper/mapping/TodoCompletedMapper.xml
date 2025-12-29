@@ -74,6 +74,9 @@
             <if test="date!= null and date != ''">
                 and finish_time LIKE CONCAT(#{date},'%')
             </if>
+            <if test="dateEnd!= null and dateEnd != ''">
+                and finish_time &lt;= #{dateEnd}
+            </if>
           <if test="ids!= null and ids.size()>0">
               and todo_id in
               <foreach collection="ids" item="id" separator="," open="(" close=")">
@@ -96,6 +99,31 @@
             </foreach>
             GROUP BY todo_id
         )
+    </select>
+    <select id="getLastCompletedListPer"
+            resultType="com.npc.common.modular.todoCompleted.entity.TodoCompleted">
+        SELECT id AS todoId, CONCAT(reach_date, ' 12:00:01') AS finishTime
+        FROM (
+            SELECT
+                t.id,
+                DATE(tc.finish_time) AS reach_date,
+                ROW_NUMBER() OVER (
+                    PARTITION BY t.id
+                    ORDER BY DATE(tc.finish_time) DESC
+                ) AS rn
+            FROM t_todo t
+            JOIN t_todo_completed tc ON tc.todo_id = t.id and tc.status = '2'
+            WHERE t.id IN
+            <foreach collection="ids" item="id" separator="," open="(" close=")">
+                #{id}
+            </foreach>
+            GROUP BY
+                t.id,
+                DATE(tc.finish_time),
+                t.recurrence_count
+            HAVING SUM(tc.complete_num) >= t.recurrence_count
+        ) x
+        WHERE rn = 1
     </select>
 
 </mapper>

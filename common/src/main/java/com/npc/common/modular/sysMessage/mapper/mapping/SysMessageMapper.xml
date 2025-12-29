@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.npc.common.modular.sysMessage.mapper.SysMessageMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.npc.common.modular.sysMessage.entity.SysMessage">
+            <result column="id" property="id"/>
+            <result column="user_id" property="userId"/>
+            <result column="title" property="title"/>
+            <result column="content" property="content"/>
+            <result column="message_type" property="messageType"/>
+            <result column="biz_type" property="bizType"/>
+            <result column="priority" property="priority"/>
+            <result column="related_id" property="relatedId"/>
+            <result column="related_type" property="relatedType"/>
+            <result column="status" property="status"/>
+            <result column="action_url" property="actionUrl"/>
+            <result column="is_pinned" property="isPinned"/>
+            <result column="is_popup" property="isPopup"/>
+            <result column="created_at" property="createdAt"/>
+            <result column="read_at" property="readAt"/>
+            <result column="updated_at" property="updatedAt"/>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+            id, user_id, title, content, message_type, biz_type, priority, related_id, related_type, status, action_url, is_pinned, is_popup, created_at, read_at, updated_at
+    </sql>
+
+    <sql id="commonConditionSQL">
+        <where>
+            t_sys_message.is_delete = 0
+                <if test="id != '' and id != null">
+                    and t_sys_message.id = #{id}
+                </if>
+                <if test="userId != '' and userId != null">
+                    and t_sys_message.user_id = #{userId}
+                </if>
+                <if test="title != '' and title != null">
+                    and t_sys_message.title = #{title}
+                </if>
+                <if test="content != '' and content != null">
+                    and t_sys_message.content = #{content}
+                </if>
+                <if test="messageType != '' and messageType != null">
+                    and t_sys_message.message_type = #{messageType}
+                </if>
+                <if test="bizType != '' and bizType != null">
+                    and t_sys_message.biz_type = #{bizType}
+                </if>
+                <if test="priority != '' and priority != null">
+                    and t_sys_message.priority = #{priority}
+                </if>
+                <if test="relatedId != '' and relatedId != null">
+                    and t_sys_message.related_id = #{relatedId}
+                </if>
+                <if test="relatedType != '' and relatedType != null">
+                    and t_sys_message.related_type = #{relatedType}
+                </if>
+                <if test="status != '' and status != null">
+                    and t_sys_message.status = #{status}
+                </if>
+                <if test="actionUrl != '' and actionUrl != null">
+                    and t_sys_message.action_url = #{actionUrl}
+                </if>
+                <if test="isPinned != '' and isPinned != null">
+                    and t_sys_message.is_pinned = #{isPinned}
+                </if>
+                <if test="isPopup != '' and isPopup != null">
+                    and t_sys_message.is_popup = #{isPopup}
+                </if>
+                <if test="createdAt != '' and createdAt != null">
+                    and t_sys_message.created_at = #{createdAt}
+                </if>
+                <if test="readAt != '' and readAt != null">
+                    and t_sys_message.read_at = #{readAt}
+                </if>
+                <if test="updatedAt != '' and updatedAt != null">
+                    and t_sys_message.updated_at = #{updatedAt}
+                </if>
+        </where>
+    </sql>
+
+    <select id="getSysMessageListByColList" resultType="com.npc.common.modular.sysMessage.entity.SysMessage">
+        select
+        <include refid="Base_Column_List"/>
+        from t_sys_message
+        <where>
+            t_sys_message.is_delete = 0
+            and ${column} in
+            <foreach collection="ids" item="id" separator="," open="(" close=")">
+                ${id}
+            </foreach>
+        </where>
+    </select>
+
+</mapper>

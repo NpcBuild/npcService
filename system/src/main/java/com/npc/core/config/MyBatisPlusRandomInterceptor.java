@@ -32,6 +32,11 @@ public class MyBatisPlusRandomInterceptor implements InnerInterceptor {
                         sql = appendRandomOrderBy(sql);
                         break;
                     }
+                } else if (value != null) {
+                    if (hasRandomTrue(value)) {
+                        sql = appendRandomOrderBy(sql);
+                        break;
+                    }
                 }
             }
         }
@@ -48,17 +53,16 @@ public class MyBatisPlusRandomInterceptor implements InnerInterceptor {
     // 检测对象是否包含 `random=true`
     private boolean hasRandomTrue(Object paramObj) {
         if (paramObj == null) {
-            System.out.println("paramObj is null");
             return false;
         }
-
-        System.out.println("paramObj class: " + paramObj.getClass().getName());
 
         try {
             Field field = findField(paramObj.getClass(), "random");
             if (field == null) {
-                System.out.println("Field 'random' not found in class hierarchy");
                 return false;
+            } else {
+                System.out.println("paramObj class: " + paramObj.getClass().getName());
+                System.out.println("Field 'random' found in class: " + field.getDeclaringClass().getName());
             }
             field.setAccessible(true);
             Object value = field.get(paramObj);

@@ -28,10 +28,19 @@ public class PackDynamicAutoProxyCreator extends AbstractAutoProxyCreator {
         // userRealm
         // securityManager
         // dispatcherServlet
+        // myBatisPlusRandomInterceptor
+        // simpleMeterRegistry
         // ，则不代理
-//        if ("sqlSessionTemplate".equals(beanName) || "userRealm".equals(beanName) || "securityManager".equals(beanName) || "dispatcherServlet".equals(beanName)) {
-//            return DO_NOT_PROXY;
-//        }
+        if ("sqlSessionTemplate".equals(beanName)
+                || "userRealm".equals(beanName)
+                || "securityManager".equals(beanName)
+                || "dispatcherServlet".equals(beanName)
+                || "myBatisPlusRandomInterceptor".equals(beanName)
+                || "simpleMeterRegistry".equals(beanName)
+                || beanName != null && beanName.startsWith("jackson")  // 排除所有Jackson相关Bean
+                || beanName != null && beanName.contains("messageConverter")) {  // 排除消息转换器
+            return DO_NOT_PROXY;
+        }
 
         BeanFactory beanFactory = getBeanFactory();
         if (beanFactory != null && beanFactory instanceof ConfigurableListableBeanFactory) {

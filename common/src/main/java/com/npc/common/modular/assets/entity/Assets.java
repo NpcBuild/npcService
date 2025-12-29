@@ -10,6 +10,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 
 /**
@@ -26,24 +27,17 @@ public class Assets implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-
-
-
     /**
      * 物品ID
      */
 //    @ApiModelProperty(value = "物品ID")
     private Integer id;
 
-
-
     /**
      * 物品名称
      */
 //    @ApiModelProperty(value = "物品名称")
     private String name;
-
-
 
     /**
      * 物品分类（如 电子产品、服装、家具）

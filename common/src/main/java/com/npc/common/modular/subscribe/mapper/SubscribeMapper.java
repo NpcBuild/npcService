@@ -26,5 +26,5 @@ public interface SubscribeMapper extends BaseMapper<Subscribe> {
      */
     List<Subscribe> getSubscribeListByColList(@Param("column") String column, @Param("ids") List<Integer> ids);
 
-    List<Subscribe> getEnableList(@Param("endTime") String endTime);
+    List<Subscribe> getEnableList(@Param("startTime") String startTime, @Param("endTime") String endTime);
 }

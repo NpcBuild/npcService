@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.npc.common.modular.chat.mapper.ChatBuddyHabitMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.npc.common.modular.chat.entity.ChatBuddyHabit">
+            <result column="id" property="id"/>
+            <result column="buddy_id" property="buddyId"/>
+            <result column="habit_type" property="habitType"/>
+            <result column="habit_name" property="habitName"/>
+            <result column="habit_level" property="habitLevel"/>
+            <result column="frequency" property="frequency"/>
+            <result column="description" property="description"/>
+            <result column="created_at" property="createdAt"/>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+            id, buddy_id, habit_type, habit_name, habit_level, frequency, description, created_at
+    </sql>
+
+    <sql id="commonConditionSQL">
+        <where>
+            t_chat_buddy_habit.is_delete = 0
+                <if test="id != '' and id != null">
+                    and t_chat_buddy_habit.id = #{id}
+                </if>
+                <if test="buddyId != '' and buddyId != null">
+                    and t_chat_buddy_habit.buddy_id = #{buddyId}
+                </if>
+                <if test="habitType != '' and habitType != null">
+                    and t_chat_buddy_habit.habit_type = #{habitType}
+                </if>
+                <if test="habitName != '' and habitName != null">
+                    and t_chat_buddy_habit.habit_name = #{habitName}
+                </if>
+                <if test="habitLevel != '' and habitLevel != null">
+                    and t_chat_buddy_habit.habit_level = #{habitLevel}
+                </if>
+                <if test="frequency != '' and frequency != null">
+                    and t_chat_buddy_habit.frequency = #{frequency}
+                </if>
+                <if test="description != '' and description != null">
+                    and t_chat_buddy_habit.description = #{description}
+                </if>
+                <if test="createdAt != '' and createdAt != null">
+                    and t_chat_buddy_habit.created_at = #{createdAt}
+                </if>
+        </where>
+    </sql>
+
+    <select id="getChatBuddyHabitListByColList" resultType="com.npc.common.modular.chat.entity.ChatBuddyHabit">
+        select
+        <include refid="Base_Column_List"/>
+        from t_chat_buddy_habit
+        <where>
+            t_chat_buddy_habit.is_delete = 0
+            and ${column} in
+            <foreach collection="ids" item="id" separator="," open="(" close=")">
+                ${id}
+            </foreach>
+        </where>
+    </select>
+    <select id="getByBuddyId" resultType="com.npc.common.modular.chat.entity.ChatBuddyHabit"
+            parameterType="int">
+        select
+        <include refid="Base_Column_List"/>
+            from t_chat_buddy_habit
+        <where>
+            buddy_id = #{id}
+        </where>
+    </select>
+
+</mapper>

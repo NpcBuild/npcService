@@ -170,5 +170,26 @@
     </where>
     group by tcb.id) tmp_count
     </select>
+    <select id="getBirthdayList" resultType="com.npc.common.modular.holiday.vo.CalendarEventVO">
+        SELECT
+            CONCAT(name, '生日') AS title,
+            CASE
+            WHEN CHAR_LENGTH(gregorian_birthday) = 5 THEN
+                CONCAT(#{queryYear}, '-', gregorian_birthday)
+            ELSE
+                CONCAT(#{queryYear}, SUBSTRING(gregorian_birthday, 5)) END AS `date`,
+            "gregorian" AS dateType,
+            "birthday" AS eventType
+        FROM t_chat_buddy
+        WHERE (has_contact IS NULL OR has_contact != 0)
+          AND gregorian_birthday IS NOT NULL
+          AND  (
+          (CHAR_LENGTH(gregorian_birthday) = 5 AND
+           DATE(CONCAT(#{queryYear}, '-', gregorian_birthday)) BETWEEN #{startDate} AND #{endDate})
+          OR
+          (CHAR_LENGTH(gregorian_birthday) > 5 AND
+           DATE(CONCAT(#{queryYear}, SUBSTRING(gregorian_birthday, 5))) BETWEEN #{startDate} AND #{endDate})
+      )
+    </select>
 
 </mapper>

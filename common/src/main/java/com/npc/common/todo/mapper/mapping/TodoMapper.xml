@@ -29,6 +29,8 @@
             <result column="done_get" property="doneGet"/>
             <result column="recurrence_type" property="recurrenceType"/>
             <result column="recurrence_count" property="recurrenceCount"/>
+            <result column="recurrence_params" property="recurrenceParams"/>
+            <result column="recurrence_count" property="recurrenceCount"/>
             <result column="recurrence_days" property="recurrenceDays"/>
             <result column="recurrence_interval" property="recurrenceInterval"/>
             <result column="next_due_date" property="nextDueDate"/>
@@ -195,6 +197,12 @@
             </if>
             <if test="vo.id != null and vo.id != ''">
                 and td.id = #{vo.id}
+            </if>
+            <if test="vo.recurrenceType != null and vo.recurrenceType != ''">
+                and td.recurrence_type = #{vo.recurrenceType}
+            </if>
+            <if test="vo.recurrenceTypeExclude != null and vo.recurrenceTypeExclude != ''">
+                and (td.recurrence_type is null or td.recurrence_type != #{vo.recurrenceTypeExclude})
             </if>
         </where>
     </select>

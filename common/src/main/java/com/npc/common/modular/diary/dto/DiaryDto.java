@@ -7,7 +7,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 /**
- * @program: ChatBuddy.java
+ * @program: npcService
  * @description 日记查询参数Dto
  * @author: feiyang
  * @create: 2025/06/27 11:48

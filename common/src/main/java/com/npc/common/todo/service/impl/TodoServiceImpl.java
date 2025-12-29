@@ -10,10 +10,12 @@ import com.npc.common.modular.todoCompleted.service.ITodoCompletedService;
 import com.npc.common.todo.entity.Todo;
 import com.npc.common.todo.enums.TodoEnum;
 import com.npc.common.todo.enums.TodoTypeEnum;
+import com.npc.common.todo.enums.TodoRecurrenceConstant;
 import com.npc.common.todo.mapper.TodoMapper;
 import com.npc.common.todo.service.ITodoService;
 import com.npc.common.todo.vo.TodoVO;
 import com.npc.common.todo.vo.TodoViewVO;
+import com.npc.core.net.query.Workday;
 import com.npc.utils.DateUtils;
 import com.npc.core.utils.StringUtils;
 import org.springframework.stereotype.Service;
@@ -82,6 +84,9 @@ public class TodoServiceImpl extends ServiceImpl<TodoMapper, Todo> implements IT
      * 5. 工作日 workDay
      * 6. 休息日 restDay
      * 7. 自定义 custom
+     * targetCount 有值 则为 计数任务
+     * recurrenceCount 有值（肯定有值）且不为1 则为 周期任务
+     * 其他的是 普通任务
      * @param todo
      * @return
      */
@@ -118,6 +123,9 @@ public class TodoServiceImpl extends ServiceImpl<TodoMapper, Todo> implements IT
         if (StringUtils.isNotEmpty(vo.getDate())) {
             vo.setStartDate(vo.getDate());
             vo.setEndDate(DateUtils.getNextDay(LocalDate.parse(vo.getDate())).toString());
+            if (Workday.isHoliday(LocalDate.parse(vo.getDate()))) {
+                vo.setRecurrenceTypeExclude("workDay");
+            }
         } else {
             if (StringUtils.isEmpty(vo.getStartDate())) {
                 vo.setStartDate(DateUtils.getDate());
@@ -128,11 +136,12 @@ public class TodoServiceImpl extends ServiceImpl<TodoMapper, Todo> implements IT
         }
         // 任务循环模式查询
         // recurrence_type 循环类型 ('none','daily','weekly','monthly','workDay','restDay','custom')
-        // recurrence_days 自定义循环（如['Monday','Thursday']）
+        // recurrence_days 自定义循环（如指定日期：['Monday','Thursday']）
         // recurrence_interval 间隔天数（如每X天，每X周）
+        // recurrence_count 每一个循环周期的循环数量：3；
         // next_due_date 下次执行时间
         /*
-          无循环 recurrence_type = none
+          无循环（单次执行任务） recurrence_type = none
           每天 recurrence_type = daily
           每周 recurrence_type = weekly
           每月 recurrence_type = monthly
@@ -143,12 +152,14 @@ public class TodoServiceImpl extends ServiceImpl<TodoMapper, Todo> implements IT
           每周六、周日 recurrence_type = weekly recurrence_days = ['Monday','Thursday']
           每月的第X周 recurrence_type = monthly recurrence_interval = 2
           每年的第X月 recurrence_type = yearly recurrence_interval = 2
-          每周的星期？
-          每月的？号
-          艾宾浩斯记忆法
-          定期循环（每？天）
-          自定义频次（每周？天）
+          每月的？号  recurrence_type = monthly recurrence_days = ['?']
+          艾宾浩斯记忆法 recurrence_type = ebbinghaus
+          定期循环（每?天）recurrence_type = custom recurrence_interval = 2
+          自定义频次（每周?天）recurrence_type = weekly recurrence_count = ?
          */
-
+//        switch (vo.getRecurrenceType()) {
+//            case TodoRecurrenceConstant.NONE:
+//
+//        }
     }
 }

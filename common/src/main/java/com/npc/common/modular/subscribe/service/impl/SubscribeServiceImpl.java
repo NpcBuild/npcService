@@ -1,5 +1,7 @@
 package com.npc.common.modular.subscribe.service.impl;
 
+import com.npc.common.modular.events.dto.EventsDto;
+import com.npc.common.modular.holiday.vo.CalendarEventVO;
 import com.npc.common.modular.subscribe.dto.SubscribeDto;
 import com.npc.common.modular.subscribe.vo.SubscribeVO;
 import com.npc.utils.CronUtils;
@@ -17,12 +19,10 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.util.ObjectUtils;
 
 import java.text.ParseException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -36,7 +36,7 @@ import java.util.stream.Collectors;
 @Service
 public class SubscribeServiceImpl extends ServiceImpl<SubscribeMapper, Subscribe> implements ISubscribeService {
     // 3天内提醒
-    private static final int REMIND_MILLI_SECOND = 3 * 24 * 60 * 60;
+    private static final int REMIND_MILLI_DAYS = 3;
 
     private static final Logger logger = LoggerFactory.getLogger(SubscribeServiceImpl.class);
 
@@ -44,13 +44,33 @@ public class SubscribeServiceImpl extends ServiceImpl<SubscribeMapper, Subscribe
     private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     @Override
+    public List<SubscribeVO> getAllSubscribeList(SubscribeDto subscribeDto) {
+        List<Subscribe> enableList = getEnableList(null, DateUtils.getTime());
+        List<SubscribeVO> res = new ArrayList<>();
+        for (Subscribe subscribe : enableList) {
+            List<String> remainingDates = CronUtils.getMatchingDates(subscribe.getPayCron(), subscribe.getEndDate(), null);
+            if (remainingDates != null) {
+                for (String remainingDate : remainingDates) {
+                    SubscribeVO subscribeVO = new SubscribeVO();
+                    BeanUtils.copyProperties(subscribe, subscribeVO);
+                    subscribeVO.setSubTime(LocalDateTime.parse(remainingDate, DATE_TIME_FORMATTER));
+                    subscribeVO.setRemainingPeriods((long) remainingDates.size());
+                    res.add(subscribeVO);
+                }
+            }
+        }
+        // 按照还款日期排序
+        return res.stream().sorted(Comparator.comparing(SubscribeVO::getSubTime)).collect(Collectors.toList());
+    }
+
+    @Override
     public List<SubscribeVO> getNextSubscribeList(SubscribeDto subscribeDto) {
-        List<Subscribe> enableList = getEnableList();
+        List<Subscribe> enableList = getEnableList(null, DateUtils.getTime());
         List<SubscribeVO> res = new ArrayList<>();
         for (Subscribe subscribe : enableList) {
             String next = CronUtils.getNext(subscribe.getPayCron(), null);
-            int differentDaysByMillisecond = DateUtils.differentDaysByMillisecond(DateUtils.getNowDate(), DateUtils.parseDate(next));
-            if (differentDaysByMillisecond <= REMIND_MILLI_SECOND) {
+            int differentDays = DateUtils.differentDaysByMillisecond(DateUtils.getNowDate(), DateUtils.parseDate(next));
+            if (differentDays <= REMIND_MILLI_DAYS) {
                 SubscribeVO subscribeVO = new SubscribeVO();
                 BeanUtils.copyProperties(subscribe, subscribeVO);
                 if (!ObjectUtils.isEmpty(next)) {
@@ -65,6 +85,44 @@ public class SubscribeServiceImpl extends ServiceImpl<SubscribeMapper, Subscribe
         }
         // 按照还款日期排序
         return res.stream().sorted(Comparator.comparing(SubscribeVO::getSubTime)).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<CalendarEventVO> getList(EventsDto eventsDto) {
+        // 将 LocalDate 转换为字符串格式用于数据库查询
+        String startDateStr = eventsDto.getStartDate() != null ?
+                eventsDto.getStartDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")) : null;
+        String endDateStr = eventsDto.getEndDate() != null ?
+                eventsDto.getEndDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")) : null;
+
+        List<Subscribe> enableList = getEnableList(startDateStr, endDateStr);
+        // 将 LocalDate 转换为 LocalDateTime
+        LocalDate startDate = eventsDto.getStartDate();
+        LocalDate endDate = eventsDto.getEndDate();
+        // 或者指定具体时间
+        LocalDateTime startDateTimeWithTime = startDate != null ?
+                startDate.atTime(0, 0, 0) : null;
+        LocalDateTime endDateTimeWithTime = endDate != null ?
+                endDate.atTime(23, 59, 59) : null;
+        List<CalendarEventVO> res = new ArrayList<>();
+
+        for (Subscribe subscribe : enableList) {
+            List<String> remainingDates = CronUtils.getMatchingDates(subscribe.getPayCron(), endDateTimeWithTime, startDateTimeWithTime);
+            for (String remainingDate : remainingDates) {
+                CalendarEventVO vo = new CalendarEventVO();
+                vo.setId(subscribe.getId().toString());
+                vo.setTitle(subscribe.getSubContent());
+                vo.setDate(remainingDate);
+                vo.setEventType("subscribe");
+                vo.setDescription(subscribe.getNotes());
+//            vo.setIcon("icon-subscribe");
+//            vo.setColor(subscribe.getCategory());
+//            vo.setIsImportant(false);
+//            vo.setIsCustom("true");
+                res.add(vo);
+            }
+        }
+        return res;
     }
 
     /**
@@ -163,8 +221,7 @@ public class SubscribeServiceImpl extends ServiceImpl<SubscribeMapper, Subscribe
 
 
 
-    private List<Subscribe> getEnableList() {
-        String endTime = DateUtils.getTime();
-        return this.baseMapper.getEnableList(endTime);
+    private List<Subscribe> getEnableList(String startTime, String endTime) {
+        return this.baseMapper.getEnableList(startTime, endTime);
     }
 }

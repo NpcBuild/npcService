@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.npc.common.modular.chat.mapper.ChatBuddyPersonalityMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.npc.common.modular.chat.entity.ChatBuddyPersonality">
+            <result column="id" property="id"/>
+            <result column="buddy_id" property="buddyId"/>
+            <result column="trait_name" property="traitName"/>
+            <result column="trait_level" property="traitLevel"/>
+            <result column="description" property="description"/>
+            <result column="created_at" property="createdAt"/>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+            id, buddy_id, trait_name, trait_level, description, created_at
+    </sql>
+
+    <sql id="commonConditionSQL">
+        <where>
+            t_chat_buddy_personality.is_delete = 0
+                <if test="id != '' and id != null">
+                    and t_chat_buddy_personality.id = #{id}
+                </if>
+                <if test="buddyId != '' and buddyId != null">
+                    and t_chat_buddy_personality.buddy_id = #{buddyId}
+                </if>
+                <if test="traitName != '' and traitName != null">
+                    and t_chat_buddy_personality.trait_name = #{traitName}
+                </if>
+                <if test="traitLevel != '' and traitLevel != null">
+                    and t_chat_buddy_personality.trait_level = #{traitLevel}
+                </if>
+                <if test="description != '' and description != null">
+                    and t_chat_buddy_personality.description = #{description}
+                </if>
+                <if test="createdAt != '' and createdAt != null">
+                    and t_chat_buddy_personality.created_at = #{createdAt}
+                </if>
+        </where>
+    </sql>
+
+    <select id="getChatBuddyPersonalityListByColList" resultType="com.npc.common.modular.chat.entity.ChatBuddyPersonality">
+        select
+        <include refid="Base_Column_List"/>
+        from t_chat_buddy_personality
+        <where>
+            t_chat_buddy_personality.is_delete = 0
+            and ${column} in
+            <foreach collection="ids" item="id" separator="," open="(" close=")">
+                ${id}
+            </foreach>
+        </where>
+    </select>
+    <select id="getByBuddyId" resultType="com.npc.common.modular.chat.entity.ChatBuddyPersonality"
+            parameterType="int">
+        select
+        <include refid="Base_Column_List"/>
+            from t_chat_buddy_personality
+        where buddy_id = #{id}
+    </select>
+
+</mapper>

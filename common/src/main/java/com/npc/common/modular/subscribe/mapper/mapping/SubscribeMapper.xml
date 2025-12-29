@@ -79,8 +79,15 @@
     </select>
     <select id="getEnableList" resultType="com.npc.common.modular.subscribe.entity.Subscribe">
         SELECT <include refid="Base_Column_List"/> FROM t_subscribe
-        WHERE (end_date is null or end_date >= #{endTime})
-          and sub_status = 1
+        <where>
+            and sub_status = 1
+            <if test="startTime != null and startTime != ''">
+                and (start_date is null or start_date &lt;= #{startTime})
+            </if>
+            <if test="endTime != null and endTime != ''">
+                and (end_date is null or end_date >= #{endTime})
+            </if>
+        </where>
     </select>
 
 </mapper>

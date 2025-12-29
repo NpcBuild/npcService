@@ -25,23 +25,16 @@ public class Money implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-
-
-
     /**
      * 交易唯一标识符，自增长
      */
 	@TableId(value="id", type= IdType.AUTO)
     private Integer id;
 
-
-
     /**
      * 交易描述
      */
     private String description;
-
-
 
     /**
      * 交易金额
@@ -98,6 +91,10 @@ public class Money implements Serializable {
      * 是否为定期交易
      */
     private Boolean recurringTransaction;
+    /**
+     * 是否不计入账单汇总（0=计入，1=不计入）
+     */
+    private Boolean excludeFromSummary;
 
 
     private String dateStartS;

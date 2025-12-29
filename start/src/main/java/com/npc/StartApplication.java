@@ -18,6 +18,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @MapperScan(basePackages = {"com.npc"},annotationClass = Mapper.class)
 @EnableScheduling   //开启定时任务
 @EnableDiscoveryClient
+//@EnableRefreshScope // 关键注解：开启配置刷新能力
 public class StartApplication extends SpringBootServletInitializer {
     private final static Logger logger = LoggerFactory.getLogger(StartApplication.class);
 

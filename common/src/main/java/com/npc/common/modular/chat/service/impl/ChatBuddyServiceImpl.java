@@ -1,5 +1,6 @@
 package com.npc.common.modular.chat.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -9,9 +10,19 @@ import com.npc.common.modular.chat.mapper.ChatBuddyMapper;
 import com.npc.common.modular.chat.service.IChatBuddyService;
 import com.npc.common.modular.chat.vo.BuddyVO;
 import com.npc.common.modular.dailySchedule.vo.DailyScheduleVO;
+import com.npc.common.modular.events.dto.EventsDto;
+import com.npc.common.modular.holiday.vo.CalendarEventVO;
+import com.npc.core.utils.StringUtils;
+import com.npc.utils.DayUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
+
+import javax.annotation.Resource;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
 
 /**
  * <p>
@@ -25,6 +36,9 @@ import org.springframework.stereotype.Service;
 public class ChatBuddyServiceImpl extends ServiceImpl<ChatBuddyMapper, ChatBuddy> implements IChatBuddyService {
 
     private static final Logger logger = LoggerFactory.getLogger(ChatBuddyServiceImpl.class);
+
+    @Resource
+    private ChatBuddyMapper chatBuddyMapper;
 
     @Override
     public IPage<ChatBuddy> selectListByPage(BuddyVO buddyVO) {
@@ -47,5 +61,65 @@ public class ChatBuddyServiceImpl extends ServiceImpl<ChatBuddyMapper, ChatBuddy
 //        // 注意这里应该使用 BuddyEntity 的 Mapper 而不是 VO 的 Mapper，因为 VO 通常不直接与数据库表对应
 //        IPage<ChatBuddy> buddyIPage = this.baseMapper.selectPage(page, queryWrapper);
 //        return buddyIPage;
+    }
+
+    @Override
+    public List<CalendarEventVO> getBirthdayList(EventsDto eventsDto) {
+        // 处理农历日期数据为阳历
+        List<CalendarEventVO> lunchList = this.getLunchBirthday(eventsDto);
+        // 提取查询年份
+        Map<String, Object> params = new HashMap<>();
+        params.put("startDate", eventsDto.getStartDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+        params.put("endDate", eventsDto.getEndDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+        params.put("queryYear", String.valueOf(eventsDto.getStartDate().getYear()));
+        if (CollectionUtils.isEmpty(lunchList)) {
+            return chatBuddyMapper.getBirthdayList(params);
+        } else {
+            lunchList.addAll(chatBuddyMapper.getBirthdayList(params));
+            return lunchList;
+        }
+    }
+
+    @Override
+    public List<CalendarEventVO> getLunchBirthday(EventsDto eventsDto) {
+        List<ChatBuddy> buddyList = chatBuddyMapper.selectList(
+                new LambdaQueryWrapper<ChatBuddy>()
+                        .isNull(ChatBuddy::getHasContact)
+                        .or()
+                        .ne(ChatBuddy::getHasContact, 0)
+                        .isNotNull(ChatBuddy::getLunarBirthday)
+                        .ne(ChatBuddy::getLunarBirthday, "")  // 排除空字符串
+        );
+
+        int targetYear = eventsDto.getStartDate().getYear();
+
+        List<CalendarEventVO> buddyLunchBirthdayList = new ArrayList<>();
+
+        for (ChatBuddy buddy : buddyList) {
+            if (StringUtils.isBlank(buddy.getLunarBirthday())) {
+                continue;
+            }
+            String solar = DayUtils.lunarToGregorian(buddy.getLunarBirthday(), targetYear);
+
+            try {
+                // 解析转换后的阳历日期
+                LocalDate solarDate = LocalDate.parse(solar);
+
+                // 判断调整后的日期是否在查询范围内
+                if (!solarDate.isBefore(eventsDto.getStartDate()) &&
+                        !solarDate.isAfter(eventsDto.getEndDate())) {
+                    CalendarEventVO vo = new CalendarEventVO();
+                    vo.setTitle(buddy.getName() + "农历生日");
+                    vo.setDate(solarDate.toString());
+                    vo.setDateType("lunar");
+                    vo.setEventType("birthday");
+                    buddyLunchBirthdayList.add(vo);
+                }
+            } catch (Exception e) {
+                // 日期解析异常，跳过该条记录
+                logger.warn("Failed to parse solar date: {}", solar, e);
+            }
+        }
+        return buddyLunchBirthdayList;
     }
 }

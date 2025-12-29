@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.npc.common.modular.serverErrorLog.mapper.ServerErrorLogMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.npc.common.modular.serverErrorLog.entity.ServerErrorLog">
+            <result column="id" property="id"/>
+            <result column="error_time" property="errorTime"/>
+            <result column="error_level" property="errorLevel"/>
+            <result column="service_name" property="serviceName"/>
+            <result column="request_uri" property="requestUri"/>
+            <result column="user_id" property="userId"/>
+            <result column="error_message" property="errorMessage"/>
+            <result column="stack_trace" property="stackTrace"/>
+            <result column="extra_info" property="extraInfo"/>
+            <result column="created_at" property="createdAt"/>
+            <result column="updated_at" property="updatedAt"/>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+            id, error_time, error_level, service_name, request_uri, user_id, error_message, stack_trace, extra_info, created_at, updated_at
+    </sql>
+
+    <sql id="commonConditionSQL">
+        <where>
+            sys_server_error_log.is_delete = 0
+                <if test="id != '' and id != null">
+                    and sys_server_error_log.id = #{id}
+                </if>
+                <if test="errorTime != '' and errorTime != null">
+                    and sys_server_error_log.error_time = #{errorTime}
+                </if>
+                <if test="errorLevel != '' and errorLevel != null">
+                    and sys_server_error_log.error_level = #{errorLevel}
+                </if>
+                <if test="serviceName != '' and serviceName != null">
+                    and sys_server_error_log.service_name = #{serviceName}
+                </if>
+                <if test="requestUri != '' and requestUri != null">
+                    and sys_server_error_log.request_uri = #{requestUri}
+                </if>
+                <if test="userId != '' and userId != null">
+                    and sys_server_error_log.user_id = #{userId}
+                </if>
+                <if test="errorMessage != '' and errorMessage != null">
+                    and sys_server_error_log.error_message = #{errorMessage}
+                </if>
+                <if test="stackTrace != '' and stackTrace != null">
+                    and sys_server_error_log.stack_trace = #{stackTrace}
+                </if>
+                <if test="extraInfo != '' and extraInfo != null">
+                    and sys_server_error_log.extra_info = #{extraInfo}
+                </if>
+                <if test="createdAt != '' and createdAt != null">
+                    and sys_server_error_log.created_at = #{createdAt}
+                </if>
+                <if test="updatedAt != '' and updatedAt != null">
+                    and sys_server_error_log.updated_at = #{updatedAt}
+                </if>
+        </where>
+    </sql>
+
+    <select id="getServerErrorLogListByColList" resultType="com.npc.common.modular.serverErrorLog.entity.ServerErrorLog">
+        select
+        <include refid="Base_Column_List"/>
+        from sys_server_error_log
+        <where>
+            sys_server_error_log.is_delete = 0
+            and ${column} in
+            <foreach collection="ids" item="id" separator="," open="(" close=")">
+                ${id}
+            </foreach>
+        </where>
+    </select>
+
+</mapper>

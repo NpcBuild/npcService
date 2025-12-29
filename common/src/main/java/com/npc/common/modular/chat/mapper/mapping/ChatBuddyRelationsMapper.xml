@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.npc.common.modular.chat.mapper.ChatBuddyRelationsMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.npc.common.modular.chat.entity.ChatBuddyRelations">
+            <result column="id" property="id"/>
+            <result column="from_id" property="fromId"/>
+            <result column="to_id" property="toId"/>
+            <result column="type_ids" property="typeIds"/>
+            <result column="status" property="status"/>
+            <result column="create_time" property="createTime"/>
+            <result column="update_time" property="updateTime"/>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+            id, from_id, to_id, type_ids, status, create_time, update_time
+    </sql>
+
+    <sql id="commonConditionSQL">
+        <where>
+            t_chat_buddy_relations.is_delete = 0
+                <if test="id != '' and id != null">
+                    and t_chat_buddy_relations.id = #{id}
+                </if>
+                <if test="fromId != '' and fromId != null">
+                    and t_chat_buddy_relations.from_id = #{fromId}
+                </if>
+                <if test="toId != '' and toId != null">
+                    and t_chat_buddy_relations.to_id = #{toId}
+                </if>
+                <if test="typeIds != '' and typeIds != null">
+                    and t_chat_buddy_relations.type_ids = #{typeIds}
+                </if>
+                <if test="status != '' and status != null">
+                    and t_chat_buddy_relations.status = #{status}
+                </if>
+                <if test="createTime != '' and createTime != null">
+                    and t_chat_buddy_relations.create_time = #{createTime}
+                </if>
+                <if test="updateTime != '' and updateTime != null">
+                    and t_chat_buddy_relations.update_time = #{updateTime}
+                </if>
+        </where>
+    </sql>
+
+    <select id="getChatBuddyRelationsListByColList" resultType="com.npc.common.modular.chat.entity.ChatBuddyRelations">
+        select
+        <include refid="Base_Column_List"/>
+        from t_chat_buddy_relations
+        <where>
+            t_chat_buddy_relations.is_delete = 0
+            and ${column} in
+            <foreach collection="ids" item="id" separator="," open="(" close=")">
+                ${id}
+            </foreach>
+        </where>
+    </select>
+
+</mapper>

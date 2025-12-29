@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.npc.common.modular.review.mapper.ReviewDailyMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.npc.common.modular.review.entity.ReviewDaily">
+            <result column="id" property="id"/>
+            <result column="user_id" property="userId"/>
+            <result column="review_date" property="reviewDate"/>
+            <result column="today_core_tasks" property="todayCoreTasks"/>
+            <result column="completion_score" property="completionScore"/>
+            <result column="gains" property="gains"/>
+            <result column="regret" property="regret"/>
+            <result column="tomorrow_core_tasks" property="tomorrowCoreTasks"/>
+            <result column="created_at" property="createdAt"/>
+            <result column="updated_at" property="updatedAt"/>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+            id, user_id, review_date, today_core_tasks, completion_score, gains, regret, tomorrow_core_tasks, created_at, updated_at
+    </sql>
+
+    <sql id="commonConditionSQL">
+        <where>
+            t_review_daily.is_delete = 0
+                <if test="id != '' and id != null">
+                    and t_review_daily.id = #{id}
+                </if>
+                <if test="userId != '' and userId != null">
+                    and t_review_daily.user_id = #{userId}
+                </if>
+                <if test="reviewDate != '' and reviewDate != null">
+                    and t_review_daily.review_date = #{reviewDate}
+                </if>
+                <if test="todayCoreTasks != '' and todayCoreTasks != null">
+                    and t_review_daily.today_core_tasks = #{todayCoreTasks}
+                </if>
+                <if test="completionScore != '' and completionScore != null">
+                    and t_review_daily.completion_score = #{completionScore}
+                </if>
+                <if test="gains != '' and gains != null">
+                    and t_review_daily.gains = #{gains}
+                </if>
+                <if test="regret != '' and regret != null">
+                    and t_review_daily.regret = #{regret}
+                </if>
+                <if test="tomorrowCoreTasks != '' and tomorrowCoreTasks != null">
+                    and t_review_daily.tomorrow_core_tasks = #{tomorrowCoreTasks}
+                </if>
+                <if test="createdAt != '' and createdAt != null">
+                    and t_review_daily.created_at = #{createdAt}
+                </if>
+                <if test="updatedAt != '' and updatedAt != null">
+                    and t_review_daily.updated_at = #{updatedAt}
+                </if>
+        </where>
+    </sql>
+
+    <select id="getReviewDailyListByColList" resultType="com.npc.common.modular.review.entity.ReviewDaily">
+        select
+        <include refid="Base_Column_List"/>
+        from t_review_daily
+        <where>
+            t_review_daily.is_delete = 0
+            and ${column} in
+            <foreach collection="ids" item="id" separator="," open="(" close=")">
+                ${id}
+            </foreach>
+        </where>
+    </select>
+
+</mapper>

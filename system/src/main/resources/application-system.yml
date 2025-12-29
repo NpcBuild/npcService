@@ -32,6 +32,20 @@ spring:
   #      - optional:nacos:${spring.application.name}:${spring.profiles.active}
 ---
 spring:
+  config:
+    activate:
+      on-profile: mac
+  cloud:
+    compatibility-verifier:
+      enabled: false
+    nacos:
+      discovery:
+        enabled: false
+        server-addr: 192.168.1.20:8848
+  #    import:
+  #      - optional:nacos:${spring.application.name}:${spring.profiles.active}
+---
+spring:
   alarm:
     dingtalk:
       enabled: true

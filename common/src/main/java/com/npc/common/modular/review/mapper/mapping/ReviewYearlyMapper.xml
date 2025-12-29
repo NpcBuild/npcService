@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.npc.common.modular.review.mapper.ReviewYearlyMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.npc.common.modular.review.entity.ReviewYearly">
+            <result column="id" property="id"/>
+            <result column="user_id" property="userId"/>
+            <result column="review_year" property="reviewYear"/>
+            <result column="year_keyword" property="yearKeyword"/>
+            <result column="achievements" property="achievements"/>
+            <result column="regrets" property="regrets"/>
+            <result column="new_year_top_goals" property="newYearTopGoals"/>
+            <result column="q1_plan" property="q1Plan"/>
+            <result column="q2_plan" property="q2Plan"/>
+            <result column="q3_plan" property="q3Plan"/>
+            <result column="q4_plan" property="q4Plan"/>
+            <result column="created_at" property="createdAt"/>
+            <result column="updated_at" property="updatedAt"/>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+            id, user_id, review_year, year_keyword, achievements, regrets, new_year_top_goals, q1_plan, q2_plan, q3_plan, q4_plan, created_at, updated_at
+    </sql>
+
+    <sql id="commonConditionSQL">
+        <where>
+            t_review_yearly.is_delete = 0
+                <if test="id != '' and id != null">
+                    and t_review_yearly.id = #{id}
+                </if>
+                <if test="userId != '' and userId != null">
+                    and t_review_yearly.user_id = #{userId}
+                </if>
+                <if test="reviewYear != '' and reviewYear != null">
+                    and t_review_yearly.review_year = #{reviewYear}
+                </if>
+                <if test="yearKeyword != '' and yearKeyword != null">
+                    and t_review_yearly.year_keyword = #{yearKeyword}
+                </if>
+                <if test="achievements != '' and achievements != null">
+                    and t_review_yearly.achievements = #{achievements}
+                </if>
+                <if test="regrets != '' and regrets != null">
+                    and t_review_yearly.regrets = #{regrets}
+                </if>
+                <if test="newYearTopGoals != '' and newYearTopGoals != null">
+                    and t_review_yearly.new_year_top_goals = #{newYearTopGoals}
+                </if>
+                <if test="q1Plan != '' and q1Plan != null">
+                    and t_review_yearly.q1_plan = #{q1Plan}
+                </if>
+                <if test="q2Plan != '' and q2Plan != null">
+                    and t_review_yearly.q2_plan = #{q2Plan}
+                </if>
+                <if test="q3Plan != '' and q3Plan != null">
+                    and t_review_yearly.q3_plan = #{q3Plan}
+                </if>
+                <if test="q4Plan != '' and q4Plan != null">
+                    and t_review_yearly.q4_plan = #{q4Plan}
+                </if>
+                <if test="createdAt != '' and createdAt != null">
+                    and t_review_yearly.created_at = #{createdAt}
+                </if>
+                <if test="updatedAt != '' and updatedAt != null">
+                    and t_review_yearly.updated_at = #{updatedAt}
+                </if>
+        </where>
+    </sql>
+
+    <select id="getReviewYearlyListByColList" resultType="com.npc.common.modular.review.entity.ReviewYearly">
+        select
+        <include refid="Base_Column_List"/>
+        from t_review_yearly
+        <where>
+            t_review_yearly.is_delete = 0
+            and ${column} in
+            <foreach collection="ids" item="id" separator="," open="(" close=")">
+                ${id}
+            </foreach>
+        </where>
+    </select>
+
+</mapper>

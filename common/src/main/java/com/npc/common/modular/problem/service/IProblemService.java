@@ -2,6 +2,7 @@ package com.npc.common.modular.problem.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.npc.common.modular.plan.vo.PlanTreeVo;
 import com.npc.common.modular.problem.dto.ProblemDto;
 import com.npc.common.modular.problem.entity.Problem;
 import com.npc.common.modular.problem.vo.ProblemVO;
@@ -24,6 +25,6 @@ public interface IProblemService extends IService<Problem> {
 
     List<Problem> search(ProblemDto problem);
 
-    ProblemVO translate(Problem record);
+    ProblemVO translate(Problem record, List<PlanTreeVo> PLAN_TREE);
     List<ProblemVO> translate(List<Problem> records);
 }

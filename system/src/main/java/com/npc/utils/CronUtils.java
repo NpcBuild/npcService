@@ -6,7 +6,9 @@ import org.springframework.scheduling.support.CronExpression;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 /**
  * @author NPC
@@ -64,6 +66,58 @@ public class CronUtils {
             }
 
             return count;
+        } catch (Exception e) {
+            e.printStackTrace();
+            // 处理异常情况
+            return null;
+        }
+    }
+
+    /**
+     * 计算cron表达式在指定时间范围内所有符合的日期列表
+     *
+     * @param cronExpression cron表达式
+     * @param endDate        结束时间
+     * @return 符合条件的日期列表，如果为null表示无限次或发生错误
+     */
+    public static List<String> getMatchingDates(String cronExpression, LocalDateTime endDate, LocalDateTime startDate) {
+        try {
+            LocalDateTime now = LocalDateTime.now();
+            if (startDate != null) {
+                now = startDate;
+            }
+            List<String> matchingDates = new ArrayList<>();
+
+            // 限制最大计算次数，防止无限循环
+            long maxIterations = 10000;
+            long iterations = 0;
+
+            LocalDateTime end = endDate;
+            LocalDateTime next = now;
+
+            while (next != null && iterations < maxIterations && next.isBefore(end)) {
+                String nextStr = getNext(cronExpression, next);
+                if (nextStr == null) {
+                    break; // 如果getNext返回null，说明cron表达式无效
+                }
+
+                // 检查新获取的时间是否在结束时间之前
+                LocalDateTime nextExecutionTime = DateUtil.parseLocalDateTime(nextStr);
+                if (nextExecutionTime.isAfter(end)) {
+                    break;
+                }
+
+                matchingDates.add(nextStr);
+                next = nextExecutionTime;
+                iterations++;
+
+                // 如果发现循环模式或者超过合理范围，则认为是无限次
+                if (matchingDates.size() > 1000) {
+                    return null; // 表示无限次
+                }
+            }
+
+            return matchingDates;
         } catch (Exception e) {
             e.printStackTrace();
             // 处理异常情况

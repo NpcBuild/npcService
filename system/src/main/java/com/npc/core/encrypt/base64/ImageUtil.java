@@ -1,6 +1,9 @@
 package com.npc.core.encrypt.base64;
 
+import org.springframework.web.multipart.MultipartFile;
+
 import javax.imageio.ImageIO;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.util.Base64;
@@ -116,6 +119,51 @@ public class ImageUtil {
         convertBase64StrToImage(base, "aaa.jpg");
 //        String base64Str = convertImageToBase64Str("C:\\Users\\NPC\\Desktop\\test.jpg");
 //        System.out.println(base64Str);
+    }
+
+    /**
+     * 压缩图片
+     *
+     * @param file     原始图片文件
+     * @param format   图片格式，例如 "JPEG"
+     * @return 压缩后的字节数组
+     * @throws IOException 如果读取或写入图像时发生错误
+     */
+    public static byte[] compressImage(MultipartFile file, String format) throws IOException {
+        // 将 MultipartFile 转换为 BufferedImage
+        BufferedImage originalImage = ImageIO.read(file.getInputStream());
+
+        int originalWidth = originalImage.getWidth();
+        int originalHeight = originalImage.getHeight();
+
+        // 设置最大尺寸限制，而不是固定尺寸
+        int maxWidth = 1920;
+        int maxHeight = 1080;
+
+        // 只有当原图超过最大尺寸时才进行压缩
+        if (originalWidth <= maxWidth && originalHeight <= maxHeight) {
+            // 图片尺寸已经在合理范围内，直接返回原图数据
+            return file.getBytes();
+        }
+
+        // 计算缩放比例并保持宽高比
+        double scale = Math.min((double) maxWidth / originalWidth,
+                (double) maxHeight / originalHeight);
+
+        int scaledWidth = (int) (originalWidth * scale);
+        int scaledHeight = (int) (originalHeight * scale);
+
+        // 创建缩放后的图像
+        Image scaledImage = originalImage.getScaledInstance(scaledWidth, scaledHeight, Image.SCALE_SMOOTH);
+        BufferedImage bufferedScaledImage = new BufferedImage(scaledWidth, scaledHeight, BufferedImage.TYPE_INT_RGB);
+        Graphics2D g2d = bufferedScaledImage.createGraphics();
+        g2d.drawImage(scaledImage, 0, 0, null);
+        g2d.dispose();
+
+        // 输出到字节数组
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        ImageIO.write(bufferedScaledImage, format, baos);
+        return baos.toByteArray();
     }
 
 

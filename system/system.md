@@ -31,3 +31,7 @@ RestTemplateBuilder net模块
 # 多设备开发配置
 不同设备间服务组件不同，动态根据服务环境运行所需的组件
 例如：mac设备无redis环境，则自动退到Guava Caches
+1. 自动检测 Redis 环境（无、单机、集群）
+2. 根据检测结果动态配置相应的缓存策略
+3. 提供统一的缓存接口，屏蔽底层实现差异
+RedisServerAddrModifier

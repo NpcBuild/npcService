@@ -3,8 +3,8 @@ package com.npc.common.modular.chat.controller;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.npc.common.modular.chat.entity.ChatBuddy;
-import com.npc.common.modular.chat.service.IChatBuddyService;
+import com.npc.common.modular.chat.entity.*;
+import com.npc.common.modular.chat.service.*;
 import com.npc.common.modular.chat.vo.BuddyVO;
 import com.npc.common.monitor.server.ServerService;
 import com.npc.core.ServerResponseEnum;
@@ -41,6 +41,16 @@ public class ChatBuddyController {
 
     @Autowired
     private IChatBuddyService chatBuddyService;
+    @Autowired
+    private IChatBuddyRelationsService chatBuddyRelationsService;
+    @Autowired
+    private IChatBuddyPersonalityService chatBuddyPersonalityService;
+    @Autowired
+    private IChatBuddyCareerService  chatBuddyCareerService;
+    @Autowired
+    private IChatBuddyHabitService chatBuddyHabitService;
+    @Autowired
+    private IChatBuddyPastService chatBuddyPastService;
 
 
     /**
@@ -61,17 +71,35 @@ public class ChatBuddyController {
 
     /**
      * 修改关系
-     * @param chatBuddy 传递的实体
+     * @param chatBuddyRelations 传递的实体
      * @return ResponseDataModel转换结果
      */
     @RequestMapping(value = "/saveRelations", method = RequestMethod.POST)
-    public ServerResponseVO<?> saveRelations(@RequestBody @Validated ChatBuddy chatBuddy) {
+    public ServerResponseVO<?> saveRelations(@RequestBody @Validated ChatBuddyRelations chatBuddyRelations) {
         try {
-            UpdateWrapper updateWrapper = new UpdateWrapper();
-            updateWrapper.eq("id",chatBuddy.getId());
-            updateWrapper.eq("relation",chatBuddy.getRelation());
-            boolean update = chatBuddyService.update(updateWrapper);
-            return ServerResponseVO.success(update);
+            // 构建查询条件
+            QueryWrapper<ChatBuddyRelations> queryWrapper = new QueryWrapper<>();
+            queryWrapper.eq("from_id", chatBuddyRelations.getFromId())
+                    .eq("to_id", chatBuddyRelations.getToId());
+
+            // 查询是否存在记录
+            ChatBuddyRelations existingRelation = chatBuddyRelationsService.getOne(queryWrapper);
+
+            boolean result;
+            if (existingRelation != null) {
+                // 存在则更新
+                UpdateWrapper<ChatBuddyRelations> updateWrapper = new UpdateWrapper<>();
+                updateWrapper.eq("from_id", chatBuddyRelations.getFromId())
+                        .eq("to_id", chatBuddyRelations.getToId())
+                        .set("type_ids", chatBuddyRelations.getTypeIds());
+                result = chatBuddyRelationsService.update(updateWrapper);
+            } else {
+                // 不存在则新增
+                chatBuddyRelations.setStatus("1");
+                result = chatBuddyRelationsService.save(chatBuddyRelations);
+            }
+
+            return ServerResponseVO.success(result);
         } catch (Exception e) {
             e.printStackTrace();
             return ServerResponseVO.error(ServerResponseEnum.SAVE_FAILED);
@@ -245,5 +273,20 @@ public class ChatBuddyController {
             allPic.add(ImageUtil.convertImageToBase64Str(file.getAbsolutePath()));
         }
         return ServerResponseVO.success(allPic);
+    }
+
+    @GetMapping ("/{id}/profile")
+    public ServerResponseVO<?> getProfile(@PathVariable("id") int id) {
+       ChatBuddy chatBuddy = chatBuddyService.getById(id);
+       List<ChatBuddyPersonality> personalities = chatBuddyPersonalityService.getByBuddyId(id);
+       List<ChatBuddyCareer> careers = chatBuddyCareerService.getByBuddyId(id);
+       List<ChatBuddyHabit> habits = chatBuddyHabitService.getByBuddyId(id);
+       List<ChatBuddyPast> pasts = chatBuddyPastService.getByBuddyId(id);
+       Map<String, Object> res = new  HashMap<>();
+       res.put( "personalityList",personalities);
+       res.put( "careerList",careers);
+       res.put( "habitList",habits);
+       res.put( "pastList",pasts);
+       return ServerResponseVO.success(res);
     }
 }

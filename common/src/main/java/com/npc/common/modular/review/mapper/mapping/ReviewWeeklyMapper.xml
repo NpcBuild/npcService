@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.npc.common.modular.review.mapper.ReviewWeeklyMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.npc.common.modular.review.entity.ReviewWeekly">
+            <result column="id" property="id"/>
+            <result column="user_id" property="userId"/>
+            <result column="review_year" property="reviewYear"/>
+            <result column="review_week" property="reviewWeek"/>
+            <result column="achievements" property="achievements"/>
+            <result column="biggest_regret" property="biggestRegret"/>
+            <result column="summary" property="summary"/>
+            <result column="next_week_keyword" property="nextWeekKeyword"/>
+            <result column="next_week_core_goals" property="nextWeekCoreGoals"/>
+            <result column="message_to_self" property="messageToSelf"/>
+            <result column="created_at" property="createdAt"/>
+            <result column="updated_at" property="updatedAt"/>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+            id, user_id, review_year, review_week, achievements, biggest_regret, summary, next_week_keyword, next_week_core_goals, message_to_self, created_at, updated_at
+    </sql>
+
+    <sql id="commonConditionSQL">
+        <where>
+            t_review_weekly.is_delete = 0
+                <if test="id != '' and id != null">
+                    and t_review_weekly.id = #{id}
+                </if>
+                <if test="userId != '' and userId != null">
+                    and t_review_weekly.user_id = #{userId}
+                </if>
+                <if test="reviewYear != '' and reviewYear != null">
+                    and t_review_weekly.review_year = #{reviewYear}
+                </if>
+                <if test="reviewWeek != '' and reviewWeek != null">
+                    and t_review_weekly.review_week = #{reviewWeek}
+                </if>
+                <if test="achievements != '' and achievements != null">
+                    and t_review_weekly.achievements = #{achievements}
+                </if>
+                <if test="biggestRegret != '' and biggestRegret != null">
+                    and t_review_weekly.biggest_regret = #{biggestRegret}
+                </if>
+                <if test="summary != '' and summary != null">
+                    and t_review_weekly.summary = #{summary}
+                </if>
+                <if test="nextWeekKeyword != '' and nextWeekKeyword != null">
+                    and t_review_weekly.next_week_keyword = #{nextWeekKeyword}
+                </if>
+                <if test="nextWeekCoreGoals != '' and nextWeekCoreGoals != null">
+                    and t_review_weekly.next_week_core_goals = #{nextWeekCoreGoals}
+                </if>
+                <if test="messageToSelf != '' and messageToSelf != null">
+                    and t_review_weekly.message_to_self = #{messageToSelf}
+                </if>
+                <if test="createdAt != '' and createdAt != null">
+                    and t_review_weekly.created_at = #{createdAt}
+                </if>
+                <if test="updatedAt != '' and updatedAt != null">
+                    and t_review_weekly.updated_at = #{updatedAt}
+                </if>
+        </where>
+    </sql>
+
+    <select id="getReviewWeeklyListByColList" resultType="com.npc.common.modular.review.entity.ReviewWeekly">
+        select
+        <include refid="Base_Column_List"/>
+        from t_review_weekly
+        <where>
+            t_review_weekly.is_delete = 0
+            and ${column} in
+            <foreach collection="ids" item="id" separator="," open="(" close=")">
+                ${id}
+            </foreach>
+        </where>
+    </select>
+
+</mapper>

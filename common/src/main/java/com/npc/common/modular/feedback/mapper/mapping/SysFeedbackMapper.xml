@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.npc.common.modular.feedback.mapper.SysFeedbackMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.npc.common.modular.feedback.entity.SysFeedback">
+            <result column="id" property="id"/>
+            <result column="user_id" property="userId"/>
+            <result column="feedback_type" property="feedbackType"/>
+            <result column="title" property="title"/>
+            <result column="content" property="content"/>
+            <result column="screenshot_urls" property="screenshotUrls"/>
+            <result column="contact_info" property="contactInfo"/>
+            <result column="device_info" property="deviceInfo"/>
+            <result column="app_version" property="appVersion"/>
+            <result column="status" property="status"/>
+            <result column="admin_reply" property="adminReply"/>
+            <result column="priority" property="priority"/>
+            <result column="created_at" property="createdAt"/>
+            <result column="updated_at" property="updatedAt"/>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+            id, user_id, feedback_type, title, content, screenshot_urls, contact_info, device_info, app_version, status, admin_reply, priority, created_at, updated_at
+    </sql>
+
+    <sql id="commonConditionSQL">
+        <where>
+            t_sys_feedback.is_delete = 0
+                <if test="id != '' and id != null">
+                    and t_sys_feedback.id = #{id}
+                </if>
+                <if test="userId != '' and userId != null">
+                    and t_sys_feedback.user_id = #{userId}
+                </if>
+                <if test="feedbackType != '' and feedbackType != null">
+                    and t_sys_feedback.feedback_type = #{feedbackType}
+                </if>
+                <if test="title != '' and title != null">
+                    and t_sys_feedback.title = #{title}
+                </if>
+                <if test="content != '' and content != null">
+                    and t_sys_feedback.content = #{content}
+                </if>
+                <if test="screenshotUrls != '' and screenshotUrls != null">
+                    and t_sys_feedback.screenshot_urls = #{screenshotUrls}
+                </if>
+                <if test="contactInfo != '' and contactInfo != null">
+                    and t_sys_feedback.contact_info = #{contactInfo}
+                </if>
+                <if test="deviceInfo != '' and deviceInfo != null">
+                    and t_sys_feedback.device_info = #{deviceInfo}
+                </if>
+                <if test="appVersion != '' and appVersion != null">
+                    and t_sys_feedback.app_version = #{appVersion}
+                </if>
+                <if test="status != '' and status != null">
+                    and t_sys_feedback.status = #{status}
+                </if>
+                <if test="adminReply != '' and adminReply != null">
+                    and t_sys_feedback.admin_reply = #{adminReply}
+                </if>
+                <if test="priority != '' and priority != null">
+                    and t_sys_feedback.priority = #{priority}
+                </if>
+                <if test="createdAt != '' and createdAt != null">
+                    and t_sys_feedback.created_at = #{createdAt}
+                </if>
+                <if test="updatedAt != '' and updatedAt != null">
+                    and t_sys_feedback.updated_at = #{updatedAt}
+                </if>
+        </where>
+    </sql>
+
+    <select id="getSysFeedbackListByColList" resultType="com.npc.common.modular.feedback.entity.SysFeedback">
+        select
+        <include refid="Base_Column_List"/>
+        from t_sys_feedback
+        <where>
+            t_sys_feedback.is_delete = 0
+            and ${column} in
+            <foreach collection="ids" item="id" separator="," open="(" close=")">
+                ${id}
+            </foreach>
+        </where>
+    </select>
+    <select id="countFeedbackByMonth" resultType="com.npc.common.modular.feedback.entity.SysFeedback">
+        SELECT DATE_FORMAT(created_at, '%Y-%m') AS month, COUNT(*) AS feedback_count
+        FROM t_user_feedback
+        GROUP BY month
+        ORDER BY month DESC;
+    </select>
+    <select id="findPendingHighPriorityFeedback"
+            resultType="com.npc.common.modular.feedback.entity.SysFeedback">
+        SELECT *
+        FROM t_user_feedback
+        WHERE status = 'PENDING'
+          AND priority IN ('HIGH', 'URGENT')
+        ORDER BY created_at DESC;
+    </select>
+
+</mapper>

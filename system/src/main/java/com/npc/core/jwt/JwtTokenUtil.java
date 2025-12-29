@@ -2,9 +2,9 @@ package com.npc.core.jwt;
 
 import com.alibaba.fastjson.JSONObject;
 import com.npc.Constants;
+import com.npc.cache.service.CacheService;
 import com.npc.core.ServerResponseEnum;
 import com.npc.exception.YFLoginTimeoutException;
-import com.npc.redis.utils.RedisUtil;
 import io.jsonwebtoken.*;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author NPC
@@ -29,54 +30,50 @@ public class JwtTokenUtil {
     @Value("${jwt.expire.refreshToken}")
     public Integer refreshTokenExpire;
     @Autowired
-    RedisUtil redisUtil;
+    private CacheService cacheService;
 
     /**
      * 创建 刷新令牌 与 访问令牌 关联关系
-     *
      * @param userToken
      * @param refreshTokenExpireDate
      */
     public void tokenAssociation(UserToken userToken, Date refreshTokenExpireDate) {
         Long time = (refreshTokenExpireDate.getTime() - System.currentTimeMillis()) / 1000 + 100;
-        redisUtil.set(userToken.getRefreshToken(), userToken.getAccessToken(), time);
+        cacheService.set(userToken.getRefreshToken(), userToken.getAccessToken(), time, TimeUnit.SECONDS);
     }
 
     /**
      * 根据 刷新令牌 获取 访问令牌
-     *
      * @param refreshToken
      */
     public String getAccessTokenByRefresh(String refreshToken) {
-        Object value = redisUtil.get(refreshToken);
-        return value == null ? null : String.valueOf(value);
+        return cacheService.get(refreshToken, String.class);
+//        Object value = redisUtil.get(refreshToken);
+//        return value == null ? null : String.valueOf(value);
     }
 
 
     /**
      * 添加至黑名单
-     *
      * @param token
      * @param expireTime
      */
     public void addBlacklist(String token, Date expireTime) {
         Long expireTimeLong = (expireTime.getTime() - System.currentTimeMillis()) / 1000 + 100;
-        redisUtil.set(getBlacklistPrefix(token), "1", expireTimeLong);
+        cacheService.set(getBlacklistPrefix(token), "1", expireTimeLong, TimeUnit.SECONDS);
     }
 
     /**
      * 校验是否存在黑名单
-     *
      * @param token
      * @return true 存在 false不存在
      */
     public Boolean checkBlacklist(String token) {
-        return redisUtil.hasKey(getBlacklistPrefix(token));
+        return cacheService.hasKey(getBlacklistPrefix(token));
     }
 
     /**
      * 获取黑名单前缀
-     *
      * @param token
      * @return
      */
@@ -87,7 +84,6 @@ public class JwtTokenUtil {
 
     /**
      * 获取 token 信息
-     *
      * @param userTokenInfo
      * @return
      */
@@ -108,7 +104,6 @@ public class JwtTokenUtil {
 
     /**
      * 生成token
-     *
      * @param userTokenInfo
      * @return
      */
@@ -124,7 +119,6 @@ public class JwtTokenUtil {
 
     /**
      * 获取 token 中注册信息
-     *
      * @param token
      * @return
      */
@@ -140,7 +134,6 @@ public class JwtTokenUtil {
 
     /**
      * 验证 token 是否过期失效
-     *
      * @param token
      * @return true 过期 false 未过期
      */
@@ -155,7 +148,6 @@ public class JwtTokenUtil {
 
     /**
      * 获取 token 失效时间
-     *
      * @param token
      * @return
      */
@@ -166,7 +158,6 @@ public class JwtTokenUtil {
 
     /**
      * 获取 token 发布时间
-     *
      * @param token
      * @return
      */
@@ -177,7 +168,6 @@ public class JwtTokenUtil {
 
     /**
      * 获取用户信息
-     *
      * @param token
      * @return
      */
@@ -189,7 +179,6 @@ public class JwtTokenUtil {
 
     /**
      * 获取用户名
-     *
      * @param token
      * @return
      */
@@ -200,7 +189,6 @@ public class JwtTokenUtil {
 
     /**
      * 获取用户Id
-     *
      * @param token
      * @return
      */

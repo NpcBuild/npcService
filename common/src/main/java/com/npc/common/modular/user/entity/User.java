@@ -28,6 +28,15 @@ public class User implements Serializable {
     @ExcelProperty("账号名")
     @TableField("account")
     private String account;
+    @ExcelProperty("邮箱")
+    @TableField("email")
+    private String email;
+    @ExcelProperty("手机号")
+    @TableField("phone")
+    private String phone;
+    // 头像
+    @TableField("avatar")
+    private String avatar;
     @TableLogic
     @ExcelProperty("逻辑删除")
     @TableField("flag")

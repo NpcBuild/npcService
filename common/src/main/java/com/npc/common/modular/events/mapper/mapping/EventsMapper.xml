@@ -61,5 +61,40 @@
             </foreach>
         </where>
     </select>
+    <select id="getListByRange" resultType="com.npc.common.modular.holiday.vo.CalendarEventVO">
+        SELECT
+            `name` AS title,
+            event_date AS DATE,
+            "event" AS eventType
+        FROM t_events
+        WHERE event_date >= #{startDate} AND event_date &lt;= #{endDate}
+    </select>
+
+    <select id="getList" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM t_events
+        <where>
+            <if test="dto.id != '' and dto.id != null">
+                and t_events.id = #{dto.id}
+            </if>
+            <if test="dto.name != '' and dto.name != null">
+                and t_events.name = #{dto.name}
+            </if>
+            <if test="dto.eventDate != '' and dto.eventDate != null">
+                and t_events.event_date = #{dto.eventDate}
+            </if>
+            <if test="dto.type != '' and dto.type != null">
+                and t_events.type = #{dto.type}
+            </if>
+            <if test="dto.description != '' and dto.description != null">
+                and t_events.description = #{dto.description}
+            </if>
+            <if test="dto.reminder != '' and dto.reminder != null">
+                and t_events.reminder = #{dto.reminder}
+            </if>
+        </where>
+        ORDER BY t_events.id DESC
+    </select>
 
 </mapper>

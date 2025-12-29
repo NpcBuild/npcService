@@ -108,6 +108,17 @@ public class SubscribeController {
         return ServerResponseVO.success(pages);
     }
 
+    /**
+     * 获取所有负债数据：
+     * @param subscribeDto 获取对象
+     * @return List<Subscribe>
+     */
+    @RequestMapping(value = "/getAllSubscribeList", method = RequestMethod.GET)
+    public ServerResponseVO<?> getAllSubscribeList(@Validated SubscribeDto subscribeDto) {
+        List<SubscribeVO> list = subscribeService.getAllSubscribeList(subscribeDto);
+        return ServerResponseVO.success(list);
+    }
+
     @GetMapping("getNextSubscribeList")
     public ServerResponseVO<?> getNextSubscribeList(@Validated SubscribeDto subscribeDto) {
         List<SubscribeVO> list = subscribeService.getNextSubscribeList(subscribeDto);

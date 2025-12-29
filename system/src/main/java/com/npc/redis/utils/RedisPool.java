@@ -1,7 +1,6 @@
 package com.npc.redis.utils;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 import redis.clients.jedis.HostAndPort;
 import redis.clients.jedis.JedisCluster;
@@ -14,75 +13,81 @@ import java.util.Set;
 @Slf4j
 public class RedisPool {
 
-    private static JedisCluster  pool;
+    private static JedisCluster pool;
+    private static boolean enabled = true;
 
     private static Integer maxTotal = 300;
-
     private static Integer maxIdle = 100;
-
     private static Integer maxWait = 10000;
-
     private static Boolean testOnBorrow = true;
 
-////    @Value("${spring.redis.host}")
-//    private static String redisIP = "localhost";
-////    @Value("${spring.redis.port}")
-//    private static Integer redisPort = 6380;
-
     private static void initPool() {
-        JedisPoolConfig config = new JedisPoolConfig();
+        // 检查是否启用了 Redis
+        String redisMode = System.getProperty("app.redis.mode", "none");
+        if ("none".equals(redisMode)) {
+            log.info("Redis is disabled, skipping initialization.");
+            enabled = false;
+            return;
+        }
 
-        config.setMaxTotal(maxTotal);
-        config.setMaxIdle(maxIdle);
-        config.setTestOnBorrow(testOnBorrow);
-        config.setBlockWhenExhausted(true);
-        config.setMaxWaitMillis(maxWait);
+        try {
+            JedisPoolConfig config = new JedisPoolConfig();
+            config.setMaxTotal(maxTotal);
+            config.setMaxIdle(maxIdle);
+            config.setTestOnBorrow(testOnBorrow);
+            config.setBlockWhenExhausted(true);
+            config.setMaxWaitMillis(maxWait);
 
-        Set<HostAndPort> shareInfos = new LinkedHashSet<HostAndPort>();
+            Set<HostAndPort> shareInfos = new LinkedHashSet<>();
 
-//        System.out.println("当前生效的环境配置是: " + activeProfile);
-        //        dev环境
-        shareInfos.add(new HostAndPort("localhost", 6380));
-        shareInfos.add(new HostAndPort("localhost", 6381));
-        shareInfos.add(new HostAndPort("localhost", 6382));
-        shareInfos.add(new HostAndPort("localhost", 6383));
-        shareInfos.add(new HostAndPort("localhost", 6384));
-        shareInfos.add(new HostAndPort("localhost", 6385));
-        //        docker环境
-        shareInfos.add(new HostAndPort("192.168.1.20", 6380));
-        shareInfos.add(new HostAndPort("192.168.1.20", 6381));
-        shareInfos.add(new HostAndPort("192.168.1.20", 6382));
-        shareInfos.add(new HostAndPort("192.168.1.20", 6383));
-        shareInfos.add(new HostAndPort("192.168.1.20", 6384));
-        shareInfos.add(new HostAndPort("192.168.1.20", 6385));
-        //        pro环境
-        shareInfos.add(new HostAndPort("172.16.0.11", 6379));
-        shareInfos.add(new HostAndPort("172.16.0.12", 6379));
-        shareInfos.add(new HostAndPort("172.16.0.13", 6379));
-        shareInfos.add(new HostAndPort("172.16.0.14", 6379));
-        shareInfos.add(new HostAndPort("172.16.0.15", 6379));
-        shareInfos.add(new HostAndPort("172.16.0.16", 6379));
+            if ("cluster".equals(redisMode)) {
+                // 集群模式
+                String clusterNodesStr = System.getProperty("app.redis.cluster.nodes");
+                if (clusterNodesStr != null && !clusterNodesStr.isEmpty()) {
+                    String[] clusterNodes = clusterNodesStr.split(",");
+                    for (String node : clusterNodes) {
+                        String[] parts = node.trim().split(":");
+                        if (parts.length == 2) {
+                            shareInfos.add(new HostAndPort(parts[0], Integer.parseInt(parts[1])));
+                        }
+                    }
+                }
+            } else if ("single".equals(redisMode)) {
+                // 单机模式（备用）
+//                String redisHost = System.getProperty("app.redis.host", "127.0.0.1");
+                String redisHost = System.getProperty("app.redis.host", "192.168.1.20");
+                int redisPort = Integer.parseInt(System.getProperty("app.redis.port", "6379"));
+                // 注意：单机模式应该使用 Jedis 而不是 JedisCluster
+                // 这里只是示例，实际应该根据模式选择合适的客户端
+                shareInfos.add(new HostAndPort(redisHost, redisPort));
+            }
 
-        pool = new JedisCluster(shareInfos, config);
+            pool = new JedisCluster(shareInfos, config);
+            log.info("JedisCluster initialized successfully with {} nodes", shareInfos.size());
+        } catch (Exception e) {
+            log.error("Failed to initialize JedisCluster", e);
+            enabled = false;
+        }
     }
 
-    // 类加载到 jvm 时直接初始化连接池
     static {
         initPool();
     }
 
     public static JedisCluster getJedis() {
+        if (!enabled) {
+            throw new RuntimeException("Redis is not enabled or failed to initialize");
+        }
         return pool;
     }
 
-    //todo 实现上方的获取实例
     public static void jedisPoolClose(JedisCluster jedis) {
-        if (jedis != null) {
-//            try {
-//                jedis.close();
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//            }
+        if (jedis != null && enabled) {
+            try {
+                jedis.close();
+            } catch (Exception e) {
+                log.error("Failed to close jedis cluster connection", e);
+            }
         }
     }
 }

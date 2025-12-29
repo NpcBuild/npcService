@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.npc.common.modular.review.mapper.ReviewMonthlyMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.npc.common.modular.review.entity.ReviewMonthly">
+            <result column="id" property="id"/>
+            <result column="user_id" property="userId"/>
+            <result column="review_year" property="reviewYear"/>
+            <result column="review_month" property="reviewMonth"/>
+            <result column="last_month_keyword" property="lastMonthKeyword"/>
+            <result column="last_month_achievements" property="lastMonthAchievements"/>
+            <result column="last_month_challenges" property="lastMonthChallenges"/>
+            <result column="this_month_key_metric_note" property="thisMonthKeyMetricNote"/>
+            <result column="next_month_keyword" property="nextMonthKeyword"/>
+            <result column="next_month_top_goals" property="nextMonthTopGoals"/>
+            <result column="weekly_plan_notes" property="weeklyPlanNotes"/>
+            <result column="created_at" property="createdAt"/>
+            <result column="updated_at" property="updatedAt"/>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+            id, user_id, review_year, review_month, last_month_keyword, last_month_achievements, last_month_challenges, this_month_key_metric_note, next_month_keyword, next_month_top_goals, weekly_plan_notes, created_at, updated_at
+    </sql>
+
+    <sql id="commonConditionSQL">
+        <where>
+            t_review_monthly.is_delete = 0
+                <if test="id != '' and id != null">
+                    and t_review_monthly.id = #{id}
+                </if>
+                <if test="userId != '' and userId != null">
+                    and t_review_monthly.user_id = #{userId}
+                </if>
+                <if test="reviewYear != '' and reviewYear != null">
+                    and t_review_monthly.review_year = #{reviewYear}
+                </if>
+                <if test="reviewMonth != '' and reviewMonth != null">
+                    and t_review_monthly.review_month = #{reviewMonth}
+                </if>
+                <if test="lastMonthKeyword != '' and lastMonthKeyword != null">
+                    and t_review_monthly.last_month_keyword = #{lastMonthKeyword}
+                </if>
+                <if test="lastMonthAchievements != '' and lastMonthAchievements != null">
+                    and t_review_monthly.last_month_achievements = #{lastMonthAchievements}
+                </if>
+                <if test="lastMonthChallenges != '' and lastMonthChallenges != null">
+                    and t_review_monthly.last_month_challenges = #{lastMonthChallenges}
+                </if>
+                <if test="thisMonthKeyMetricNote != '' and thisMonthKeyMetricNote != null">
+                    and t_review_monthly.this_month_key_metric_note = #{thisMonthKeyMetricNote}
+                </if>
+                <if test="nextMonthKeyword != '' and nextMonthKeyword != null">
+                    and t_review_monthly.next_month_keyword = #{nextMonthKeyword}
+                </if>
+                <if test="nextMonthTopGoals != '' and nextMonthTopGoals != null">
+                    and t_review_monthly.next_month_top_goals = #{nextMonthTopGoals}
+                </if>
+                <if test="weeklyPlanNotes != '' and weeklyPlanNotes != null">
+                    and t_review_monthly.weekly_plan_notes = #{weeklyPlanNotes}
+                </if>
+                <if test="createdAt != '' and createdAt != null">
+                    and t_review_monthly.created_at = #{createdAt}
+                </if>
+                <if test="updatedAt != '' and updatedAt != null">
+                    and t_review_monthly.updated_at = #{updatedAt}
+                </if>
+        </where>
+    </sql>
+
+    <select id="getReviewMonthlyListByColList" resultType="com.npc.common.modular.review.entity.ReviewMonthly">
+        select
+        <include refid="Base_Column_List"/>
+        from t_review_monthly
+        <where>
+            t_review_monthly.is_delete = 0
+            and ${column} in
+            <foreach collection="ids" item="id" separator="," open="(" close=")">
+                ${id}
+            </foreach>
+        </where>
+    </select>
+
+</mapper>

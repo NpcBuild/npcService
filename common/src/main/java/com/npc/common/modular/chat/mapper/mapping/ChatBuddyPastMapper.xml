@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.npc.common.modular.chat.mapper.ChatBuddyPastMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.npc.common.modular.chat.entity.ChatBuddyPast">
+            <result column="id" property="id"/>
+            <result column="buddy_id" property="buddyId"/>
+            <result column="event_type" property="eventType"/>
+            <result column="event_time" property="eventTime"/>
+            <result column="event_title" property="eventTitle"/>
+            <result column="event_description" property="eventDescription"/>
+            <result column="impact_level" property="impactLevel"/>
+            <result column="created_at" property="createdAt"/>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+            id, buddy_id, event_type, event_time, event_title, event_description, impact_level, created_at
+    </sql>
+
+    <sql id="commonConditionSQL">
+        <where>
+            t_chat_buddy_past.is_delete = 0
+                <if test="id != '' and id != null">
+                    and t_chat_buddy_past.id = #{id}
+                </if>
+                <if test="buddyId != '' and buddyId != null">
+                    and t_chat_buddy_past.buddy_id = #{buddyId}
+                </if>
+                <if test="eventType != '' and eventType != null">
+                    and t_chat_buddy_past.event_type = #{eventType}
+                </if>
+                <if test="eventTime != '' and eventTime != null">
+                    and t_chat_buddy_past.event_time = #{eventTime}
+                </if>
+                <if test="eventTitle != '' and eventTitle != null">
+                    and t_chat_buddy_past.event_title = #{eventTitle}
+                </if>
+                <if test="eventDescription != '' and eventDescription != null">
+                    and t_chat_buddy_past.event_description = #{eventDescription}
+                </if>
+                <if test="impactLevel != '' and impactLevel != null">
+                    and t_chat_buddy_past.impact_level = #{impactLevel}
+                </if>
+                <if test="createdAt != '' and createdAt != null">
+                    and t_chat_buddy_past.created_at = #{createdAt}
+                </if>
+        </where>
+    </sql>
+
+    <select id="getChatBuddyPastListByColList" resultType="com.npc.common.modular.chat.entity.ChatBuddyPast">
+        select
+        <include refid="Base_Column_List"/>
+        from t_chat_buddy_past
+        <where>
+            t_chat_buddy_past.is_delete = 0
+            and ${column} in
+            <foreach collection="ids" item="id" separator="," open="(" close=")">
+                ${id}
+            </foreach>
+        </where>
+    </select>
+    <select id="getByBuddyId" resultType="com.npc.common.modular.chat.entity.ChatBuddyPast"
+            parameterType="int">
+        select
+        <include refid="Base_Column_List"/>
+            from t_chat_buddy_past
+        where buddy_id = #{id}
+    </select>
+
+</mapper>

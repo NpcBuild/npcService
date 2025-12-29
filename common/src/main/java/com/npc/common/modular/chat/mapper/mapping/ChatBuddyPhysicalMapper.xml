@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.npc.common.modular.chat.mapper.ChatBuddyPhysicalMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.npc.common.modular.chat.entity.ChatBuddyPhysical">
+            <result column="id" property="id"/>
+            <result column="buddy_id" property="buddyId"/>
+            <result column="height_cm" property="heightCm"/>
+            <result column="weight_kg" property="weightKg"/>
+            <result column="body_shape" property="bodyShape"/>
+            <result column="appearance_desc" property="appearanceDesc"/>
+            <result column="health_notes" property="healthNotes"/>
+            <result column="created_at" property="createdAt"/>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+            id, buddy_id, height_cm, weight_kg, body_shape, appearance_desc, health_notes, created_at
+    </sql>
+
+    <sql id="commonConditionSQL">
+        <where>
+            t_chat_buddy_physical.is_delete = 0
+                <if test="id != '' and id != null">
+                    and t_chat_buddy_physical.id = #{id}
+                </if>
+                <if test="buddyId != '' and buddyId != null">
+                    and t_chat_buddy_physical.buddy_id = #{buddyId}
+                </if>
+                <if test="heightCm != '' and heightCm != null">
+                    and t_chat_buddy_physical.height_cm = #{heightCm}
+                </if>
+                <if test="weightKg != '' and weightKg != null">
+                    and t_chat_buddy_physical.weight_kg = #{weightKg}
+                </if>
+                <if test="bodyShape != '' and bodyShape != null">
+                    and t_chat_buddy_physical.body_shape = #{bodyShape}
+                </if>
+                <if test="appearanceDesc != '' and appearanceDesc != null">
+                    and t_chat_buddy_physical.appearance_desc = #{appearanceDesc}
+                </if>
+                <if test="healthNotes != '' and healthNotes != null">
+                    and t_chat_buddy_physical.health_notes = #{healthNotes}
+                </if>
+                <if test="createdAt != '' and createdAt != null">
+                    and t_chat_buddy_physical.created_at = #{createdAt}
+                </if>
+        </where>
+    </sql>
+
+    <select id="getChatBuddyPhysicalListByColList" resultType="com.npc.common.modular.chat.entity.ChatBuddyPhysical">
+        select
+        <include refid="Base_Column_List"/>
+        from t_chat_buddy_physical
+        <where>
+            t_chat_buddy_physical.is_delete = 0
+            and ${column} in
+            <foreach collection="ids" item="id" separator="," open="(" close=")">
+                ${id}
+            </foreach>
+        </where>
+    </select>
+
+</mapper>

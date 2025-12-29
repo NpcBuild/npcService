@@ -23,6 +23,15 @@ public class ProblemVO extends PageSearch {
     private LocalDate date;
 
     /**
+     * 计划id
+     */
+    private Integer planId;
+    /**
+     * 待办id
+     */
+    private Integer todoId;
+
+    /**
      * 问题标题
      */
     private String title;
@@ -97,4 +106,8 @@ public class ProblemVO extends PageSearch {
      * 相关联的问题信息
      */
     private String relatedProblems;
+
+    private boolean haveImg;
+    // 计划
+    private String planText;
 }

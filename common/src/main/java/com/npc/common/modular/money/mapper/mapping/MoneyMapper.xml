@@ -14,11 +14,12 @@
             <result column="notes" property="notes"/>
             <result column="expense_location" property="expenseLocation"/>
             <result column="recurring_transaction" property="recurringTransaction"/>
+            <result column="exclude_from_summary" property="excludeFromSummary"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-            id, description, amount, date, payment_time, category, tags, notes, expense_location, recurring_transaction
+            id, description, amount, date, payment_time, category, tags, notes, expense_location, recurring_transaction, exclude_from_summary
     </sql>
 
     <sql id="commonConditionSQL">
@@ -54,6 +55,9 @@
                 <if test="recurringTransaction != '' and recurringTransaction != null">
                     and t_money.recurring_transaction = #{recurringTransaction}
                 </if>
+                <if test="excludeFromSummary != '' and excludeFromSummary != null">
+                    and t_money.exclude_from_summary = #{excludeFromSummary}
+                </if>
         </where>
     </sql>
 
@@ -72,15 +76,19 @@
 <!--    统计-->
     <select id="getInfo" resultType="com.npc.common.modular.money.vo.MoneyReport">
         SELECT
-            -1 * sum( CASE WHEN amount &lt; 0 THEN amount END ) AS 'income',
-            sum( CASE WHEN amount > 0 THEN amount END ) AS 'expenditure',
-            -1 * sum( amount ) AS 'balance',
-            ROUND(sum( CASE WHEN amount > 0 and recurring_transaction is null THEN amount END ) / #{day}, 2) AS'average'
+            -1 * COALESCE(sum(CASE WHEN amount &lt; 0 THEN amount END), 0) AS 'income',
+            COALESCE(sum(CASE WHEN amount > 0 THEN amount END), 0) AS 'expenditure',
+            -1 * COALESCE(sum(amount), 0) AS 'balance',
+            ROUND(
+                COALESCE(sum(CASE WHEN amount > 0 AND recurring_transaction IS NULL THEN amount END), 0)
+                / #{day}, 2
+            ) AS 'average'
         FROM
         t_money
         WHERE
-            DATE > #{dateStartS}
-            AND DATE &lt; #{dateEndS}
+            exclude_from_summary = 0
+            AND DATE >= #{dateStartS}
+            AND DATE &lt;= #{dateEndS}
     </select>
     <select id="getList" resultType="com.npc.common.modular.money.entity.Money" parameterType="com.npc.common.modular.money.dto.MoneyDto">
         SELECT
@@ -186,7 +194,7 @@
             ,SUM(CASE WHEN category = #{category} THEN amount END) AS `${category}`
         </foreach>
         FROM t_money
-        WHERE payment_time IS NOT NULL
+        WHERE payment_time IS NOT NULL and exclude_from_summary = 0
         GROUP BY DATE_FORMAT(payment_time,'%Y-%m')
         ORDER BY DATE_FORMAT(payment_time,'%Y-%m') DESC
     </select>

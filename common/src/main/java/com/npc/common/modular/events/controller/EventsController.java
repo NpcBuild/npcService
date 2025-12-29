@@ -1,6 +1,9 @@
 package com.npc.common.modular.events.controller;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.npc.common.modular.events.dto.EventsDto;
+import com.npc.common.modular.holiday.vo.CalendarEventVO;
+import com.npc.common.modular.problem.entity.Problem;
 import com.npc.core.ServerResponseEnum;
 import com.npc.core.ServerResponseVO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +18,7 @@ import com.npc.common.modular.events.service.IEventsService;
 import com.npc.common.modular.events.entity.Events;
 
 import java.util.Arrays;
+import java.util.List;
 
 /**
  * <p>
@@ -106,9 +110,18 @@ public class EventsController {
     @RequestMapping(value = "/getEventsList", method = RequestMethod.GET)
     // @ApiOperation(response = ServerResponseVO.class, value = " 分页查询数据")
     public ServerResponseVO<?> getEventsList(@Validated EventsDto eventsDto) {
-        Page page = new Page(eventsDto.getPageNum(), eventsDto.getPageSize());
-        QueryWrapper<Events> queryWrapper = new QueryWrapper(eventsDto);
-        Page<Events> pages = eventsService.page(page, queryWrapper);
+        IPage<Events> page = eventsService.selectListByPage(eventsDto);
+        return ServerResponseVO.success(page);
+    }
+
+    @GetMapping("/list")
+    public ServerResponseVO<?> list(@Validated EventsDto eventsDto) {
+        List<CalendarEventVO> pages = eventsService.getCalendarEventList(eventsDto);
         return ServerResponseVO.success(pages);
+    }
+    @GetMapping("/add")
+    public ServerResponseVO<?> add(@Validated CalendarEventVO eventVO) {
+        CalendarEventVO vo = eventsService.addCalendarEvent(eventVO);
+        return ServerResponseVO.success(vo);
     }
 }

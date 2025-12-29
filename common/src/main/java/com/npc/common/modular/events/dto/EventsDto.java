@@ -1,9 +1,11 @@
 package com.npc.common.modular.events.dto;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import com.npc.core.PageSearch;
 import lombok.Data;
+import org.springframework.format.annotation.DateTimeFormat;
 
 /**
  * <p>
@@ -26,10 +28,11 @@ public class EventsDto extends PageSearch {
 
     private String description;  // 事件描述 
 
-    private Boolean reminder;  // 是否提醒 
+    private Boolean reminder;  // 是否提醒
 
-    private LocalDateTime createdAt;  // 创建时间 
-
-    private LocalDateTime updatedAt;  // 更新时间 
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    private LocalDate startDate; // 区间-开始日期
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    private LocalDate endDate; // 区间-结束日期
 
 }

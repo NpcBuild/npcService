@@ -2,6 +2,7 @@ package com.npc.common.modular.plan.service.impl;
 
 import com.npc.common.modular.plan.dto.PlanDto;
 import com.npc.common.modular.plan.vo.PlanTreeVo;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,6 +28,7 @@ public class PlanServiceImpl extends ServiceImpl<PlanMapper, Plan> implements IP
 
     private static final Logger logger = LoggerFactory.getLogger(PlanServiceImpl.class);
 
+//    @Cacheable("planTree")
     @Override
     public List<PlanTreeVo> getTree(PlanDto planDto) {
         Integer id = planDto.getId();

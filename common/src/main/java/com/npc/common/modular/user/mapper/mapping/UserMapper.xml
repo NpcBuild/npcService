@@ -8,10 +8,13 @@
         <result column="userName" property="userName" />
         <result column="userPwd" property="userPwd" />
         <result column="account" property="account" />
+        <result column="email" property="email" />
+        <result column="phone" property="phone" />
+        <result column="avatar" property="avatar" />
         <result column="flag" property="flag" />
     </resultMap>
     <sql id="base_column_list">
-        id, account, userPwd, userName, flag
+        id, account, userPwd, userName, email, phone, avatar, flag
     </sql>
 
     <select id="findByAccount" resultType="com.npc.common.modular.user.model.result.UserResult" parameterType="String">
@@ -21,11 +24,11 @@
         where account = #{account}
     </select>
     <insert id="regist" parameterType="com.npc.common.modular.user.model.parame.UserParame">
-        insert into t_user(userName,userPwd,account)
-        values(#{user.userName},#{user.userPwd},#{user.account})
+        insert into t_user(userName,userPwd,account, email, phone, avatar)
+        values(#{user.userName},#{user.userPwd},#{user.account},#{user.email},#{user.phone},#{user.avatar})
     </insert>
     <insert id="insert" parameterType="com.npc.common.modular.user.model.parame.UserParame">
-        insert into t_user(userName,userPwd,account)
-        values(#{user.userName},#{user.userPwd},#{user.account})
+        insert into t_user(userName,userPwd,account, email, phone, avatar)
+        values(#{user.userName},#{user.userPwd},#{user.account},#{user.email},#{user.phone},#{user.avatar})
     </insert>
 </mapper>

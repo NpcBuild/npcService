@@ -39,6 +39,7 @@
       <groupId>javax.servlet</groupId>
       <artifactId>javax.servlet-api</artifactId>
       <version>3.1.0</version>
+      <scope>provided</scope> <!-- 新增 scope，避免冲突 -->
     </dependency>
     <!--    velocity模板引擎，用于mybatis-plus代码生成器-->
     <dependency>
@@ -76,6 +77,17 @@
        <groupId>com.itextpdf.tool</groupId>
        <artifactId>xmlworker</artifactId>
        <version>5.5.11</version>
+    </dependency>
+    <!-- minio 对象存储上传下载-->
+    <dependency>
+      <groupId>io.minio</groupId>
+      <artifactId>minio</artifactId>
+      <version>8.5.1</version>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.cloud</groupId>
+      <artifactId>spring-cloud-starter-openfeign</artifactId>
+      <version>3.0.5</version>
     </dependency>
     <dependency>
       <groupId>junit</groupId>

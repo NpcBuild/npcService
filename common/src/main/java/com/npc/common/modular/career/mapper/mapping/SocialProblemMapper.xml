@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.npc.common.modular.career.mapper.SocialProblemMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.npc.common.modular.career.entity.SocialProblem">
+            <result column="id" property="id"/>
+            <result column="title" property="title"/>
+            <result column="description" property="description"/>
+            <result column="category" property="category"/>
+            <result column="severity" property="severity"/>
+            <result column="affected_population" property="affectedPopulation"/>
+            <result column="frequency" property="frequency"/>
+            <result column="current_solutions" property="currentSolutions"/>
+            <result column="pain" property="pain"/>
+            <result column="purchasing_power" property="purchasingPower"/>
+            <result column="reachability" property="reachability"/>
+            <result column="market_growth" property="marketGrowth"/>
+            <result column="total_score" property="totalScore"/>
+            <result column="tags" property="tags"/>
+            <result column="notes" property="notes"/>
+            <result column="created_at" property="createdAt"/>
+            <result column="updated_at" property="updatedAt"/>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+            id, title, description, category, severity, affected_population, frequency, current_solutions, pain, purchasing_power, reachability, market_growth, total_score, tags, notes, created_at, updated_at
+    </sql>
+
+    <sql id="commonConditionSQL">
+        <where>
+            t_social_problem.is_delete = 0
+                <if test="id != '' and id != null">
+                    and t_social_problem.id = #{id}
+                </if>
+                <if test="title != '' and title != null">
+                    and t_social_problem.title = #{title}
+                </if>
+                <if test="description != '' and description != null">
+                    and t_social_problem.description = #{description}
+                </if>
+                <if test="category != '' and category != null">
+                    and t_social_problem.category = #{category}
+                </if>
+                <if test="severity != '' and severity != null">
+                    and t_social_problem.severity = #{severity}
+                </if>
+                <if test="affectedPopulation != '' and affectedPopulation != null">
+                    and t_social_problem.affected_population = #{affectedPopulation}
+                </if>
+                <if test="frequency != '' and frequency != null">
+                    and t_social_problem.frequency = #{frequency}
+                </if>
+                <if test="currentSolutions != '' and currentSolutions != null">
+                    and t_social_problem.current_solutions = #{currentSolutions}
+                </if>
+                <if test="pain != '' and pain != null">
+                    and t_social_problem.pain = #{pain}
+                </if>
+                <if test="purchasingPower != '' and purchasingPower != null">
+                    and t_social_problem.purchasing_power = #{purchasingPower}
+                </if>
+                <if test="reachability != '' and reachability != null">
+                    and t_social_problem.reachability = #{reachability}
+                </if>
+                <if test="marketGrowth != '' and marketGrowth != null">
+                    and t_social_problem.market_growth = #{marketGrowth}
+                </if>
+                <if test="totalScore != '' and totalScore != null">
+                    and t_social_problem.total_score = #{totalScore}
+                </if>
+                <if test="tags != '' and tags != null">
+                    and t_social_problem.tags = #{tags}
+                </if>
+                <if test="notes != '' and notes != null">
+                    and t_social_problem.notes = #{notes}
+                </if>
+                <if test="createdAt != '' and createdAt != null">
+                    and t_social_problem.created_at = #{createdAt}
+                </if>
+                <if test="updatedAt != '' and updatedAt != null">
+                    and t_social_problem.updated_at = #{updatedAt}
+                </if>
+        </where>
+    </sql>
+
+    <select id="getSocialProblemListByColList" resultType="com.npc.common.modular.career.entity.SocialProblem">
+        select
+        <include refid="Base_Column_List"/>
+        from t_social_problem
+        <where>
+            t_social_problem.is_delete = 0
+            and ${column} in
+            <foreach collection="ids" item="id" separator="," open="(" close=")">
+                ${id}
+            </foreach>
+        </where>
+    </select>
+
+</mapper>

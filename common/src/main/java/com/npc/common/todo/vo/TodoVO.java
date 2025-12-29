@@ -71,11 +71,16 @@ public class TodoVO extends QuartzJobVO {
      * 计划表主键
      */
     private Integer planId;
-    private Integer problemId; //问题表主键
+    /**
+     * 问题表主键
+     */
+    private Integer problemId;
     /**
      * 循环类型
      */
     private String recurrenceType;
+    // 排除的循环类型
+    private String recurrenceTypeExclude;
     /**
      * 循环次数（每个循环周期）
      */

@@ -73,7 +73,7 @@ public class MoneyController {
             if (null != money.getPaymentTime() && null == money.getDate()) {
                 money.setDate(money.getPaymentTime().toLocalDate());
             }
-            if (money.getNotes().contains("订阅任务")) {
+            if (StringUtils.isNotEmpty(money.getNotes()) && money.getNotes().contains("订阅任务")) {
                 money.setRecurringTransaction(true);
             }
             // 保证收入金额始终为负数入库
@@ -84,7 +84,7 @@ public class MoneyController {
                 }
             }
             if (money.getCategory().contains("通勤") || money.getDescription().contains("通勤")) {
-                money.setRecurringTransaction(true);
+//                money.setRecurringTransaction(true);
                 Money money1 = new Money();
                 BeanUtil.copyProperties(money,money1);
                 moneyService.saveOrUpdate(money1);
@@ -110,14 +110,13 @@ public class MoneyController {
 
 
     /**
-     * 查询信息
+     * 查询统计信息
      * @return ServerResponseVO转换结果
      */
     @GetMapping("getInfo")
-    public ServerResponseVO<?> getInfo() {
-
+    public ServerResponseVO<?> getInfo(@RequestParam("date") String date) {
         try {
-            MoneyReport money =moneyService.getInfo();
+            MoneyReport money =moneyService.getInfo(date);
             return ServerResponseVO.success(money);
         } catch (Exception e) {
             e.printStackTrace();

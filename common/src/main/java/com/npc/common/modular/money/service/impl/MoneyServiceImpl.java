@@ -35,10 +35,10 @@ public class MoneyServiceImpl extends ServiceImpl<MoneyMapper, Money> implements
     private static final Logger logger = LoggerFactory.getLogger(MoneyServiceImpl.class);
 
     @Override
-    public MoneyReport getInfo() {
+    public MoneyReport getInfo(String date) {
         Money money = new Money();
-        money.setDateStartS(DateUtils.getFirstDayOfMonth(LocalDate.now()));
-        money.setDateEndS(DateUtils.getFirstDayOfNextMonth(LocalDate.now()));
+        money.setDateStartS(DateUtils.getFirstDayOfMonth(LocalDate.parse(date)));
+        money.setDateEndS(DateUtils.getFirstDayOfNextMonth(LocalDate.parse(date)));
         money.setDay(Calendar.getInstance().get(Calendar.DAY_OF_MONTH));
         return this.baseMapper.getInfo(money);
     }

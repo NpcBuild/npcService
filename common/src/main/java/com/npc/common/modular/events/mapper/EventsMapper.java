@@ -1,7 +1,12 @@
 package com.npc.common.modular.events.mapper;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.npc.common.modular.events.dto.EventsDto;
 import com.npc.common.modular.events.entity.Events;
-import com.baomidou.mybatisplus.core.mapper.BaseMapper;import org.apache.ibatis.annotations.Param;
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.npc.common.modular.holiday.vo.CalendarEventVO;
+import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Mapper;
 
 
@@ -26,4 +31,6 @@ public interface EventsMapper extends BaseMapper<Events> {
      */
     List<Events> getEventsListByColList(@Param("column") String column, @Param("ids") List<Integer> ids);
 
+    List<CalendarEventVO> getListByRange(EventsDto eventsDto);
+    IPage<Events> getList(@Param("dto") EventsDto eventsDto, Page<Events> page);
 }

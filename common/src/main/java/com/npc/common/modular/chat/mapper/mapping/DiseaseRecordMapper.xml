@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.npc.common.modular.disease.mapper.DiseaseRecordMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.npc.common.modular.disease.entity.DiseaseRecord">
+            <result column="id" property="id"/>
+            <result column="buddy_id" property="buddyId"/>
+            <result column="disease_id" property="diseaseId"/>
+            <result column="disease_name" property="diseaseName"/>
+            <result column="diagnosis_date" property="diagnosisDate"/>
+            <result column="status" property="status"/>
+            <result column="user_symptoms" property="userSymptoms"/>
+            <result column="doctor_diagnosis" property="doctorDiagnosis"/>
+            <result column="treatment_plan" property="treatmentPlan"/>
+            <result column="medications" property="medications"/>
+            <result column="follow_up_date" property="followUpDate"/>
+            <result column="notes" property="notes"/>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+            id, buddy_id, disease_id, disease_name, diagnosis_date, status, user_symptoms, doctor_diagnosis, treatment_plan, medications, follow_up_date, notes
+    </sql>
+
+    <sql id="commonConditionSQL">
+        <where>
+            t_disease_record.is_delete = 0
+                <if test="id != '' and id != null">
+                    and t_disease_record.id = #{id}
+                </if>
+                <if test="buddyId != '' and buddyId != null">
+                    and t_disease_record.buddy_id = #{buddyId}
+                </if>
+                <if test="diseaseId != '' and diseaseId != null">
+                    and t_disease_record.disease_id = #{diseaseId}
+                </if>
+                <if test="diseaseName != '' and diseaseName != null">
+                    and t_disease_record.disease_name = #{diseaseName}
+                </if>
+                <if test="diagnosisDate != '' and diagnosisDate != null">
+                    and t_disease_record.diagnosis_date = #{diagnosisDate}
+                </if>
+                <if test="status != '' and status != null">
+                    and t_disease_record.status = #{status}
+                </if>
+                <if test="userSymptoms != '' and userSymptoms != null">
+                    and t_disease_record.user_symptoms = #{userSymptoms}
+                </if>
+                <if test="doctorDiagnosis != '' and doctorDiagnosis != null">
+                    and t_disease_record.doctor_diagnosis = #{doctorDiagnosis}
+                </if>
+                <if test="treatmentPlan != '' and treatmentPlan != null">
+                    and t_disease_record.treatment_plan = #{treatmentPlan}
+                </if>
+                <if test="medications != '' and medications != null">
+                    and t_disease_record.medications = #{medications}
+                </if>
+                <if test="followUpDate != '' and followUpDate != null">
+                    and t_disease_record.follow_up_date = #{followUpDate}
+                </if>
+                <if test="notes != '' and notes != null">
+                    and t_disease_record.notes = #{notes}
+                </if>
+        </where>
+    </sql>
+
+    <select id="getDiseaseRecordListByColList" resultType="com.npc.common.modular.disease.entity.DiseaseRecord">
+        select
+        <include refid="Base_Column_List"/>
+        from t_disease_record
+        <where>
+            t_disease_record.is_delete = 0
+            and ${column} in
+            <foreach collection="ids" item="id" separator="," open="(" close=")">
+                ${id}
+            </foreach>
+        </where>
+    </select>
+
+</mapper>

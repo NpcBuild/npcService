@@ -14,7 +14,9 @@ import com.npc.core.ServerResponseVO;
 import com.npc.core.constant.Constants;
 import com.npc.core.encrypt.base64.ImageUtil;
 import com.npc.core.utils.FileUtils;
+import com.npc.core.utils.PicUtils;
 import com.npc.core.utils.StringUtils;
+import com.npc.utils.DateUtils;
 import org.apache.commons.beanutils.BeanUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,6 +39,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.LocalDate;
 import java.util.*;
 
 /**
@@ -53,8 +56,8 @@ public class ProblemController {
     
     private static final Logger logger = LoggerFactory.getLogger(ProblemController.class);
 
-    private static final String WIN_DIR = "C:\\Users\\NPC\\Pictures\\problem\\";
-    private static final String LIUNX_DIR = "/home/npc/Desktop/problem/";
+    public static final String WIN_DIR = "C:\\Users\\NPC\\Pictures\\problem\\";
+    public static final String LIUNX_DIR = "/home/npc/Desktop/problem/";
 
     @Autowired
     public IProblemService problemService;
@@ -70,6 +73,9 @@ public class ProblemController {
     @RequestMapping(value = "/save", method = RequestMethod.POST)
     public ServerResponseVO<?> save(@RequestBody @Validated Problem problem) {
         try {
+            if (ObjectUtils.isEmpty(problem.getDate())) {
+                problem.setDate(LocalDate.now());
+            }
             boolean obj = problemService.saveOrUpdate(problem);
             return ServerResponseVO.success(problem);
         } catch (Exception e) {
@@ -88,7 +94,7 @@ public class ProblemController {
     public ServerResponseVO<?> update(@RequestBody @Validated Problem problem) {
         try {
             boolean obj = problemService.updateSolutionById(problem);
-            return ServerResponseVO.success(obj);
+            return ServerResponseVO.success(problem);
         } catch (Exception e) {
             e.printStackTrace();
             return ServerResponseVO.error(ServerResponseEnum.UPDATE_FAILED);
@@ -347,5 +353,39 @@ public class ProblemController {
         res.setSize(page.getSize());
         res.setTotal(page.getTotal());
         return ServerResponseVO.success(res);
+    }
+
+    /**
+     * 获取所有有图片文件夹的问题题号
+     * @return 问题ID列表
+     */
+    @RequestMapping(value = "/problemIdsWithImages", method = RequestMethod.GET)
+    public ServerResponseVO<?> getProblemIdsWithImages() {
+        try {
+            String fileDir = ServerService.IS_LINUX ? LIUNX_DIR : WIN_DIR;
+            File baseDir = new File(fileDir);
+
+            if (!baseDir.exists() || !baseDir.isDirectory()) {
+                return ServerResponseVO.success(new ArrayList<>());
+            }
+
+            List<String> problemIds = new ArrayList<>();
+            File[] problemDirs = baseDir.listFiles(File::isDirectory);
+
+            if (problemDirs != null) {
+                for (File dir : problemDirs) {
+                    // 检查目录下是否有图片文件
+                    if (PicUtils.hasImageFiles(dir)) {
+                        problemIds.add(dir.getName());
+                    }
+                }
+            }
+
+            return ServerResponseVO.success(problemIds);
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.error("获取有图片的问题列表异常：" + e.getMessage());
+            return ServerResponseVO.error(ServerResponseEnum.DATA_EXCEPTION);
+        }
     }
 }

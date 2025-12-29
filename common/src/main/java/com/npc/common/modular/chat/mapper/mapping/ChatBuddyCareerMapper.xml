@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.npc.common.modular.chat.mapper.ChatBuddyCareerMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.npc.common.modular.chat.entity.ChatBuddyCareer">
+            <result column="id" property="id"/>
+            <result column="buddy_id" property="buddyId"/>
+            <result column="occupation" property="occupation"/>
+            <result column="industry" property="industry"/>
+            <result column="company" property="company"/>
+            <result column="position" property="position"/>
+            <result column="income_level" property="incomeLevel"/>
+            <result column="work_style" property="workStyle"/>
+            <result column="notes" property="notes"/>
+            <result column="created_at" property="createdAt"/>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+            id, buddy_id, occupation, industry, company, position, income_level, work_style, notes, created_at
+    </sql>
+
+    <sql id="commonConditionSQL">
+        <where>
+            t_chat_buddy_career.is_delete = 0
+                <if test="id != '' and id != null">
+                    and t_chat_buddy_career.id = #{id}
+                </if>
+                <if test="buddyId != '' and buddyId != null">
+                    and t_chat_buddy_career.buddy_id = #{buddyId}
+                </if>
+                <if test="occupation != '' and occupation != null">
+                    and t_chat_buddy_career.occupation = #{occupation}
+                </if>
+                <if test="industry != '' and industry != null">
+                    and t_chat_buddy_career.industry = #{industry}
+                </if>
+                <if test="company != '' and company != null">
+                    and t_chat_buddy_career.company = #{company}
+                </if>
+                <if test="position != '' and position != null">
+                    and t_chat_buddy_career.position = #{position}
+                </if>
+                <if test="incomeLevel != '' and incomeLevel != null">
+                    and t_chat_buddy_career.income_level = #{incomeLevel}
+                </if>
+                <if test="workStyle != '' and workStyle != null">
+                    and t_chat_buddy_career.work_style = #{workStyle}
+                </if>
+                <if test="notes != '' and notes != null">
+                    and t_chat_buddy_career.notes = #{notes}
+                </if>
+                <if test="createdAt != '' and createdAt != null">
+                    and t_chat_buddy_career.created_at = #{createdAt}
+                </if>
+        </where>
+    </sql>
+
+    <select id="getChatBuddyCareerListByColList" resultType="com.npc.common.modular.chat.entity.ChatBuddyCareer">
+        select
+        <include refid="Base_Column_List"/>
+        from t_chat_buddy_career
+        <where>
+            t_chat_buddy_career.is_delete = 0
+            and ${column} in
+            <foreach collection="ids" item="id" separator="," open="(" close=")">
+                ${id}
+            </foreach>
+        </where>
+    </select>
+    <select id="getByBuddyId" resultType="com.npc.common.modular.chat.entity.ChatBuddyCareer"
+            parameterType="int">
+        select
+        <include refid="Base_Column_List"/>
+            from t_chat_buddy_career
+        where buddy_id = #{id}
+    </select>
+
+</mapper>

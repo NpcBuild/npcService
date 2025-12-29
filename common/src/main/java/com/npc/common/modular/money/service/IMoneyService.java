@@ -18,7 +18,7 @@ import java.util.Map;
  * @since 2023-12-25
  */
 public interface IMoneyService extends IService<Money> {
-    MoneyReport getInfo();
+    MoneyReport getInfo(String date);
 
     IPage<Money> getListPage(MoneyDto dto);
 

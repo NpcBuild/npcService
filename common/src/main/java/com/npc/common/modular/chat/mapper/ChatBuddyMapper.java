@@ -5,11 +5,14 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.npc.common.modular.chat.entity.ChatBuddy;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.npc.common.modular.chat.vo.BuddyVO;
+import com.npc.common.modular.events.dto.EventsDto;
+import com.npc.common.modular.holiday.vo.CalendarEventVO;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Mapper;
 
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -31,4 +34,6 @@ public interface ChatBuddyMapper extends BaseMapper<ChatBuddy> {
     List<ChatBuddy> getChatBuddyListByColList(@Param("column") String column, @Param("ids") List<Integer> ids);
 
     IPage<ChatBuddy> getList(Page<ChatBuddy> page,@Param("dto")  BuddyVO buddyVO);
+
+    List<CalendarEventVO> getBirthdayList(Map<String, Object> params);
 }

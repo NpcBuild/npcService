@@ -15,6 +15,7 @@ import org.springframework.stereotype.Component;
 //@Lazy(false)
 public class SpringUtils implements ApplicationContextAware {
 
+    //Spring的上下文，相当于“Bean仓库”
     private static ApplicationContext applicationContext = null;
 
     /**

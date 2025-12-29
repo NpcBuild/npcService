@@ -6,13 +6,9 @@ import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MapPropertySource;
 
 import java.io.IOException;
-import java.net.Inet4Address;
 import java.net.InetSocketAddress;
-import java.net.NetworkInterface;
 import java.net.Socket;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author NPC
@@ -35,47 +31,87 @@ public class RedisServerAddrModifier implements EnvironmentPostProcessor {
     @Override
     public void postProcessEnvironment(ConfigurableEnvironment environment, SpringApplication application) {
         try {
-            // 获取系统环境变量 是dev还是pro
-            String env = System.getenv("ENV");
-            if (env == null) {
-                env = "dev"; // 默认开发环境
-            }
-            System.out.println("当前系统环境是：" + env);
-            // 获取代码运行环境中的Redis是单机模式还是集群模式
-            String redisMode = System.getenv("REDIS_MODE");
-            if (redisMode == null) {
-                redisMode = "single"; // 默认单机模式
+            // 获取配置的集群节点
+            String clusterNodesStr = environment.getProperty("spring.redis.cluster.nodes");
+            String redisHost = environment.getProperty("spring.redis.host", "192.168.1.20");
+            String redisPortStr = environment.getProperty("spring.redis.port", "6379");
+            int redisPort = Integer.parseInt(redisPortStr);
+
+            // 检测 Redis 环境
+            String redisType = detectRedisEnvironment(redisHost, redisPort, clusterNodesStr);
+
+            Map<String, Object> source = new HashMap<>();
+
+            switch (redisType) {
+                case "cluster":
+                    // 配置集群模式
+                    source.put("spring.redis.enabled", true);
+                    source.put("spring.redis.cluster.enabled", true);
+                    source.put("spring.redis.cluster.nodes", clusterNodesStr);
+                    source.put("spring.redis.timeout", "2000ms");
+                    source.put("app.cache.type", "redis-cluster");
+                    System.setProperty("app.redis.mode", "cluster");
+                    break;
+                case "single":
+                    // 配置单机模式
+                    source.put("spring.redis.enabled", true);
+                    source.put("spring.redis.cluster.enabled", false);
+                    source.put("spring.redis.host", redisHost);
+                    source.put("spring.redis.port", redisPort);
+                    source.put("spring.redis.timeout", "2000ms");
+                    source.put("spring.redis.lettuce.pool.max-active", 8);
+                    source.put("spring.redis.lettuce.pool.max-idle", 8);
+                    source.put("spring.redis.lettuce.pool.min-idle", 0);
+                    source.put("app.cache.type", "redis-single");
+                    System.setProperty("app.redis.mode", "single");
+                    break;
+                case "none":
+                default:
+                    // 不启用 Redis，使用 Guava Cache
+                    source.put("spring.redis.enabled", false);
+                    source.put("spring.redis.cluster.enabled", false);
+                    source.put("app.cache.type", "guava");
+                    System.setProperty("app.redis.mode", "none");
+                    break;
             }
 
-//            // 根据上述结果，修改生效的Redis环境配置
-//            Map<String, Object> source = new HashMap<>();
-//            if ("dev".equals(env)) {
-//                if ("single".equals(redisMode)) {
-//                    // 开发环境单机模式
-//                    source.put("spring.redis.host", "127.0.0.1");
-//                    source.put("spring.redis.port", 6379);
-//                } else {
-//                    // 开发环境集群模式
-//                    source.put("spring.redis.cluster.nodes", "127.0.0.1:6379,127.0.0.1:6380,127.0.0.1:6381");
-//                }
-//            } else {
-//                if ("single".equals(redisMode)) {
-//                    // 生产环境单机模式
-//                    source.put("spring.redis.host", "prod-redis-host");
-//                    source.put("spring.redis.port", 6379);
-//                } else {
-//                    // 生产环境集群模式
-//                    source.put("spring.redis.cluster.nodes", "prod-node1:6379,prod-node2:6379,prod-node3:6379");
-//                }
-//            }
-//
-//            MapPropertySource propertySource = new MapPropertySource("dynamicRedisConfig", source);
-//            // 将自定义属性源添加到属性源列表的最前面
-//            environment.getPropertySources().addFirst(propertySource);
-//            System.out.println("根据环境和模式，实时修改Redis配置为：" + source);
+            MapPropertySource propertySource = new MapPropertySource("dynamicRedisConfig", source);
+            environment.getPropertySources().addFirst(propertySource);
+            System.out.println("根据环境检测，实时修改Redis配置为：" + source);
         } catch (Exception e) {
             e.printStackTrace();
             System.err.println("修改 Redis 配置时出现异常: " + e.getMessage());
         }
+    }
+
+    /**
+     * 检测 Redis 环境类型
+     * @return "cluster" | "single" | "none"
+     */
+    private String detectRedisEnvironment(String singleHost, int singlePort, String clusterNodesStr) {
+        // 如果配置了集群节点，则检查集群节点是否可用
+        if (clusterNodesStr != null && !clusterNodesStr.isEmpty()) {
+            String[] clusterNodes = clusterNodesStr.split(",");
+            int availableClusterNodes = 0;
+            for (String node : clusterNodes) {
+                String[] parts = node.trim().split(":");
+                if (parts.length == 2 && isServiceAvailable(parts[0], Integer.parseInt(parts[1]))) {
+                    availableClusterNodes++;
+                }
+            }
+
+            // 如果至少有3个集群节点可用，则认为是集群环境
+            if (availableClusterNodes >= 3) {
+                return "cluster";
+            }
+        }
+
+        // 检查单机节点是否可用
+        if (isServiceAvailable(singleHost, singlePort)) {
+            return "single";
+        }
+
+        // 没有可用的 Redis 服务
+        return "none";
     }
 }

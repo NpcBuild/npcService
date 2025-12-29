@@ -18,9 +18,44 @@
     </modules>
 
     <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
     </properties>
+
+<!--    &lt;!&ndash; 统一版本管理 &ndash;&gt;-->
+<!--    <dependencyManagement>-->
+<!--        <dependencies>-->
+<!--            &lt;!&ndash; 1. Spring Boot 版本（升级到 2.6.13，兼容 Spring Cloud 2021.0.x） &ndash;&gt;-->
+<!--            <dependency>-->
+<!--                <groupId>org.springframework.boot</groupId>-->
+<!--                <artifactId>spring-boot-dependencies</artifactId>-->
+<!--                <version>2.6.13</version>-->
+<!--                <type>pom</type>-->
+<!--                <scope>import</scope>-->
+<!--            </dependency>-->
+
+<!--            &lt;!&ndash; 2. Spring Cloud 版本（2021.0.9，适配 Spring Boot 2.6.x~2.7.x） &ndash;&gt;-->
+<!--            <dependency>-->
+<!--                <groupId>org.springframework.cloud</groupId>-->
+<!--                <artifactId>spring-cloud-dependencies</artifactId>-->
+<!--                <version>2021.0.9</version>-->
+<!--                <type>pom</type>-->
+<!--                <scope>import</scope>-->
+<!--            </dependency>-->
+
+<!--            &lt;!&ndash; 3. Spring Cloud Alibaba 版本（2021.0.5.0，适配 Spring Cloud 2021.0.x） &ndash;&gt;-->
+<!--            <dependency>-->
+<!--                <groupId>com.alibaba.cloud</groupId>-->
+<!--                <artifactId>spring-cloud-alibaba-dependencies</artifactId>-->
+<!--                <version>2021.0.5.0</version>-->
+<!--                <type>pom</type>-->
+<!--                <scope>import</scope>-->
+<!--            </dependency>-->
+
+<!--            &lt;!&ndash; 4. 统一 Spring 核心组件版本（由 Spring Boot 2.6.13 自动管理，无需手动指定） &ndash;&gt;-->
+<!--        </dependencies>-->
+<!--    </dependencyManagement>-->
 
 
     <!--    <build>-->
@@ -58,4 +93,12 @@
 <!--        </plugins>-->
 <!--    </build>-->
 
+    <build>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+            </resource>
+        </resources>
+    </build>
 </project>

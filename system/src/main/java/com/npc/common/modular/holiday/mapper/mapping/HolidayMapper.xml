@@ -53,5 +53,13 @@
             </foreach>
         </where>
     </select>
+    <select id="getList" resultType="com.npc.common.modular.holiday.vo.CalendarEventVO">
+        select
+            name as title,
+            date as `date`,
+            "holiday" as eventType
+        from t_holiday
+        where date BETWEEN #{startDate} AND #{endDate}
+    </select>
 
 </mapper>

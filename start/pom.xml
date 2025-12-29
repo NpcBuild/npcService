@@ -40,6 +40,12 @@
             </properties>
         </profile>
         <profile>
+            <id>mac</id>
+            <properties>
+                <profiles.active>mac</profiles.active>
+            </properties>
+        </profile>
+        <profile>
             <id>test</id>
             <properties>
                 <profiles.active>test</profiles.active>

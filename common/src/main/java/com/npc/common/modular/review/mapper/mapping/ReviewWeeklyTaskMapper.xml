@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.npc.common.modular.review.mapper.ReviewWeeklyTaskMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.npc.common.modular.review.entity.ReviewWeeklyTask">
+            <result column="id" property="id"/>
+            <result column="weekly_id" property="weeklyId"/>
+            <result column="task_title" property="taskTitle"/>
+            <result column="priority" property="priority"/>
+            <result column="created_at" property="createdAt"/>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+            id, weekly_id, task_title, priority, created_at
+    </sql>
+
+    <sql id="commonConditionSQL">
+        <where>
+            t_review_weekly_task.is_delete = 0
+                <if test="id != '' and id != null">
+                    and t_review_weekly_task.id = #{id}
+                </if>
+                <if test="weeklyId != '' and weeklyId != null">
+                    and t_review_weekly_task.weekly_id = #{weeklyId}
+                </if>
+                <if test="taskTitle != '' and taskTitle != null">
+                    and t_review_weekly_task.task_title = #{taskTitle}
+                </if>
+                <if test="priority != '' and priority != null">
+                    and t_review_weekly_task.priority = #{priority}
+                </if>
+                <if test="createdAt != '' and createdAt != null">
+                    and t_review_weekly_task.created_at = #{createdAt}
+                </if>
+        </where>
+    </sql>
+
+    <select id="getReviewWeeklyTaskListByColList" resultType="com.npc.common.modular.review.entity.ReviewWeeklyTask">
+        select
+        <include refid="Base_Column_List"/>
+        from t_review_weekly_task
+        <where>
+            t_review_weekly_task.is_delete = 0
+            and ${column} in
+            <foreach collection="ids" item="id" separator="," open="(" close=")">
+                ${id}
+            </foreach>
+        </where>
+    </select>
+
+</mapper>

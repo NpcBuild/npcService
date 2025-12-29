@@ -12,6 +12,7 @@ import org.junit.Test;
 
 import javax.annotation.Resource;
 import java.io.*;
+import java.math.BigDecimal;
 import java.net.URL;
 import java.util.HashMap;
 
@@ -35,21 +36,24 @@ public class AppTest
 
     @Test
     public void test (){
-//        // double精度问题
-//        Double a = -14d;
-//        Double b = 6.022212d;
-//        Double c = -20.022212d;
-//        System.out.println(c.doubleValue());
-//        System.out.println(c.toString());
-//        System.out.println(a.doubleValue()-b.doubleValue()-c.doubleValue());
-////        int d = new BigDecimal(a.toString()) - new BigDecimal(b.toString()) - new BigDecimal(c.toString());
-//        BigDecimal aa = new BigDecimal(a.toString());
-//        BigDecimal bb = new BigDecimal(b.toString());
-//        BigDecimal cc = new BigDecimal(c.toString());
-//        BigDecimal dd = aa.subtract(bb).subtract(cc);
-//        if (dd.compareTo(BigDecimal.ZERO)==0) {
-//            System.out.println("1");
-//        }
+        // double精度问题
+        Double a = -14d;
+        Double b = 6.022212d;
+        Double c = -20.022212d;
+        System.out.println(c.doubleValue());
+        System.out.println(c.toString());
+        System.out.println(a.doubleValue()-b.doubleValue()-c.doubleValue());
+//        int d = new BigDecimal(a.toString()) - new BigDecimal(b.toString()) - new BigDecimal(c.toString());
+        BigDecimal aa = new BigDecimal(a.toString());
+        BigDecimal bb = new BigDecimal(b.toString());
+        BigDecimal cc = new BigDecimal(c.toString());
+        BigDecimal dd = aa.subtract(bb).subtract(cc);
+        if (dd.compareTo(BigDecimal.ZERO)==0) {
+            System.out.println("1");
+        }
+    }
+    @Test
+    public void testGenerate (){
         GenerateCode.fastGenerate();
     }
     @Test

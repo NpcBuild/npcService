@@ -28,9 +28,9 @@ public class NacosServerAddrModifier implements EnvironmentPostProcessor {
                 NetworkInterface networkInterface = networkInterfaces.nextElement();
                 // 遍历IP地址
                 Enumeration<java.net.InetAddress> inetAddresses = networkInterface.getInetAddresses();
-                System.out.println("inetAddresses");
                 while (inetAddresses.hasMoreElements()) {
                     java.net.InetAddress inetAddress = inetAddresses.nextElement();
+                    System.out.println("Found IP Address: " + inetAddress.getHostAddress());
                     if (inetAddress instanceof Inet4Address && inetAddress.getHostAddress().startsWith("192.168.1.")) {
                         // 获取到符合条件的IP
                         String localIp = inetAddress.getHostAddress();

@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.npc.common.modular.money.mapper.MoneyBudgetMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.npc.common.modular.money.entity.MoneyBudget">
+            <result column="id" property="id"/>
+            <result column="user_id" property="userId"/>
+            <result column="budget_name" property="budgetName"/>
+            <result column="category" property="category"/>
+            <result column="amount_limit" property="amountLimit"/>
+            <result column="amount_spent" property="amountSpent"/>
+            <result column="start_date" property="startDate"/>
+            <result column="end_date" property="endDate"/>
+            <result column="period_type" property="periodType"/>
+            <result column="auto_extend" property="autoExtend"/>
+            <result column="alert_threshold" property="alertThreshold"/>
+            <result column="exclude_from_summary" property="excludeFromSummary"/>
+            <result column="notes" property="notes"/>
+            <result column="created_at" property="createdAt"/>
+            <result column="updated_at" property="updatedAt"/>
+    </resultMap>
+    <resultMap id="ResultVOMap" type="com.npc.common.modular.money.vo.MoneyBudgetVO">
+            <result column="id" property="id"/>
+            <result column="user_id" property="userId"/>
+            <result column="budget_name" property="budgetName"/>
+            <result column="category" property="category"/>
+            <result column="amount_limit" property="amountLimit"/>
+            <result column="amount_spent" property="amountSpent"/>
+            <result column="start_date" property="startDate"/>
+            <result column="end_date" property="endDate"/>
+            <result column="period_type" property="periodType"/>
+            <result column="auto_extend" property="autoExtend"/>
+            <result column="alert_threshold" property="alertThreshold"/>
+            <result column="exclude_from_summary" property="excludeFromSummary"/>
+            <result column="notes" property="notes"/>
+            <result column="created_at" property="createdAt"/>
+            <result column="updated_at" property="updatedAt"/>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+            id, user_id, budget_name, category, amount_limit, amount_spent, start_date, end_date, period_type, auto_extend, alert_threshold, exclude_from_summary, notes, created_at, updated_at
+    </sql>
+
+    <sql id="commonConditionSQL">
+        <where>
+            t_money_budget.is_delete = 0
+                <if test="id != '' and id != null">
+                    and t_money_budget.id = #{id}
+                </if>
+                <if test="userId != '' and userId != null">
+                    and t_money_budget.user_id = #{userId}
+                </if>
+                <if test="budgetName != '' and budgetName != null">
+                    and t_money_budget.budget_name = #{budgetName}
+                </if>
+                <if test="category != '' and category != null">
+                    and t_money_budget.category = #{category}
+                </if>
+                <if test="amountLimit != '' and amountLimit != null">
+                    and t_money_budget.amount_limit = #{amountLimit}
+                </if>
+                <if test="amountSpent != '' and amountSpent != null">
+                    and t_money_budget.amount_spent = #{amountSpent}
+                </if>
+                <if test="startDate != '' and startDate != null">
+                    and t_money_budget.start_date = #{startDate}
+                </if>
+                <if test="endDate != '' and endDate != null">
+                    and t_money_budget.end_date = #{endDate}
+                </if>
+                <if test="periodType != '' and periodType != null">
+                    and t_money_budget.period_type = #{periodType}
+                </if>
+                <if test="autoExtend != '' and autoExtend != null">
+                    and t_money_budget.auto_extend = #{autoExtend}
+                </if>
+                <if test="alertThreshold != '' and alertThreshold != null">
+                    and t_money_budget.alert_threshold = #{alertThreshold}
+                </if>
+                <if test="excludeFromSummary != '' and excludeFromSummary != null">
+                    and t_money_budget.exclude_from_summary = #{excludeFromSummary}
+                </if>
+                <if test="notes != '' and notes != null">
+                    and t_money_budget.notes = #{notes}
+                </if>
+                <if test="createdAt != '' and createdAt != null">
+                    and t_money_budget.created_at = #{createdAt}
+                </if>
+                <if test="updatedAt != '' and updatedAt != null">
+                    and t_money_budget.updated_at = #{updatedAt}
+                </if>
+        </where>
+    </sql>
+
+    <select id="getMoneyBudgetListByColList" resultType="com.npc.common.modular.money.entity.MoneyBudget">
+        select
+        <include refid="Base_Column_List"/>
+        from t_money_budget
+        <where>
+            t_money_budget.is_delete = 0
+            and ${column} in
+            <foreach collection="ids" item="id" separator="," open="(" close=")">
+                ${id}
+            </foreach>
+        </where>
+    </select>
+
+    <select id="getBudgetList" resultMap="ResultVOMap">
+        SELECT
+            b.id,
+            b.category,
+            b.budget_name,
+            b.amount_limit,
+            COALESCE(SUM(m.amount), 0) AS amount_spent
+        FROM t_money_budget b
+        LEFT JOIN t_money m
+           ON m.category = b.category
+               AND m.date BETWEEN b.start_date AND b.end_date
+               AND m.exclude_from_summary = 0
+               AND (m.recurring_transaction is null or m.recurring_transaction != 1)
+        WHERE b.user_id = #{userId}
+        AND #{date} BETWEEN b.start_date AND b.end_date
+        GROUP BY b.id
+    </select>
+
+</mapper>

@@ -1,4 +1,5 @@
 package ${package.Controller};
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.npc.core.ServerResponseEnum;
 import com.npc.core.ServerResponseVO;
 import org.springframework.beans.factory.annotation.Autowired;

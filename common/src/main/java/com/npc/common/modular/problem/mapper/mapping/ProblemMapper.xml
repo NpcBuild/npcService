@@ -6,6 +6,8 @@
     <resultMap id="BaseResultMap" type="com.npc.common.modular.problem.entity.Problem">
             <result column="id" property="id"/>
             <result column="date" property="date"/>
+            <result column="plan_id" property="planId"/>
+            <result column="todo_id" property="todoId"/>
             <result column="title" property="title"/>
             <result column="description" property="description"/>
             <result column="environment" property="environment"/>
@@ -24,7 +26,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-            id, date, title, description, environment, solution, notes, category, tags, status, resolution_date, severity, assigned_to, priority, attachments, related_problems
+            id, date, plan_id, todo_id, title, description, environment, solution, notes, category, tags, status, resolution_date, severity, assigned_to, priority, attachments, related_problems
     </sql>
 
     <sql id="commonConditionSQL">
@@ -35,6 +37,12 @@
                 </if>
                 <if test="date != '' and date != null">
                     and t_problem.date = #{date}
+                </if>
+                <if test="planId != '' and planId != null">
+                    and t_problem.plan_id = #{planId}
+                </if>
+                <if test="todoId != '' and todoId != null">
+                    and t_problem.todo_id = #{todoId}
                 </if>
                 <if test="title != '' and title != null">
                     and t_problem.title = #{title}
@@ -119,6 +127,12 @@
             </if>
             <if test="vo.date != '' and vo.date != null">
                 and date = #{vo.date}
+            </if>
+            <if test="vo.planId != '' and vo.planId != null">
+                and plan_id = #{vo.planId}
+            </if>
+            <if test="vo.todoId != '' and vo.todoId != null">
+                and todo_id = #{vo.todoId}
             </if>
             <if test="vo.title != '' and vo.title != null">
                 and title like CONCAT('%', #{vo.title}, '%')

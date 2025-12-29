@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.npc.common.modular.disease.mapper.DiseaseMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.npc.common.modular.disease.entity.Disease">
+            <result column="id" property="id"/>
+            <result column="name" property="name"/>
+            <result column="name_en" property="nameEn"/>
+            <result column="alias" property="alias"/>
+            <result column="icd10_code" property="icd10Code"/>
+            <result column="category" property="category"/>
+            <result column="sub_category" property="subCategory"/>
+            <result column="description" property="description"/>
+            <result column="cause" property="cause"/>
+            <result column="symptoms" property="symptoms"/>
+            <result column="complications" property="complications"/>
+            <result column="diagnosis" property="diagnosis"/>
+            <result column="treatment" property="treatment"/>
+            <result column="prognosis" property="prognosis"/>
+            <result column="prevention" property="prevention"/>
+            <result column="contagious" property="contagious"/>
+            <result column="chronic" property="chronic"/>
+            <result column="severity_level" property="severityLevel"/>
+            <result column="common_population" property="commonPopulation"/>
+            <result column="common_age_range" property="commonAgeRange"/>
+            <result column="reference_source" property="referenceSource"/>
+            <result column="created_at" property="createdAt"/>
+            <result column="updated_at" property="updatedAt"/>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+            id, name, name_en, alias, icd10_code, category, sub_category, description, cause, symptoms, complications, diagnosis, treatment, prognosis, prevention, contagious, chronic, severity_level, common_population, common_age_range, reference_source, created_at, updated_at
+    </sql>
+
+    <sql id="commonConditionSQL">
+        <where>
+            t_disease.is_delete = 0
+                <if test="id != '' and id != null">
+                    and t_disease.id = #{id}
+                </if>
+                <if test="name != '' and name != null">
+                    and t_disease.name = #{name}
+                </if>
+                <if test="nameEn != '' and nameEn != null">
+                    and t_disease.name_en = #{nameEn}
+                </if>
+                <if test="alias != '' and alias != null">
+                    and t_disease.alias = #{alias}
+                </if>
+                <if test="icd10Code != '' and icd10Code != null">
+                    and t_disease.icd10_code = #{icd10Code}
+                </if>
+                <if test="category != '' and category != null">
+                    and t_disease.category = #{category}
+                </if>
+                <if test="subCategory != '' and subCategory != null">
+                    and t_disease.sub_category = #{subCategory}
+                </if>
+                <if test="description != '' and description != null">
+                    and t_disease.description = #{description}
+                </if>
+                <if test="cause != '' and cause != null">
+                    and t_disease.cause = #{cause}
+                </if>
+                <if test="symptoms != '' and symptoms != null">
+                    and t_disease.symptoms = #{symptoms}
+                </if>
+                <if test="complications != '' and complications != null">
+                    and t_disease.complications = #{complications}
+                </if>
+                <if test="diagnosis != '' and diagnosis != null">
+                    and t_disease.diagnosis = #{diagnosis}
+                </if>
+                <if test="treatment != '' and treatment != null">
+                    and t_disease.treatment = #{treatment}
+                </if>
+                <if test="prognosis != '' and prognosis != null">
+                    and t_disease.prognosis = #{prognosis}
+                </if>
+                <if test="prevention != '' and prevention != null">
+                    and t_disease.prevention = #{prevention}
+                </if>
+                <if test="contagious != '' and contagious != null">
+                    and t_disease.contagious = #{contagious}
+                </if>
+                <if test="chronic != '' and chronic != null">
+                    and t_disease.chronic = #{chronic}
+                </if>
+                <if test="severityLevel != '' and severityLevel != null">
+                    and t_disease.severity_level = #{severityLevel}
+                </if>
+                <if test="commonPopulation != '' and commonPopulation != null">
+                    and t_disease.common_population = #{commonPopulation}
+                </if>
+                <if test="commonAgeRange != '' and commonAgeRange != null">
+                    and t_disease.common_age_range = #{commonAgeRange}
+                </if>
+                <if test="referenceSource != '' and referenceSource != null">
+                    and t_disease.reference_source = #{referenceSource}
+                </if>
+                <if test="createdAt != '' and createdAt != null">
+                    and t_disease.created_at = #{createdAt}
+                </if>
+                <if test="updatedAt != '' and updatedAt != null">
+                    and t_disease.updated_at = #{updatedAt}
+                </if>
+        </where>
+    </sql>
+
+    <select id="getDiseaseListByColList" resultType="com.npc.common.modular.disease.entity.Disease">
+        select
+        <include refid="Base_Column_List"/>
+        from t_disease
+        <where>
+            t_disease.is_delete = 0
+            and ${column} in
+            <foreach collection="ids" item="id" separator="," open="(" close=")">
+                ${id}
+            </foreach>
+        </where>
+    </select>
+
+</mapper>
