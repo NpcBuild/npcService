@@ -5,7 +5,9 @@
     <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="com.npc.common.modular.location.entity.Location">
             <result column="id" property="id"/>
+            <result column="name" property="name"/>
             <result column="location" property="location"/>
+            <result column="type" property="type"/>
             <result column="coordinates" property="coordinates"/>
             <result column="visited" property="visited"/>
             <result column="description" property="description"/>
@@ -14,7 +16,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-            id, location, coordinates, visited, description, stars
+            id, name, location, type, coordinates, visited, description, stars
     </sql>
 
     <sql id="commonConditionSQL">
@@ -23,8 +25,14 @@
                 <if test="id != '' and id != null">
                     and t_location.id = #{id}
                 </if>
+                <if test="name != '' and name != null">
+                    and t_location.name = #{name}
+                </if>
                 <if test="location != '' and location != null">
                     and t_location.location = #{location}
+                </if>
+                <if test="type != '' and type != null">
+                    and t_location.type = #{type}
                 </if>
                 <if test="coordinates != '' and coordinates != null">
                     and t_location.coordinates = #{coordinates}
@@ -61,8 +69,14 @@
             <if test="dto.id != '' and dto.id != null">
                 and id = #{dto.id}
             </if>
+            <if test="dto.name != '' and dto.name != null">
+                and name = #{dto.name}
+            </if>
             <if test="dto.location != '' and dto.location != null">
                 and location = #{dto.location}
+            </if>
+            <if test="dto.type != '' and dto.type != null">
+                and type = #{dto.type}
             </if>
             <if test="dto.coordinates != '' and dto.coordinates != null">
                 and coordinates = #{dto.coordinates}

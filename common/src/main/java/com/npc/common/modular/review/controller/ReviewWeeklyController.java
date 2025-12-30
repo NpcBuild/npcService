@@ -44,8 +44,12 @@ public class ReviewWeeklyController {
     // @ApiOperation(response = ServerResponseVO.class, value = "每周复盘表 添加 修改接口, 填入Id为更新, 不填Id为新增")
     public ServerResponseVO<?> save(@RequestBody @Validated ReviewWeekly reviewWeekly) {
         try {
-            Boolean obj = reviewWeeklyService.saveOrUpdate(reviewWeekly);
-            return ServerResponseVO.success(obj);
+            if (reviewWeekly.getId() == null) {
+                Boolean obj = reviewWeeklyService.saveOrUpdate(reviewWeekly);
+            } else {
+                Boolean obj = reviewWeeklyService.updateById(reviewWeekly);
+            }
+            return ServerResponseVO.success(reviewWeekly);
         } catch (Exception e) {
             e.printStackTrace();
             return ServerResponseVO.error(ServerResponseEnum.SAVE_FAILED);

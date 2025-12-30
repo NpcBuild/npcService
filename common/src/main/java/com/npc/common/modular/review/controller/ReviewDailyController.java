@@ -44,8 +44,12 @@ public class ReviewDailyController {
     // @ApiOperation(response = ServerResponseVO.class, value = "每日复盘表 添加 修改接口, 填入Id为更新, 不填Id为新增")
     public ServerResponseVO<?> save(@RequestBody @Validated ReviewDaily reviewDaily) {
         try {
-            Boolean obj = reviewDailyService.saveOrUpdate(reviewDaily);
-            return ServerResponseVO.success(obj);
+            if (reviewDaily.getId() == null) {
+                Boolean obj = reviewDailyService.saveOrUpdate(reviewDaily);
+            } else {
+                Boolean obj = reviewDailyService.updateById(reviewDaily);
+            }
+            return ServerResponseVO.success(reviewDaily);
         } catch (Exception e) {
             e.printStackTrace();
             return ServerResponseVO.error(ServerResponseEnum.SAVE_FAILED);

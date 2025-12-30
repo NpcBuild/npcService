@@ -29,35 +29,41 @@ public class Location implements Serializable {
      */
     private Long id;
 
-
+    /**
+     * 名称
+     */
+    private String name;
 
     /**
      * 位置名
      */
     private String location;
 
-
+    /**
+     * 类型（case restaurant = "餐厅"
+     *     case attraction = "景点"
+     *     case hotel = "酒店"
+     *     case shopping = "购物"
+     *     case entertainment = "娱乐"
+     *     case address = "住址"
+     *     case other = "其他"）
+     */
+    private String type;
 
     /**
      * 坐标（经纬度）
      */
     private String coordinates;
 
-
-
     /**
      * 是否去过
      */
     private Integer visited;
 
-
-
     /**
      * 描述
      */
     private String description;
-
-
 
     /**
      * 评分（星级）

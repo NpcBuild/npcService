@@ -44,8 +44,12 @@ public class ReviewMonthlyController {
     // @ApiOperation(response = ServerResponseVO.class, value = "每月复盘表 添加 修改接口, 填入Id为更新, 不填Id为新增")
     public ServerResponseVO<?> save(@RequestBody @Validated ReviewMonthly reviewMonthly) {
         try {
-            Boolean obj = reviewMonthlyService.saveOrUpdate(reviewMonthly);
-            return ServerResponseVO.success(obj);
+            if (reviewMonthly.getId() == null) {
+                Boolean obj = reviewMonthlyService.saveOrUpdate(reviewMonthly);
+            }  else {
+                Boolean obj = reviewMonthlyService.updateById(reviewMonthly);
+            }
+            return ServerResponseVO.success(reviewMonthly);
         } catch (Exception e) {
             e.printStackTrace();
             return ServerResponseVO.error(ServerResponseEnum.SAVE_FAILED);

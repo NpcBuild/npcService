@@ -12,7 +12,9 @@ import lombok.Data;
 public class LocationDto extends PageSearch {
     private Long id;
 
+    private String name; // 名称
     private String location; // 位置名
+    private String type; // 类型
 
     private String coordinates; // 坐标（经纬度）
 
