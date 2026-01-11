@@ -56,7 +56,7 @@ public class GenerateCode {
         // 获取项目路径 这里只会获取到idea工作目录 例 C:\private-idea-workspace\5-21（跨平台兼容）
         // 当前Java虚拟机启动时的用户工作目录
         String projectPath = System.getProperty("user.dir");
-        String moduleName = "disease";
+        String moduleName = "assets";
 //        String filePath = "src" + File.separator + "main" + File.separator + "java" + File.separator + "com" + File.separator + "npc" + File.separator + "common" + File.separator + "modular" + File.separator + moduleName;
         String filePath = "src" + File.separator + "main" + File.separator + "java";
 
@@ -64,7 +64,7 @@ public class GenerateCode {
         String outputDir = Paths.get(projectPath, filePath).toString();
 //        FastAutoGenerator.create("jdbc:mysql://localhost:3306/yf?autoReconnect=true&useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=CONVERT_TO_NULL&useSSL=false&serverTimezone=CTT", "root", "root")
 //        FastAutoGenerator.create("jdbc:mysql://192.168.1.20:3306/yf?autoReconnect=true&useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=CONVERT_TO_NULL&useSSL=false&serverTimezone=CTT", "root", "root")
-        FastAutoGenerator.create("jdbc:mysql://20.tcp.cpolar.top:14456/yf?autoReconnect=true&useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=CONVERT_TO_NULL&useSSL=false&serverTimezone=CTT", "root", "root")
+        FastAutoGenerator.create("jdbc:mysql://20.tcp.cpolar.top:14804/yf?autoReconnect=true&useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=CONVERT_TO_NULL&useSSL=false&serverTimezone=CTT", "root", "root")
                 .globalConfig(builder -> {
                     builder.author("yangfei") // 设置作者
 //                            .enableSwagger() // 开启 swagger 模式
@@ -90,7 +90,7 @@ public class GenerateCode {
                                     .enableRestStyle();
                     builder.entityBuilder().enableLombok(); //使用lombok
                     builder.controllerBuilder().enableHyphenStyle().enableRestStyle(); // 开启RestController
-                    builder.addInclude("t_disease_record") // 设置需要生成的表名
+                    builder.addInclude("t_assets_clothing") // 设置需要生成的表名
                             .addTablePrefix("c_","t_","diet_","sys_","t_sys_"); // 设置过滤表前缀
                 })
                 // 自定义配置：用来生成前端部分的Vue页面

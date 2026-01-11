@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.npc.common.modular.assets.mapper.AssetsClothingMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.npc.common.modular.assets.entity.AssetsClothing">
+            <result column="id" property="id"/>
+            <result column="asset_id" property="assetId"/>
+            <result column="clothing_category" property="clothingCategory"/>
+            <result column="season" property="season"/>
+            <result column="color_style" property="colorStyle"/>
+            <result column="color" property="color"/>
+            <result column="size" property="size"/>
+            <result column="fit_type" property="fitType"/>
+            <result column="material" property="material"/>
+            <result column="thickness" property="thickness"/>
+            <result column="wear_frequency" property="wearFrequency"/>
+            <result column="last_worn_date" property="lastWornDate"/>
+            <result column="style_tags" property="styleTags"/>
+            <result column="occasion" property="occasion"/>
+            <result column="wash_method" property="washMethod"/>
+            <result column="care_notes" property="careNotes"/>
+            <result column="clothing_status" property="clothingStatus"/>
+            <result column="notes" property="notes"/>
+            <result column="created_at" property="createdAt"/>
+            <result column="updated_at" property="updatedAt"/>
+    </resultMap>
+    <resultMap id="ClothingInfoMap" type="com.npc.common.modular.assets.vo.AssetsClothingVO">
+            <result column="id" property="id"/>
+            <result column="asset_id" property="assetId"/>
+            <result column="clothing_category" property="clothingCategory"/>
+            <result column="season" property="season"/>
+            <result column="color_style" property="colorStyle"/>
+            <result column="color" property="color"/>
+            <result column="size" property="size"/>
+            <result column="fit_type" property="fitType"/>
+            <result column="material" property="material"/>
+            <result column="thickness" property="thickness"/>
+            <result column="wear_frequency" property="wearFrequency"/>
+            <result column="last_worn_date" property="lastWornDate"/>
+            <result column="style_tags" property="styleTags"/>
+            <result column="occasion" property="occasion"/>
+            <result column="wash_method" property="washMethod"/>
+            <result column="care_notes" property="careNotes"/>
+            <result column="clothing_status" property="clothingStatus"/>
+            <result column="notes" property="notes"/>
+            <result column="created_at" property="createdAt"/>
+            <result column="updated_at" property="updatedAt"/>
+            <result column="name" property="name"/>
+            <result column="image_url" property="imageURL"/>
+            <result column="price" property="price"/>
+            <result column="status" property="status"/>
+            <result column="location" property="location"/>
+            <result column="purchase_date" property="purchaseDate"/>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+            id, asset_id, clothing_category, season, color_style, color, size, fit_type, material, thickness, wear_frequency, last_worn_date, style_tags, occasion, wash_method, care_notes, clothing_status, notes, created_at, updated_at
+    </sql>
+
+    <sql id="commonConditionSQL">
+        <where>
+            t_assets_clothing.is_delete = 0
+                <if test="id != '' and id != null">
+                    and t_assets_clothing.id = #{id}
+                </if>
+                <if test="assetId != '' and assetId != null">
+                    and t_assets_clothing.asset_id = #{assetId}
+                </if>
+                <if test="clothingCategory != '' and clothingCategory != null">
+                    and t_assets_clothing.clothing_category = #{clothingCategory}
+                </if>
+                <if test="season != '' and season != null">
+                    and t_assets_clothing.season = #{season}
+                </if>
+                <if test="colorStyle != '' and colorStyle != null">
+                    and t_assets_clothing.color_style = #{colorStyle}
+                </if>
+                <if test="color != '' and color != null">
+                    and t_assets_clothing.color = #{color}
+                </if>
+                <if test="size != '' and size != null">
+                    and t_assets_clothing.size = #{size}
+                </if>
+                <if test="fitType != '' and fitType != null">
+                    and t_assets_clothing.fit_type = #{fitType}
+                </if>
+                <if test="material != '' and material != null">
+                    and t_assets_clothing.material = #{material}
+                </if>
+                <if test="thickness != '' and thickness != null">
+                    and t_assets_clothing.thickness = #{thickness}
+                </if>
+                <if test="wearFrequency != '' and wearFrequency != null">
+                    and t_assets_clothing.wear_frequency = #{wearFrequency}
+                </if>
+                <if test="lastWornDate != '' and lastWornDate != null">
+                    and t_assets_clothing.last_worn_date = #{lastWornDate}
+                </if>
+                <if test="styleTags != '' and styleTags != null">
+                    and t_assets_clothing.style_tags = #{styleTags}
+                </if>
+                <if test="occasion != '' and occasion != null">
+                    and t_assets_clothing.occasion = #{occasion}
+                </if>
+                <if test="washMethod != '' and washMethod != null">
+                    and t_assets_clothing.wash_method = #{washMethod}
+                </if>
+                <if test="careNotes != '' and careNotes != null">
+                    and t_assets_clothing.care_notes = #{careNotes}
+                </if>
+                <if test="clothingStatus != '' and clothingStatus != null">
+                    and t_assets_clothing.clothing_status = #{clothingStatus}
+                </if>
+                <if test="notes != '' and notes != null">
+                    and t_assets_clothing.notes = #{notes}
+                </if>
+                <if test="createdAt != '' and createdAt != null">
+                    and t_assets_clothing.created_at = #{createdAt}
+                </if>
+                <if test="updatedAt != '' and updatedAt != null">
+                    and t_assets_clothing.updated_at = #{updatedAt}
+                </if>
+        </where>
+    </sql>
+
+    <select id="getAssetsClothingListByColList" resultType="com.npc.common.modular.assets.entity.AssetsClothing">
+        select
+        <include refid="Base_Column_List"/>
+        from t_assets_clothing
+        <where>
+            t_assets_clothing.is_delete = 0
+            and ${column} in
+            <foreach collection="ids" item="id" separator="," open="(" close=")">
+                ${id}
+            </foreach>
+        </where>
+    </select>
+    <select id="getList" resultMap="ClothingInfoMap">
+        select tac.*, ta.`name`, ta.image_url, ta.price, ta.status, ta.location, ta.purchase_date
+        from t_assets_clothing tac
+        join t_assets ta on ta.id = tac.asset_id
+    </select>
+
+</mapper>

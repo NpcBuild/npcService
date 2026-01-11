@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.npc.common.modular.chat.service.IChatBuddyService;
 import com.npc.common.modular.events.dto.EventsDto;
+import com.npc.common.modular.events.vo.EventsMonthInfoVO;
 import com.npc.common.modular.holiday.entity.Holiday;
 import com.npc.common.modular.holiday.service.IHolidayService;
 import com.npc.common.modular.holiday.vo.CalendarEventVO;
@@ -128,5 +129,10 @@ public class EventsServiceImpl extends ServiceImpl<EventsMapper, Events> impleme
 
         IPage<Events> list = this.baseMapper.getList(eventsDto, page);
         return list;
+    }
+
+    @Override
+    public EventsMonthInfoVO getMonthInfo(String planField, int year) {
+        return this.baseMapper.getMonthInfo(planField, year);
     }
 }

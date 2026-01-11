@@ -9,6 +9,8 @@
             <result column="base64_icon" property="base64Icon"/>
             <result column="has_contact" property="hasContact"/>
             <result column="gender" property="gender"/>
+            <result column="phone" property="phone"/>
+            <result column="location_id" property="locationId"/>
             <result column="tags" property="tags"/>
             <result column="intimacy_level" property="intimacyLevel"/>
             <result column="gregorian_birthday" property="gregorianBirthday"/>
@@ -25,10 +27,10 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-            id, name, base64_icon, has_contact, gender, tags, intimacy_level, gregorian_birthday, lunar_birthday, notes, sort, bio, avatar, photos, favorite, disposition
+            id, name, base64_icon, has_contact, gender, phone, location_id, tags, intimacy_level, gregorian_birthday, lunar_birthday, notes, sort, bio, avatar, photos, favorite, disposition
     </sql>
     <sql id="Tcb_Base_Column_List">
-            tcb.id, tcb.name, tcb.base64_icon, tcb.has_contact, tcb.gender, tcb.tags, tcb.intimacy_level, tcb.gregorian_birthday, tcb.lunar_birthday, tcb.notes, tcb.sort, tcb.bio, tcb.avatar, tcb.photos, tcb.favorite, tcb.disposition
+            tcb.id, tcb.name, tcb.base64_icon, tcb.has_contact, tcb.gender, tcb.phone, tcb.location_id, tcb.tags, tcb.intimacy_level, tcb.gregorian_birthday, tcb.lunar_birthday, tcb.notes, tcb.sort, tcb.bio, tcb.avatar, tcb.photos, tcb.favorite, tcb.disposition
     </sql>
     <sql id="commonConditionSQL">
         <where>
@@ -47,6 +49,12 @@
                 </if>
                 <if test="gender != '' and gender != null">
                     and t_chat_buddy.gender = #{gender}
+                </if>
+                <if test="phone != '' and phone != null">
+                    and t_chat_buddy.phone = #{phone}
+                </if>
+                <if test="locationId != '' and locationId != null">
+                    and t_chat_buddy.location_id = #{locationId}
                 </if>
                 <if test="tags != '' and tags != null">
                     and t_chat_buddy.tags = #{tags}
@@ -118,6 +126,12 @@
             <if test="dto.gender != '' and dto.gender != null">
                 and tcb.gender = #{dto.gender}
             </if>
+            <if test="dto.phone != '' and dto.phone != null">
+                and tcb.phone = #{dto.phone}
+            </if>
+            <if test="dto.locationId != '' and dto.locationId != null">
+                and tcb.location_id = #{dto.locationId}
+            </if>
             <if test="dto.tags != '' and dto.tags != null">
                 and tcb.tags = #{dto.tags}
             </if>
@@ -133,42 +147,6 @@
         </where>
         group by tcb.id
         order by tcb.sort
-    </select>
-    <select id="getListCount" resultType="int">
-    select count(*) from (
-    select tcb.id
-    from t_chat_buddy tcb
-    LEFT JOIN t_chat_buddy_relations tcbr ON tcbr.to_id = tcb.id
-    <where>
-        <if test="dto.id != '' and dto.id != null">
-            and tcb.id = #{dto.id}
-        </if>
-        <if test="dto.name != '' and dto.name != null">
-            and tcb.name like CONCAT('%', #{dto.name}, '%')
-        </if>
-        <if test="dto.hasContact != null and dto.hasContact">
-            and coalesce(tcb.has_contact, 1) = #{dto.hasContact}
-        </if>
-        <if test="dto.hasContact != null and dto.hasContact == false">
-            and tcb.has_contact = #{dto.hasContact}
-        </if>
-        <if test="dto.gender != '' and dto.gender != null">
-            and tcb.gender = #{dto.gender}
-        </if>
-        <if test="dto.tags != '' and dto.tags != null">
-            and tcb.tags = #{dto.tags}
-        </if>
-        <if test="dto.intimacyLevel != '' and dto.intimacyLevel != null">
-            and tcb.intimacy_level = #{dto.intimacyLevel}
-        </if>
-        <if test="dto.notes != '' and dto.notes != null">
-            and tcb.notes like CONCAT('%', #{dto.notes}, '%')
-        </if>
-        <if test="dto.sort != '' and dto.sort != null">
-            and tcb.sort = #{dto.sort}
-        </if>
-    </where>
-    group by tcb.id) tmp_count
     </select>
     <select id="getBirthdayList" resultType="com.npc.common.modular.holiday.vo.CalendarEventVO">
         SELECT

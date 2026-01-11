@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.npc.common.modular.events.dto.EventsDto;
 import com.npc.common.modular.events.entity.Events;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.npc.common.modular.events.vo.EventsMonthInfoVO;
 import com.npc.common.modular.holiday.vo.CalendarEventVO;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Mapper;
@@ -33,4 +34,6 @@ public interface EventsMapper extends BaseMapper<Events> {
 
     List<CalendarEventVO> getListByRange(EventsDto eventsDto);
     IPage<Events> getList(@Param("dto") EventsDto eventsDto, Page<Events> page);
+
+    EventsMonthInfoVO getMonthInfo(@Param("planField") String planField, @Param("year") int year);
 }

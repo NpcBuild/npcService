@@ -96,5 +96,11 @@
         </where>
         ORDER BY t_events.id DESC
     </select>
+    <select id="getMonthInfo" resultType="com.npc.common.modular.events.vo.EventsMonthInfoVO">
+        SELECT ${planField} as theme,
+               new_year_top_goals as goal
+        FROM t_review_yearly
+        WHERE review_year = #{year}
+    </select>
 
 </mapper>

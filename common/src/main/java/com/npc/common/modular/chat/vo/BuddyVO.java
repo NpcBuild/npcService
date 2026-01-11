@@ -17,6 +17,8 @@ public class BuddyVO extends PageSearch {
     private Boolean hasContact; // 是否还有联系
 
     private String gender; // 性别
+    private String phone; // 手机号码
+    private String locationId; // 居住地址ID（关联 t_location.id）
 
     private String tags; // 标签
 

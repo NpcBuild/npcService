@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.npc.common.modular.events.dto.EventsDto;
 import com.npc.common.modular.events.entity.Events;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.npc.common.modular.events.vo.EventsMonthInfoVO;
 import com.npc.common.modular.holiday.vo.CalendarEventVO;
 import com.npc.common.modular.problem.entity.Problem;
 import com.npc.common.modular.problem.vo.ProblemVO;
@@ -30,4 +31,6 @@ public interface IEventsService extends IService<Events> {
     List<CalendarEventVO> getList(EventsDto eventsDto);
 
     IPage<Events> selectListByPage(EventsDto eventsDto);
+
+    EventsMonthInfoVO getMonthInfo(String planField, int year);
 }

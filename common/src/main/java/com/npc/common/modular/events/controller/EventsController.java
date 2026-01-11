@@ -2,6 +2,7 @@ package com.npc.common.modular.events.controller;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.npc.common.modular.events.dto.EventsDto;
+import com.npc.common.modular.events.vo.EventsMonthInfoVO;
 import com.npc.common.modular.holiday.vo.CalendarEventVO;
 import com.npc.common.modular.problem.entity.Problem;
 import com.npc.core.ServerResponseEnum;
@@ -17,6 +18,8 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.npc.common.modular.events.service.IEventsService;
 import com.npc.common.modular.events.entity.Events;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.List;
 
@@ -123,5 +126,21 @@ public class EventsController {
     public ServerResponseVO<?> add(@Validated CalendarEventVO eventVO) {
         CalendarEventVO vo = eventsService.addCalendarEvent(eventVO);
         return ServerResponseVO.success(vo);
+    }
+
+    @GetMapping("/getMonthInfo")
+    public ServerResponseVO<?> getMonthInfo(@RequestParam("date") String dateString) {
+        // 将字符串转换为 LocalDate，只取日期部分
+        LocalDate date = LocalDate.parse(dateString.substring(0, 10)); // 提取 "yyyy-MM-dd" 部分
+        String month = date.format(DateTimeFormatter.ofPattern("yyyy-MM"));
+
+        // 计算季度
+        int quarter = (date.getMonthValue() - 1) / 3 + 1;
+        String planField = "q" + quarter + "_plan";
+
+        EventsMonthInfoVO monthInfo = eventsService.getMonthInfo(planField, date.getYear() - 1);
+        if (monthInfo == null) monthInfo = new EventsMonthInfoVO();
+        monthInfo.setMonth(month);
+        return ServerResponseVO.success(monthInfo);
     }
 }
