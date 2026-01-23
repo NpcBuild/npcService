@@ -21,7 +21,9 @@ public class EatenDishesDto extends PageSearch {
 
     private Integer userId;  // 用户 ID 
 
-    private Integer recipesId;  // 菜谱 ID 
+    private Integer recipesId;  // 菜谱 ID
+
+    private String mealType;;  // 用餐类型
 
     private Integer tasteRating;  // 口味评分（1-5） 
 

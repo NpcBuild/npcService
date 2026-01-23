@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.npc.common.modular.diet.mapper.EatenDishesMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.npc.common.modular.diet.entity.EatenDishes">
+            <result column="id" property="id"/>
+            <result column="user_id" property="userId"/>
+            <result column="recipes_id" property="recipesId"/>
+            <result column="taste_rating" property="tasteRating"/>
+            <result column="eat_date" property="eatDate"/>
+            <result column="restaurant" property="restaurant"/>
+            <result column="notes" property="notes"/>
+            <result column="created_at" property="createdAt"/>
+            <result column="meal_type" property="mealType"/>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+            id, user_id, recipes_id, taste_rating, eat_date, restaurant, notes, created_at, meal_type
+    </sql>
+
+    <sql id="commonConditionSQL">
+        <where>
+            diet_eaten_dishes.is_delete = 0
+                <if test="id != '' and id != null">
+                    and diet_eaten_dishes.id = #{id}
+                </if>
+                <if test="userId != '' and userId != null">
+                    and diet_eaten_dishes.user_id = #{userId}
+                </if>
+                <if test="recipesId != '' and recipesId != null">
+                    and diet_eaten_dishes.recipes_id = #{recipesId}
+                </if>
+                <if test="tasteRating != '' and tasteRating != null">
+                    and diet_eaten_dishes.taste_rating = #{tasteRating}
+                </if>
+                <if test="eatDate != '' and eatDate != null">
+                    and diet_eaten_dishes.eat_date = #{eatDate}
+                </if>
+                <if test="restaurant != '' and restaurant != null">
+                    and diet_eaten_dishes.restaurant = #{restaurant}
+                </if>
+                <if test="notes != '' and notes != null">
+                    and diet_eaten_dishes.notes = #{notes}
+                </if>
+                <if test="createdAt != '' and createdAt != null">
+                    and diet_eaten_dishes.created_at = #{createdAt}
+                </if>
+                <if test="mealType != '' and mealType != null">
+                    and diet_eaten_dishes.meal_type = #{mealType}
+                </if>
+        </where>
+    </sql>
+
+    <select id="getEatenDishesListByColList" resultType="com.npc.common.modular.diet.entity.EatenDishes">
+        select
+        <include refid="Base_Column_List"/>
+        from diet_eaten_dishes
+        <where>
+            diet_eaten_dishes.is_delete = 0
+            and ${column} in
+            <foreach collection="ids" item="id" separator="," open="(" close=")">
+                ${id}
+            </foreach>
+        </where>
+    </select>
+
+</mapper>

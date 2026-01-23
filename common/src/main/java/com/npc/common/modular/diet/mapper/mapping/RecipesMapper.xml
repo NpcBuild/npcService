@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.npc.common.modular.diet.mapper.RecipesMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.npc.common.modular.diet.entity.Recipes">
+            <result column="id" property="id"/>
+            <result column="name" property="name"/>
+            <result column="cuisine" property="cuisine"/>
+            <result column="img_url" property="imgUrl"/>
+            <result column="difficulty" property="difficulty"/>
+            <result column="description" property="description"/>
+            <result column="learning_date" property="learningDate"/>
+            <result column="notes" property="notes"/>
+            <result column="created_at" property="createdAt"/>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+            id, name, cuisine, img_url, difficulty, description, learning_date, notes, created_at
+    </sql>
+
+    <sql id="commonConditionSQL">
+        <where>
+            diet_recipes.is_delete = 0
+                <if test="id != '' and id != null">
+                    and diet_recipes.id = #{id}
+                </if>
+                <if test="name != '' and name != null">
+                    and diet_recipes.name = #{name}
+                </if>
+                <if test="cuisine != '' and cuisine != null">
+                    and diet_recipes.cuisine = #{cuisine}
+                </if>
+                <if test="imgUrl != '' and imgUrl != null">
+                    and diet_recipes.img_url = #{imgUrl}
+                </if>
+                <if test="difficulty != '' and difficulty != null">
+                    and diet_recipes.difficulty = #{difficulty}
+                </if>
+                <if test="description != '' and description != null">
+                    and diet_recipes.description = #{description}
+                </if>
+                <if test="learningDate != '' and learningDate != null">
+                    and diet_recipes.learning_date = #{learningDate}
+                </if>
+                <if test="notes != '' and notes != null">
+                    and diet_recipes.notes = #{notes}
+                </if>
+                <if test="createdAt != '' and createdAt != null">
+                    and diet_recipes.created_at = #{createdAt}
+                </if>
+        </where>
+    </sql>
+
+    <select id="getRecipesListByColList" resultType="com.npc.common.modular.diet.entity.Recipes">
+        select
+        <include refid="Base_Column_List"/>
+        from diet_recipes
+        <where>
+            diet_recipes.is_delete = 0
+            and ${column} in
+            <foreach collection="ids" item="id" separator="," open="(" close=")">
+                ${id}
+            </foreach>
+        </where>
+    </select>
+
+</mapper>

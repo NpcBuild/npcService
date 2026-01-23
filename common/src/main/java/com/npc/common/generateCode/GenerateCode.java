@@ -56,7 +56,7 @@ public class GenerateCode {
         // 获取项目路径 这里只会获取到idea工作目录 例 C:\private-idea-workspace\5-21（跨平台兼容）
         // 当前Java虚拟机启动时的用户工作目录
         String projectPath = System.getProperty("user.dir");
-        String moduleName = "diet";
+        String moduleName = "diet1";
 //        String filePath = "src" + File.separator + "main" + File.separator + "java" + File.separator + "com" + File.separator + "npc" + File.separator + "common" + File.separator + "modular" + File.separator + moduleName;
         String filePath = "src" + File.separator + "main" + File.separator + "java";
 
