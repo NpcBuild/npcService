@@ -10,6 +10,7 @@
             <result column="has_contact" property="hasContact"/>
             <result column="gender" property="gender"/>
             <result column="phone" property="phone"/>
+            <result column="id_card" property="idCard"/>
             <result column="location_id" property="locationId"/>
             <result column="tags" property="tags"/>
             <result column="intimacy_level" property="intimacyLevel"/>
@@ -27,10 +28,10 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-            id, name, base64_icon, has_contact, gender, phone, location_id, tags, intimacy_level, gregorian_birthday, lunar_birthday, notes, sort, bio, avatar, photos, favorite, disposition
+            id, name, base64_icon, has_contact, gender, phone, id_card, location_id, tags, intimacy_level, gregorian_birthday, lunar_birthday, notes, sort, bio, avatar, photos, favorite, disposition
     </sql>
     <sql id="Tcb_Base_Column_List">
-            tcb.id, tcb.name, tcb.base64_icon, tcb.has_contact, tcb.gender, tcb.phone, tcb.location_id, tcb.tags, tcb.intimacy_level, tcb.gregorian_birthday, tcb.lunar_birthday, tcb.notes, tcb.sort, tcb.bio, tcb.avatar, tcb.photos, tcb.favorite, tcb.disposition
+            tcb.id, tcb.name, tcb.base64_icon, tcb.has_contact, tcb.gender, tcb.phone, tcb.id_card, tcb.location_id, tcb.tags, tcb.intimacy_level, tcb.gregorian_birthday, tcb.lunar_birthday, tcb.notes, tcb.sort, tcb.bio, tcb.avatar, tcb.photos, tcb.favorite, tcb.disposition
     </sql>
     <sql id="commonConditionSQL">
         <where>
@@ -52,6 +53,9 @@
                 </if>
                 <if test="phone != '' and phone != null">
                     and t_chat_buddy.phone = #{phone}
+                </if>
+                <if test="idCard != '' and idCard != null">
+                    and t_chat_buddy.id_card = #{idCard}
                 </if>
                 <if test="locationId != '' and locationId != null">
                     and t_chat_buddy.location_id = #{locationId}
@@ -129,6 +133,9 @@
             <if test="dto.phone != '' and dto.phone != null">
                 and tcb.phone = #{dto.phone}
             </if>
+            <if test="dto.idCard != '' and dto.idCard != null">
+                and tcb.id_card = #{dto.idCard}
+            </if>
             <if test="dto.locationId != '' and dto.locationId != null">
                 and tcb.location_id = #{dto.locationId}
             </if>
@@ -167,6 +174,29 @@
           OR
           (CHAR_LENGTH(gregorian_birthday) > 5 AND
            DATE(CONCAT(#{queryYear}, SUBSTRING(gregorian_birthday, 5))) BETWEEN #{startDate} AND #{endDate})
+        )
+        UNION ALL
+    SELECT
+        CONCAT(name, '农历生日') AS title,
+        CASE
+        WHEN CHAR_LENGTH(lunar_birthday) = 5 THEN
+            CONCAT(#{queryLunarYear}, '-', lunar_birthday)
+        ELSE
+            CONCAT(#{queryLunarYear}, SUBSTRING(lunar_birthday, 5)) END AS `date`,
+        "lunar" AS dateType,
+        "birthday" AS eventType
+    FROM t_chat_buddy
+    WHERE (has_contact IS NULL OR has_contact != 0)
+      AND lunar_birthday IS NOT NULL
+      AND lunar_birthday != ''
+      AND (
+      (CHAR_LENGTH(lunar_birthday) = 5 AND
+       #{startLunarDate} &lt;= CONCAT(#{queryLunarYear}, '-', lunar_birthday) AND
+       CONCAT(#{queryLunarYear}, '-', lunar_birthday) &lt;= #{endLunarDate})
+      OR
+      (CHAR_LENGTH(lunar_birthday) > 5 AND
+       #{startLunarDate} &lt;= CONCAT(#{queryLunarYear}, SUBSTRING(lunar_birthday, 5)) AND
+       CONCAT(#{queryLunarYear}, SUBSTRING(lunar_birthday, 5)) &lt;= #{endLunarDate})
       )
     </select>
 

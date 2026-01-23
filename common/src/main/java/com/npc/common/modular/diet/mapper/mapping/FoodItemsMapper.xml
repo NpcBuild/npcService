@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.npc.common.modular.diet.mapper.FoodItemsMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.npc.common.modular.diet.entity.FoodItems">
+            <result column="id" property="id"/>
+            <result column="eaten_dish_id" property="eatenDishId"/>
+            <result column="name" property="name"/>
+            <result column="category" property="category"/>
+            <result column="calories" property="calories"/>
+            <result column="protein" property="protein"/>
+            <result column="carbs" property="carbs"/>
+            <result column="fat" property="fat"/>
+            <result column="fiber" property="fiber"/>
+            <result column="sugar" property="sugar"/>
+            <result column="sodium" property="sodium"/>
+            <result column="quantity" property="quantity"/>
+            <result column="unit" property="unit"/>
+            <result column="notes" property="notes"/>
+            <result column="created_at" property="createdAt"/>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+            id, eaten_dish_id, name, category, calories, protein, carbs, fat, fiber, sugar, sodium, quantity, unit, notes, created_at
+    </sql>
+
+    <sql id="commonConditionSQL">
+        <where>
+            diet_food_items.is_delete = 0
+                <if test="id != '' and id != null">
+                    and diet_food_items.id = #{id}
+                </if>
+                <if test="eatenDishId != '' and eatenDishId != null">
+                    and diet_food_items.eaten_dish_id = #{eatenDishId}
+                </if>
+                <if test="name != '' and name != null">
+                    and diet_food_items.name = #{name}
+                </if>
+                <if test="category != '' and category != null">
+                    and diet_food_items.category = #{category}
+                </if>
+                <if test="calories != '' and calories != null">
+                    and diet_food_items.calories = #{calories}
+                </if>
+                <if test="protein != '' and protein != null">
+                    and diet_food_items.protein = #{protein}
+                </if>
+                <if test="carbs != '' and carbs != null">
+                    and diet_food_items.carbs = #{carbs}
+                </if>
+                <if test="fat != '' and fat != null">
+                    and diet_food_items.fat = #{fat}
+                </if>
+                <if test="fiber != '' and fiber != null">
+                    and diet_food_items.fiber = #{fiber}
+                </if>
+                <if test="sugar != '' and sugar != null">
+                    and diet_food_items.sugar = #{sugar}
+                </if>
+                <if test="sodium != '' and sodium != null">
+                    and diet_food_items.sodium = #{sodium}
+                </if>
+                <if test="quantity != '' and quantity != null">
+                    and diet_food_items.quantity = #{quantity}
+                </if>
+                <if test="unit != '' and unit != null">
+                    and diet_food_items.unit = #{unit}
+                </if>
+                <if test="notes != '' and notes != null">
+                    and diet_food_items.notes = #{notes}
+                </if>
+                <if test="createdAt != '' and createdAt != null">
+                    and diet_food_items.created_at = #{createdAt}
+                </if>
+        </where>
+    </sql>
+
+    <select id="getFoodItemsListByColList" resultType="com.npc.common.modular.diet.entity.FoodItems">
+        select
+        <include refid="Base_Column_List"/>
+        from diet_food_items
+        <where>
+            diet_food_items.is_delete = 0
+            and ${column} in
+            <foreach collection="ids" item="id" separator="," open="(" close=")">
+                ${id}
+            </foreach>
+        </where>
+    </select>
+
+</mapper>

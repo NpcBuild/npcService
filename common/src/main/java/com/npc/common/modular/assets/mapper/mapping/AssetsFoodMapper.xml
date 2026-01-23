@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.npc.common.modular.assets.mapper.AssetsFoodMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.npc.common.modular.assets.entity.AssetsFood">
+            <result column="id" property="id"/>
+            <result column="asset_id" property="assetId"/>
+            <result column="food_category" property="foodCategory"/>
+            <result column="origin" property="origin"/>
+            <result column="brand" property="brand"/>
+            <result column="storage_method" property="storageMethod"/>
+            <result column="production_date" property="productionDate"/>
+            <result column="expiration_date" property="expirationDate"/>
+            <result column="fresh_level" property="freshLevel"/>
+            <result column="opened" property="opened"/>
+            <result column="remaining_ratio" property="remainingRatio"/>
+            <result column="nutrition_notes" property="nutritionNotes"/>
+            <result column="allergy_info" property="allergyInfo"/>
+            <result column="is_frozen" property="isFrozen"/>
+            <result column="food_status" property="foodStatus"/>
+            <result column="notes" property="notes"/>
+            <result column="created_at" property="createdAt"/>
+            <result column="updated_at" property="updatedAt"/>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+            id, asset_id, food_category, origin, brand, storage_method, production_date, expiration_date, fresh_level, opened, remaining_ratio, nutrition_notes, allergy_info, is_frozen, food_status, notes, created_at, updated_at
+    </sql>
+
+    <sql id="commonConditionSQL">
+        <where>
+            t_assets_food.is_delete = 0
+                <if test="id != '' and id != null">
+                    and t_assets_food.id = #{id}
+                </if>
+                <if test="assetId != '' and assetId != null">
+                    and t_assets_food.asset_id = #{assetId}
+                </if>
+                <if test="foodCategory != '' and foodCategory != null">
+                    and t_assets_food.food_category = #{foodCategory}
+                </if>
+                <if test="origin != '' and origin != null">
+                    and t_assets_food.origin = #{origin}
+                </if>
+                <if test="brand != '' and brand != null">
+                    and t_assets_food.brand = #{brand}
+                </if>
+                <if test="storageMethod != '' and storageMethod != null">
+                    and t_assets_food.storage_method = #{storageMethod}
+                </if>
+                <if test="productionDate != '' and productionDate != null">
+                    and t_assets_food.production_date = #{productionDate}
+                </if>
+                <if test="expirationDate != '' and expirationDate != null">
+                    and t_assets_food.expiration_date = #{expirationDate}
+                </if>
+                <if test="freshLevel != '' and freshLevel != null">
+                    and t_assets_food.fresh_level = #{freshLevel}
+                </if>
+                <if test="opened != '' and opened != null">
+                    and t_assets_food.opened = #{opened}
+                </if>
+                <if test="remainingRatio != '' and remainingRatio != null">
+                    and t_assets_food.remaining_ratio = #{remainingRatio}
+                </if>
+                <if test="nutritionNotes != '' and nutritionNotes != null">
+                    and t_assets_food.nutrition_notes = #{nutritionNotes}
+                </if>
+                <if test="allergyInfo != '' and allergyInfo != null">
+                    and t_assets_food.allergy_info = #{allergyInfo}
+                </if>
+                <if test="isFrozen != '' and isFrozen != null">
+                    and t_assets_food.is_frozen = #{isFrozen}
+                </if>
+                <if test="foodStatus != '' and foodStatus != null">
+                    and t_assets_food.food_status = #{foodStatus}
+                </if>
+                <if test="notes != '' and notes != null">
+                    and t_assets_food.notes = #{notes}
+                </if>
+                <if test="createdAt != '' and createdAt != null">
+                    and t_assets_food.created_at = #{createdAt}
+                </if>
+                <if test="updatedAt != '' and updatedAt != null">
+                    and t_assets_food.updated_at = #{updatedAt}
+                </if>
+        </where>
+    </sql>
+
+    <select id="getAssetsFoodListByColList" resultType="com.npc.common.modular.assets.entity.AssetsFood">
+        select
+        <include refid="Base_Column_List"/>
+        from t_assets_food
+        <where>
+            t_assets_food.is_delete = 0
+            and ${column} in
+            <foreach collection="ids" item="id" separator="," open="(" close=")">
+                ${id}
+            </foreach>
+        </where>
+    </select>
+
+</mapper>

@@ -13,6 +13,7 @@ import com.npc.common.modular.dailySchedule.vo.DailyScheduleVO;
 import com.npc.common.modular.events.dto.EventsDto;
 import com.npc.common.modular.holiday.vo.CalendarEventVO;
 import com.npc.core.utils.StringUtils;
+import com.npc.utils.DateUtils;
 import com.npc.utils.DayUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -66,18 +67,30 @@ public class ChatBuddyServiceImpl extends ServiceImpl<ChatBuddyMapper, ChatBuddy
     @Override
     public List<CalendarEventVO> getBirthdayList(EventsDto eventsDto) {
         // 处理农历日期数据为阳历
-        List<CalendarEventVO> lunchList = this.getLunchBirthday(eventsDto);
+        LocalDate startDate = eventsDto.getStartDate();
+        LocalDate endDate = eventsDto.getEndDate();
+        // 将阳历日期转换为农历日期（如果您需要农历显示）
+        String startLunarDate = DayUtils.gregorianToLunar(startDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+        String endLunarDate = DayUtils.gregorianToLunar(endDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+//        List<CalendarEventVO> lunchList = this.getLunchBirthday(eventsDto);
         // 提取查询年份
         Map<String, Object> params = new HashMap<>();
-        params.put("startDate", eventsDto.getStartDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
-        params.put("endDate", eventsDto.getEndDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
-        params.put("queryYear", String.valueOf(eventsDto.getStartDate().getYear()));
-        if (CollectionUtils.isEmpty(lunchList)) {
-            return chatBuddyMapper.getBirthdayList(params);
-        } else {
-            lunchList.addAll(chatBuddyMapper.getBirthdayList(params));
-            return lunchList;
+        params.put("startDate", startDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+        params.put("endDate", endDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+        params.put("queryYear", String.valueOf(startDate.getYear()));
+        params.put("queryEndYear", String.valueOf(endDate.getYear()));
+        params.put("queryLunarYear", startLunarDate.substring(0, 4));
+        params.put("queryLunarEndYear", endLunarDate.substring(0, 4));
+        params.put("startLunarDate", startLunarDate);
+        params.put("endLunarDate", endLunarDate);
+//        if (CollectionUtils.isEmpty(lunchList)) {
+        List<CalendarEventVO> birthdayList = chatBuddyMapper.getBirthdayList(params);
+        for (CalendarEventVO vo : birthdayList) {
+            if (vo.getDateType().equals("lunar")) {
+                vo.setDate(DayUtils.lunarToGregorian(vo.getDate(), Integer.parseInt(vo.getDate().substring(0, 4))));
+            }
         }
+        return birthdayList;
     }
 
     @Override

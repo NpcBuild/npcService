@@ -6,6 +6,8 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.npc.common.modular.chat.entity.*;
 import com.npc.common.modular.chat.service.*;
 import com.npc.common.modular.chat.vo.BuddyVO;
+import com.npc.common.modular.location.entity.Location;
+import com.npc.common.modular.location.mapper.LocationMapper;
 import com.npc.common.monitor.server.ServerService;
 import com.npc.core.ServerResponseEnum;
 import com.npc.core.ServerResponseVO;
@@ -18,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.Resource;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
@@ -51,6 +54,8 @@ public class ChatBuddyController {
     private IChatBuddyHabitService chatBuddyHabitService;
     @Autowired
     private IChatBuddyPastService chatBuddyPastService;
+    @Resource
+    private LocationMapper locationMapper;
 
 
     /**
@@ -275,14 +280,28 @@ public class ChatBuddyController {
         return ServerResponseVO.success(allPic);
     }
 
+    @PostMapping ("/updateFriendAvatar")
+    public ServerResponseVO<?> updateFriendAvatar(@RequestBody ChatBuddy chatBuddy) {
+        UpdateWrapper updateWrapper = new UpdateWrapper<ChatBuddy>();
+        updateWrapper.eq("id", chatBuddy.getId());
+        updateWrapper.set("avatar", chatBuddy.getAvatar());
+        chatBuddyService.update(chatBuddy, updateWrapper);
+       return ServerResponseVO.success(true);
+    }
+
     @GetMapping ("/{id}/profile")
     public ServerResponseVO<?> getProfile(@PathVariable("id") int id) {
        ChatBuddy chatBuddy = chatBuddyService.getById(id);
-       List<ChatBuddyPersonality> personalities = chatBuddyPersonalityService.getByBuddyId(id);
+       Map<String, Object> exInfo = new  HashMap<>();
+        Integer locationId = chatBuddy.getLocationId();
+        Location location = locationMapper.selectById(locationId);
+        exInfo.put("location", location.getLocation());
+        List<ChatBuddyPersonality> personalities = chatBuddyPersonalityService.getByBuddyId(id);
        List<ChatBuddyCareer> careers = chatBuddyCareerService.getByBuddyId(id);
        List<ChatBuddyHabit> habits = chatBuddyHabitService.getByBuddyId(id);
        List<ChatBuddyPast> pasts = chatBuddyPastService.getByBuddyId(id);
        Map<String, Object> res = new  HashMap<>();
+       res.put( "exInfo",exInfo);
        res.put( "personalityList",personalities);
        res.put( "careerList",careers);
        res.put( "habitList",habits);

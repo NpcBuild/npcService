@@ -63,6 +63,10 @@ public class ChatBuddy implements Serializable {
      */
     private String phone;
     /**
+     * 身份证号
+     */
+    private String idCard;
+    /**
      * 居住地址ID（关联 t_location.id）
      */
     private Integer locationId;
