@@ -8,6 +8,7 @@ import com.npc.common.modular.chat.vo.SocialGraphEdge;
 import com.npc.common.modular.chat.vo.SocialGraphNode;
 import com.npc.core.ServerResponseEnum;
 import com.npc.core.ServerResponseVO;
+import com.npc.core.utils.kinship.service.KinshipInferenceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
@@ -42,6 +43,8 @@ public class ChatBuddyRelationsController {
     public ChatBuddyRelationsServiceImpl chatBuddyRelationsServiceImpl;
     @Autowired
     private IChatBuddyService chatBuddyService;
+    @Autowired
+    private KinshipInferenceService kinshipInferenceService;
 
 
     /**
@@ -177,23 +180,27 @@ public class ChatBuddyRelationsController {
                 double angle = random.nextDouble() * 2 * Math.PI;
                 double radius = 100 + random.nextDouble() * 300; // 半径范围100-400
 
-                switch (category) {
-                    case "family":
+                switch (category.substring(0,1)) {
+                    case "A":
+//                    case "family":
                         // 家人分布在左上区域
                         node.setX(Math.cos(angle) * radius - 200);
                         node.setY(Math.sin(angle) * radius - 200);
                         break;
-                    case "friend":
+                    case "C":
+//                    case "friend":
                         // 朋友分布在右上区域
                         node.setX(Math.cos(angle) * radius + 200);
                         node.setY(Math.sin(angle) * radius - 200);
                         break;
-                    case "colleague":
+//                    case "colleague":
+                    case "B":
                         // 同事分布在左下区域
                         node.setX(Math.cos(angle) * radius - 200);
                         node.setY(Math.sin(angle) * radius + 200);
                         break;
-                    case "important":
+                    case "Z":
+//                    case "important":
                         // 重要联系人分布在右下区域
                         node.setX(Math.cos(angle) * radius + 200);
                         node.setY(Math.sin(angle) * radius + 200);
@@ -243,7 +250,15 @@ public class ChatBuddyRelationsController {
                 }
 
                 edges.add(edge);
+                kinshipInferenceService
+                        .infer(relation.getFromId(), relation.getToId(), relations)
+                        .ifPresent(result -> {
+                            System.out.println(result.relationName);
+                            System.out.println(result.explanation);
+                        });
             }
+
+
 
             // 构建返回数据结构
             Map<String, Object> result = new HashMap<>();

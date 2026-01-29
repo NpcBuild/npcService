@@ -54,7 +54,7 @@ public class Workday {
 //    @Async
 //    @Scheduled(fixedDelay = 5000) // 延迟5秒后开始执行，之后每隔固定时间执行一次
     @Alarm(title = "获取节假日业务告警", messageType = MessageTypes.TEXT, templateId = "holidayErrorTemp")
-    @PostConstruct
+//    @PostConstruct
     public void init() {
         CompletableFuture.runAsync(() -> {
             try {
@@ -91,6 +91,10 @@ public class Workday {
                 throw new RuntimeException(e);
             }
         });
+    }
+    @PostConstruct
+    public void init2() {
+        HOLIDAYLIST = holidayService.list();
     }
 
     /**

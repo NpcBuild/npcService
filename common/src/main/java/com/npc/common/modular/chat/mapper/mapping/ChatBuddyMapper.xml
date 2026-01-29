@@ -113,7 +113,7 @@
             GROUP_CONCAT(tcbr.type_ids) as type_ids,
             <include refid="Tcb_Base_Column_List"/>
         from t_chat_buddy tcb
-        LEFT JOIN t_chat_buddy_relations tcbr ON tcbr.to_id = tcb.id
+        LEFT JOIN t_chat_buddy_relations tcbr ON tcbr.to_id = tcb.id and tcbr.from_id = '1'
         <where>
             <if test="dto.id != '' and dto.id != null">
                 and tcb.id = #{dto.id}
